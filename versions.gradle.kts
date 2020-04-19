@@ -1,6 +1,3 @@
-extra["appVersionCode"] = 1
-extra["appVersion"] = "1.0.0"
-
 extra["kotlinVersion"] = "1.3.71"
 extra["gdxVersion"] = "1.9.10"
 extra["ktxVersion"] = "1.9.10-b5"

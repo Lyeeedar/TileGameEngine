@@ -17,14 +17,11 @@ dependencies {
 	implementation("com.esotericsoftware:kryo:$kryoVersion")
 
     implementation("io.github.libktx:ktx-actors:$ktxVersion")
-	implementation("io.github.libktx:ktx-assets:$ktxVersion")
     implementation("io.github.libktx:ktx-collections:$ktxVersion")
     implementation("io.github.libktx:ktx-math:$ktxVersion")
     implementation("io.github.libktx:ktx-scene2d:$ktxVersion")
 
 	implementation("com.squidpony:squidlib-util:$squidlibVersion")
-
-	implementation("com.brsanthu:migbase64:2.2")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
 }

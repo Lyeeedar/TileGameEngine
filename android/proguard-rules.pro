@@ -19,16 +19,52 @@
 #   public *;
 #}
 
+-dontobfuscate
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable
+-optimizationpasses 5
+-allowaccessmodification
+
 -verbose
 
 -dontwarn android.support.**
 -dontwarn com.badlogic.gdx.backends.android.AndroidFragmentApplication
 -dontwarn com.badlogic.gdx.utils.GdxBuild
 -dontwarn com.badlogic.gdx.physics.box2d.utils.Box2DBuild
--dontwarn com.badlogic.gdx.jnigen.BuildTarget*
--dontwarn com.badlogic.gdx.graphics.g2d.freetype.FreetypeBuild
+-dontwarn com.badlogic.gdx.jnigen.**
+-dontwarn java.awt.**
+-dontwarn javax.**
+-dontwarn com.badlogic.gdx.tools.**
+-dontwarn com.badlogic.gdx.backends.lwjgl.**
+-dontwarn org.lwjgl.**
+-dontwarn sun.misc.Unsafe
+-dontwarn sun.misc.Cleaner
+-dontwarn com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets
+-dontwarn kotlinx.coroutines.**
 
--keep class com.badlogic.gdx.controllers.android.AndroidControllers
+-keep,allowshrinking class java.beans.** { *; }
+-keep,allowshrinking class sun.reflect.** { *; }
+-keep,allowshrinking class com.esotericsoftware.kryo.** { *; }
+-keep,allowshrinking class com.esotericsoftware.kryo.io.** { *; }
+-keep,allowshrinking class sun.nio.ch.** { *; }
+-dontwarn sun.nio.ch.**
+-keep public class * extends com.google.protobuf.GeneratedMessage { *; }
+-keep class de.javakaffee.kryoserializers.** { *; }
+-dontwarn de.javakaffee.kryoserializers.**
+-keep class com.esotericsoftware.kryo.serializers.** { *; }
+-dontwarn com.esotericsoftware.kryo.serializers.**
+
+-keep class kotlin.** { *; }
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
 
 -keepclassmembers class com.badlogic.gdx.backends.android.AndroidInput* {
    <init>(com.badlogic.gdx.Application, android.content.Context, java.lang.Object, com.badlogic.gdx.backends.android.AndroidApplicationConfiguration);

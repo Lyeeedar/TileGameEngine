@@ -14,6 +14,7 @@ keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 
 val appVersionCode: Int by project
 val appVersion: String by project
+val applicationId: String by project
 
 android {
     buildToolsVersion("28.0.3")
@@ -28,7 +29,7 @@ android {
         }
     }
     defaultConfig {
-        applicationId = "com.lyeeedar.android"
+        applicationId = applicationId
         minSdkVersion(16)
         targetSdkVersion(28)
         versionCode = appVersionCode
