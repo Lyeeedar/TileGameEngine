@@ -18,6 +18,4 @@ build/
 Thumbs.db
 
 ## Lyeeedar
-game/caches
-game/assets/CompressedData
-game/assetsraw/ProcessedPaths.xml
+android/google-services.json

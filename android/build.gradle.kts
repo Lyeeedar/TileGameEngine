@@ -23,7 +23,7 @@ android {
         named("main") {
 	        manifest.srcFile("../../game/android/AndroidManifest.xml")
 	        java.srcDirs("src/", "../../game/android/src/")
-            res.srcDir("res")
+            res.srcDir("../../game/android/res")
             assets.srcDir("../../game/assets")
             jniLibs.srcDir("libs")
         }
@@ -120,6 +120,8 @@ tasks.register("copyAndroidNatives") {
 tasks.whenTaskAdded {
     if ("package" in name) {
         dependsOn("copyAndroidNatives")
+    } else if ("processDebugGoogleServices" in name) {
+	    dependsOn("copyGoogleServices")
     }
 }
 
@@ -142,4 +144,15 @@ tasks.register<Exec>("run") {
 
 	val adb = "$path/platform-tools/adb"
 	commandLine(listOf("$adb", "shell am start -n com.lyeeedar/com.lyeeedar.AndroidLauncher"))
+}
+
+tasks.register("copyGoogleServices") {
+	doFirst {
+		val srcFile = project.file("../../game/android/google-services.json")
+		val dstFile = project.file("google-services.json")
+		if (!dstFile.exists())
+		{
+			srcFile.copyTo(dstFile, true)
+		}
+	}
 }
