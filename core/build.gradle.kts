@@ -8,6 +8,7 @@ dependencies {
     val ktxVersion: String by project
 	val squidlibVersion: String by project
 	val kryoVersion: String by project
+	val kotlinCoroutinesVersion: String by project
 
     implementation(kotlin("stdlib"))
 
@@ -23,7 +24,7 @@ dependencies {
 
 	implementation("com.squidpony:squidlib-util:$squidlibVersion")
 
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 }
 
 java {

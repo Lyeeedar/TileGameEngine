@@ -73,6 +73,10 @@ repositories {
 
 dependencies {
     val gdxVersion: String by project
+	val kotlinCoroutinesVersion: String by project
+	val firebasePerfVersion: String by project
+	val firebaseAnalyticsVersion: String by project
+	val crashlyticsVersion: String by project
 
     implementation(project(":core"))
 
@@ -92,12 +96,12 @@ dependencies {
 	natives("com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a")
 	natives("com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64")
 
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion")
 
 	// Add the Firebase SDK for Google Analytics
-	implementation("com.google.firebase:firebase-analytics:17.3.0")
-	implementation("com.google.firebase:firebase-perf:19.0.6")
-	implementation("com.crashlytics.sdk.android:crashlytics:2.10.1")
+	implementation("com.google.firebase:firebase-analytics:$firebaseAnalyticsVersion")
+	implementation("com.google.firebase:firebase-perf:$firebasePerfVersion")
+	implementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion")
 
 }
 
