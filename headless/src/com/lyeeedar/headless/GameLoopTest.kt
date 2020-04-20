@@ -58,13 +58,13 @@ object GameLoopTest
 		val androidPlatformTools = "$androidHome/platform-tools"
 		println("ANDROID_HOME: $androidPlatformTools")
 
-		val apkPath = "engine/android/build/outputs/apk/debug/android-debug.apk"
+		val apkPath = "../../engine/android/build/outputs/apk/debug/android-debug.apk"
 		val apkFile = File(apkPath)
 		if (!apkFile.exists()) {
 			throw RuntimeException("Apk does not exist at " + apkFile.canonicalPath)
 		}
 
-		"$androidPlatformTools/adb install $apkPath".runCommand()
+		"$androidPlatformTools/adb install ${apkFile.canonicalPath}".runCommand()
 		"$androidPlatformTools/adb shell am start -W -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
 		"$androidPlatformTools/adb logcat -c".runCommand()
 		val pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
