@@ -92,13 +92,13 @@ dependencies {
 	natives("com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a")
 	natives("com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64")
 
-	implementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") { isTransitive = true }
-
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3")
 
 	// Add the Firebase SDK for Google Analytics
-	implementation("com.google.firebase:firebase-analytics:17.2.2")
-	implementation("com.google.firebase:firebase-perf:19.0.5")
+	implementation("com.google.firebase:firebase-analytics:17.3.0")
+	implementation("com.google.firebase:firebase-perf:19.0.6")
+	implementation("com.crashlytics.sdk.android:crashlytics:2.10.1")
+
 }
 
 // Called every time gradle gets executed, takes the native dependencies of
