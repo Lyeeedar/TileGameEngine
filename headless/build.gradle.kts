@@ -74,6 +74,7 @@ tasks.register<JavaExec>("releaseAndroidToPlaystore") {
 	classpath = sourceSets.main.get().runtimeClasspath
 	standardInput = System.`in`
 	workingDir = file("../../game/assets")
+	args = listOf(applicationId)
 }
 
 tasks.register<JavaExec>("autoLocalise") {

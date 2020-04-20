@@ -9,6 +9,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration
 import com.badlogic.gdx.backends.lwjgl.LwjglPreferences
 import com.lyeeedar.MainGame
 import com.lyeeedar.Util.AbstractApplicationChanger
+import com.lyeeedar.Util.Localisation
 import com.lyeeedar.Util.Statics
 
 class LwjglApplicationChanger : AbstractApplicationChanger(LwjglPreferences("game-settings", "settings"))
@@ -21,7 +22,7 @@ class LwjglApplicationChanger : AbstractApplicationChanger(LwjglPreferences("gam
 
 		val cfg = LwjglApplicationConfiguration()
 
-		cfg.title = "Match Dungeon"
+		cfg.title = Localisation.getText("title", "UI", "en")
 		cfg.width = 800
 		cfg.height = 600
 		cfg.fullscreen = pref.getBoolean("fullscreen")

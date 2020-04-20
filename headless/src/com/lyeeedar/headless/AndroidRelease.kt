@@ -23,7 +23,7 @@ object AndroidRelease
 		return output
 	}
 
-	@JvmStatic fun uploadToPlaystore(version: String, versionCode: Long, changes: String)
+	@JvmStatic fun uploadToPlaystore(version: String, versionCode: Long, changes: String, packageName: String)
 	{
 		println("Loading credentials")
 
@@ -38,7 +38,6 @@ object AndroidRelease
 		}
 
 		val releaseFile = File("android/build/outputs/bundle/release/android.aab")
-		val packageName = "com.lyeeedar.MatchDungeon"
 
 		println("Beginning edit")
 
@@ -68,8 +67,10 @@ object AndroidRelease
 		service.Edits().commit(packageName, editID).execute()
 	}
 
-	@JvmStatic fun main(arg: Array<String>)
+	@JvmStatic fun main(args: Array<String>)
 	{
+		val packageName = args[0]
+
 		println("Running in: " + File("").absolutePath)
 
 		val changes = "git diff".runCommand()
@@ -96,7 +97,7 @@ object AndroidRelease
 			val versionCode = matches2.groupValues[1]
 
 			// push to playstore
-			uploadToPlaystore(version, versionCode.toLong(), commitsSinceRelease)
+			uploadToPlaystore(version, versionCode.toLong(), commitsSinceRelease, packageName)
 
 			println("Release complete")
 			println("::set-output name=version::$version")
