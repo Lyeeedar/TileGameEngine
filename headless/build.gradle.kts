@@ -53,6 +53,22 @@ tasks.register<JavaExec>("testResources") {
 	workingDir = file("../../game/assets")
 }
 
+tasks.register<JavaExec>("longTest") {
+	main = "com.lyeeedar.headless.LongTest"
+	classpath = sourceSets.main.get().runtimeClasspath
+	standardInput = System.`in`
+	workingDir = file("../../game/assets")
+}
+
+val applicationId: String by project
+tasks.register<JavaExec>("gameLoopTest") {
+	main = "com.lyeeedar.headless.GameLoopTest"
+	classpath = sourceSets.main.get().runtimeClasspath
+	standardInput = System.`in`
+	workingDir = file("../../game/assets")
+	args = listOf(applicationId)
+}
+
 tasks.register<JavaExec>("releaseAndroidToPlaystore") {
 	main = "com.lyeeedar.headless.AndroidRelease"
 	classpath = sourceSets.main.get().runtimeClasspath
