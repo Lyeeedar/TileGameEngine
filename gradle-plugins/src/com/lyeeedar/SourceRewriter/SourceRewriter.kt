@@ -23,6 +23,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 		fileContents.add(packagePart)
 		fileContents.add(importsPart)
 
+		var doneImports = false
 		var currentMiscPart: MiscFilePart? = null
 		var currentClassPart: DataClassFilePart? = null
 		var funcDepth: Int? = null
@@ -40,6 +41,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 				else if (line.startsWith("import "))
 				{
 					importsPart.imports.add(line.trim())
+					doneImports = true
 					continue
 				}
 				else if (trimmed.startsWith("class "))
@@ -103,13 +105,18 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					continue
 				}
 
+				if (trimmed.isNotEmpty())
+				{
+					doneImports = true
+				}
+
 				if (currentMiscPart == null)
 				{
 					currentMiscPart = MiscFilePart()
 					fileContents.add(currentMiscPart)
 				}
 
-				if (importsPart.imports.size > 0)
+				if (doneImports)
 				{
 					currentMiscPart.code.add(line.trimEnd())
 				}

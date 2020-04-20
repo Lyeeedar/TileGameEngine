@@ -69,11 +69,11 @@ class EntityArchetypeBuilder
 }
 
 fun Entity.archetypeBuilder(): ArchetypeBuilderComponent? = this.components[ComponentType.ArchetypeBuilder] as ArchetypeBuilderComponent?
-class ArchetypeBuilderComponent : AbstractComponent()
+class ArchetypeBuilderComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
 {
 	override val type: ComponentType = ComponentType.ArchetypeBuilder
 
 	lateinit var builder: EntityArchetypeBuilder
 
-	override fun parse(xml: XmlData, entity: Entity, parentPath: String) {}
+	override fun reset() {}
 }

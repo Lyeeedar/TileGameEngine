@@ -6,15 +6,15 @@ import com.lyeeedar.Util.FastEnumMap
 class Entity
 {
 	val signature = EnumBitflag<ComponentType>()
-	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent>(ComponentType::class.java)
+	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent<*>>(ComponentType::class.java)
 
-	fun addComponent(component: AbstractComponent)
+	fun addComponent(component: AbstractComponent<*>)
 	{
 		components[component.type] = component
 		signature.setBit(component.type)
 	}
 
-	fun addComponent(componentType: ComponentType): AbstractComponent
+	fun addComponent(componentType: ComponentType): AbstractComponent<*>
 	{
 		val component = ComponentPool.obtain(componentType)
 		addComponent(component)
@@ -22,7 +22,7 @@ class Entity
 		return component
 	}
 
-	fun removeComponent(componentType: ComponentType): AbstractComponent?
+	fun removeComponent(componentType: ComponentType): AbstractComponent<*>?
 	{
 		val component = components[componentType]
 		components.remove(componentType)
@@ -30,6 +30,8 @@ class Entity
 
 		return component
 	}
+
+	fun hasComponent(componentType: ComponentType) = this.signature.contains(componentType)
 
 	var obtained = false
 	fun free()

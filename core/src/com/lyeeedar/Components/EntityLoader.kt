@@ -10,8 +10,6 @@ class EntityLoader()
 {
 	companion object
 	{
-		val sharedRenderableMap = ObjectMap<Int, Renderable>()
-
 		@JvmStatic fun load(path: String, skipRenderables: Boolean): Entity
 		{
 			val xml = getXml(path)
@@ -36,16 +34,18 @@ class EntityLoader()
 					}
 				}
 
-				val componentType = ComponentType.Values.first { it.toString().equals(componentEl.name, ignoreCase = true) }
-				val component: AbstractComponent = entity.addComponent(componentType)
-
-				component.parse(componentEl, entity, path.directory())
+				val componentID = componentEl.get("classID")
+				val componentType = ComponentType.valueOf(componentID)
+				val component = entity.addComponent(componentType)
+				val data = AbstractComponentData.loadPolymorphicClass(componentID)
+				data.load(componentEl)
+				component.swapData(data)
 			}
 
 			if (!entity.hasComponent(ComponentType.Name))
 			{
 				entity.addComponent(ComponentType.Name)
-				entity.name().set(path)
+				entity.name().data.name = path
 			}
 
 			return entity

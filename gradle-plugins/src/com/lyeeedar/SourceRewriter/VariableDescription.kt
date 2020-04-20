@@ -7,6 +7,12 @@ enum class VariableType
     LATEINIT
 }
 
+val assetManagerLoadedTypes = setOf("ParticleEffect", "ParticleEffectDescription",
+                                    "Sprite", "SpriteWrapper", "DirectionalSprite",
+                                    "Sound",
+                                    "Light",
+                                    "Texture", "TextureRegion",
+                                    "Renderable")
 class VariableDescription(val variableType: VariableType, val name: String, val type: String, val defaultValue: String, val raw: String, val annotations: ArrayList<AnnotationDescription>)
 {
 	val dataName: String
@@ -41,7 +47,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			nullable = true
 		}
 
-        if (type == "ParticleEffect" || type == "ParticleEffectDescription" || type == "Sprite" || type == "SpriteWrapper")
+        if (assetManagerLoadedTypes.contains(type))
         {
             imports.add("import com.lyeeedar.Util.AssetManager")
         }
@@ -60,7 +66,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		else if (type.startsWith("Array<"))
 		{
 			val arrayType = type.replace("Array<", "").dropLast(1)
-			if (arrayType == "ParticleEffect" || arrayType == "ParticleEffectDescription" || arrayType == "Sprite" || arrayType == "SpriteWrapper")
+			if (assetManagerLoadedTypes.contains(arrayType))
 			{
 				imports.add("import com.lyeeedar.Util.AssetManager")
 			}
@@ -165,24 +171,16 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				}
 			}
 		}
-        else if (type == "ParticleEffect" || type == "ParticleEffectDescription" || type == "Sprite" || type == "SpriteWrapper")
+        else if (assetManagerLoadedTypes.contains(type))
         {
 			val loadName: String
 			if (type == "ParticleEffectDescription" || type == "ParticleEffect")
 			{
 				loadName = "ParticleEffect"
 			}
-			else if (type == "Sprite")
-			{
-				loadName = "Sprite"
-			}
-			else if (type == "SpriteWrapper")
-			{
-				loadName = "SpriteWrapper"
-			}
 			else
 			{
-				throw RuntimeException("Unhandled renderable load type '$type'")
+				loadName = type
 			}
 
 			val loadExtension: String
@@ -262,24 +260,16 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				builder.appendln(indentation+2, "$name.add(el.boolean())")
 			}
-			else if (arrayType == "Sprite" || arrayType == "SpriteWrapper" || arrayType == "ParticleEffectDescription" || arrayType == "ParticleEffect")
+			else if (assetManagerLoadedTypes.contains(arrayType))
 			{
 				val loadName: String
 				if (arrayType == "ParticleEffectDescription" || arrayType == "ParticleEffect")
 				{
 					loadName = "ParticleEffect"
 				}
-				else if (arrayType == "Sprite")
-				{
-					loadName = "Sprite"
-				}
-				else if (arrayType == "SpriteWrapper")
-				{
-					loadName = "SpriteWrapper"
-				}
 				else
 				{
-					throw RuntimeException("Unhandled renderable load type '$arrayType'")
+					loadName = arrayType
 				}
 
 				val loadExtension: String
@@ -485,7 +475,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		{
 			builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Boolean" />""")
 		}
-        else if (type == "Sprite" || type == "SpriteWrapper" || type == "ParticleEffect" || type == "ParticleEffectDescription")
+        else if (assetManagerLoadedTypes.contains(type))
         {
 			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect" else type
             builder.appendlnFix(2, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
@@ -562,7 +552,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendlnFix(3, """<Data Name="$childName" meta:RefKey="Boolean">""")
 				builder.appendlnFix(2, """</Data>""")
 			}
-			else if (arrayType == "Sprite" || arrayType == "SpriteWrapper" || arrayType == "ParticleEffect" || arrayType == "ParticleEffectDescription")
+			else if (assetManagerLoadedTypes.contains(arrayType))
 			{
 				val dataType = if (arrayType == "ParticleEffectDescription") "ParticleEffect" else arrayType
 				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")

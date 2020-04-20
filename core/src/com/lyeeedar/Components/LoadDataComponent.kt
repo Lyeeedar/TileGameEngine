@@ -3,7 +3,7 @@ package com.lyeeedar.Components
 import com.lyeeedar.Util.XmlData
 
 inline fun Entity.loadData(): LoadDataComponent? = this.components[ComponentType.LoadData] as LoadDataComponent?
-class LoadDataComponent() : AbstractComponent()
+class LoadDataComponent() : AbstractComponent<EmptyComponentData>(EmptyComponentData())
 {
 	override val type: ComponentType = ComponentType.LoadData
 
@@ -18,11 +18,6 @@ class LoadDataComponent() : AbstractComponent()
 		this.fromLoad = fromLoad
 
 		return this
-	}
-
-	override fun parse(xml: XmlData, entity: Entity, parentPath: String)
-	{
-
 	}
 
 	override fun reset()

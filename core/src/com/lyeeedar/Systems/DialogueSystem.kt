@@ -27,10 +27,10 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature
 	override fun onTurnEntity(entity: Entity)
 	{
 		val dialogue = entity.dialogue()!!
-		if (dialogue.turnsToShow > 0)
+		if (dialogue.remainingTurnsToShow > 0)
 		{
-			dialogue.turnsToShow--
-			if (dialogue.turnsToShow == 0)
+			dialogue.remainingTurnsToShow--
+			if (dialogue.remainingTurnsToShow == 0)
 			{
 				dialogue.remove = true
 			}
@@ -61,7 +61,7 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature
 			}
 		}
 
-		if (dialogue.displayedText != dialogue.text)
+		if (dialogue.displayedText != dialogue.data.text)
 		{
 			dialogue.textAccumulator += deltaTime
 			while (dialogue.textAccumulator >= 0.02f)
@@ -69,7 +69,7 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature
 				dialogue.textAccumulator -= 0.02f
 
 				val currentPos = dialogue.displayedText.length
-				val nextChar = dialogue.text[currentPos]
+				val nextChar = dialogue.data.text[currentPos]
 				var nextString = "" + nextChar
 				if (nextChar == '[')
 				{
@@ -77,23 +77,23 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature
 					var current = currentPos + 1
 					while (true)
 					{
-						val char = dialogue.text[current]
+						val char = dialogue.data.text[current]
 						nextString += char
 
 						current++
 						if (char == ']') break
 					}
 
-					if (current < dialogue.text.length)
+					if (current < dialogue.data.text.length)
 					{
-						val char = dialogue.text[current]
+						val char = dialogue.data.text[current]
 						nextString += char
 					}
 				}
 
 				dialogue.displayedText += nextString
 
-				if (dialogue.displayedText == dialogue.text) break
+				if (dialogue.displayedText == dialogue.data.text) break
 			}
 		}
 
@@ -120,7 +120,7 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature
 			y += tileSize
 		}
 
-		layout.setText(font, dialogue.text, tempCol, Statics.stage.width * 0.5f, Align.left, true)
+		layout.setText(font, dialogue.data.text, tempCol, Statics.stage.width * 0.5f, Align.left, true)
 
 		var left = x - (layout.width * 0.5f) - 10f
 		if (left < 0) left = 0f

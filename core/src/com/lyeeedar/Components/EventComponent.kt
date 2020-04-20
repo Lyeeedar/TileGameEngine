@@ -12,10 +12,14 @@ fun Entity.event(): EventComponent? {
 
 	return event
 }
-class EventComponent : AbstractComponent()
+class EventComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
 {
 	override val type: ComponentType = ComponentType.Event
 
 	val onTurn = Event0Arg()
-	override fun parse(xml: XmlData, entity: Entity, parentPath: String) {}
+
+	override fun reset()
+	{
+		onTurn.clear()
+	}
 }

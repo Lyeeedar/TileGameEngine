@@ -70,8 +70,10 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 				entity.markForDeletion(0f, "completed")
 			}
 		}
+		renderable.size[0] = pos.data.size
+		renderable.size[1] = pos.data.size
 
-		renderer.queue(renderable, px, py, pos.slot.ordinal, 1)
+		renderer.queue(renderable, px, py, pos.data.slot.ordinal, 1)
 
 		val offset = renderable.animation?.renderOffset(false)
 
@@ -87,14 +89,14 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 		val additional = entity.additionalRenderable()
 		if (additional != null)
 		{
-			for (below in additional.below.values())
+			for (below in additional.data.below.values())
 			{
-				renderer.queue(below, ax, ay, pos.slot.ordinal, 0)
+				renderer.queue(below, ax, ay, pos.data.slot.ordinal, 0)
 			}
 
-			for (above in additional.above.values())
+			for (above in additional.data.above.values())
 			{
-				renderer.queue(above, ax, ay, pos.slot.ordinal, 2)
+				renderer.queue(above, ax, ay, pos.data.slot.ordinal, 2)
 			}
 		}
 
