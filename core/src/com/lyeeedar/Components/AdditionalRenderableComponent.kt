@@ -1,5 +1,6 @@
 package com.lyeeedar.Components
 
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Util.AssetManager
@@ -11,18 +12,42 @@ class AdditionalRenderableComponent(data: AdditionalRenderableComponentData) : A
 {
 	override val type: ComponentType = ComponentType.AdditionalRenderable
 
+	val below = ObjectMap<String, Renderable>()
+	val above = ObjectMap<String, Renderable>()
+
+	fun updateMaps()
+	{
+		below.clear()
+		above.clear()
+
+		for (r in data.below)
+		{
+			below[r.hashCode().toString()] = r
+		}
+
+		for (r in data.above)
+		{
+			above[r.hashCode().toString()] = r
+		}
+	}
+
 	override fun reset()
 	{
+		updateMaps()
+	}
 
+	override fun onDataSwapped()
+	{
+		updateMaps()
 	}
 }
 
 class AdditionalRenderableComponentData : AbstractComponentData()
 {
-	val classID: String = "AdditionalRenderable"
+	override val classID: String = "AdditionalRenderable"
 	
-	val below = ObjectMap<String, Renderable>()
-	val above = ObjectMap<String, Renderable>()
+	val below = Array<Renderable>()
+	val above = Array<Renderable>()
 
 	override fun load(xmlData: XmlData)
 	{

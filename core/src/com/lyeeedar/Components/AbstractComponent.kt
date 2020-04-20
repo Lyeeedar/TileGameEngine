@@ -4,6 +4,7 @@ import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 abstract class AbstractComponentData : XmlDataClass()
 {
+	abstract val classID: String
 
 	override fun load(xmlData: XmlData)
 	{
@@ -32,7 +33,7 @@ abstract class AbstractComponentData : XmlDataClass()
 }
 class EmptyComponentData : AbstractComponentData()
 {
-	val classID: String = "Empty"
+	override val classID: String = "Empty"
 
 	override fun load(xmlData: XmlData)
 	{
@@ -47,7 +48,9 @@ abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
 	fun swapData(data: AbstractComponentData)
 	{
 		this.data = data as T
+		onDataSwapped()
 	}
+	open fun onDataSwapped() {}
 
 	var obtained = false
 	fun free()

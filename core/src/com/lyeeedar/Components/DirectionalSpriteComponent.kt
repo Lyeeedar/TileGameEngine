@@ -23,7 +23,7 @@ class DirectionalSpriteComponent(data: DirectionalSpriteComponentData) : Abstrac
 
 class DirectionalSpriteComponentData : AbstractComponentData()
 {
-	val classID: String = "DirectionalSprite"
+	override val classID: String = "DirectionalSprite"
 	
 	lateinit var directionalSprite: DirectionalSprite
 

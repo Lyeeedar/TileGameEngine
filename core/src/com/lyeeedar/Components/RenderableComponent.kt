@@ -34,7 +34,7 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 
 class RenderableComponentData : AbstractComponentData()
 {
-	val classID: String = "Renderable"
+	override val classID: String = "Renderable"
 	
 	lateinit var renderable: Renderable
 

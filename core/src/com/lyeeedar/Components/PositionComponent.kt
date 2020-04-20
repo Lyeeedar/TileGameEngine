@@ -57,7 +57,7 @@ class PositionComponent(data: PositionComponentData): AbstractComponent<Position
 
 class PositionComponentData : AbstractComponentData()
 {
-	val classID: String = "Position"
+	override val classID: String = "Position"
 	
 	var slot: SpaceSlot = SpaceSlot.ENTITY
 	var moveable: Boolean = true

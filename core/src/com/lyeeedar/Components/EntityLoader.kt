@@ -13,33 +13,27 @@ class EntityLoader()
 		@JvmStatic fun load(path: String, skipRenderables: Boolean): Entity
 		{
 			val xml = getXml(path)
+			val data = EntityData()
+			data.load(xml)
 
-			val entity = if (xml.get("Extends", null) != null) load(xml.get("Extends"), skipRenderables) else EntityPool.obtain()
+			val entity = if (data.extends.isNotBlank()) load(data.extends, skipRenderables) else EntityPool.obtain()
 
 			entity.addComponent(ComponentType.LoadData)
 			entity.loadData()!!.set(path, xml, true)
 
-			val componentsEl = xml.getChildByName("Components") ?: return entity
-
-			for (componentEl in componentsEl.children())
+			for (component in data.components)
 			{
+				val componentID = component.classID
 				if (skipRenderables)
 				{
-					if (
-						componentEl.name.toUpperCase(Locale.ENGLISH) == "ADDITIONALRENDERABLES" ||
-						componentEl.name.toUpperCase(Locale.ENGLISH) == "DIRECTIONALSPRITE" ||
-						componentEl.name.toUpperCase(Locale.ENGLISH) == "RENDERABLE")
+					if (componentID.contains("Renderable") || componentID.contains("Sprite"))
 					{
 						continue
 					}
 				}
 
-				val componentID = componentEl.get("classID")
 				val componentType = ComponentType.valueOf(componentID)
-				val component = entity.addComponent(componentType)
-				val data = AbstractComponentData.loadPolymorphicClass(componentID)
-				data.load(componentEl)
-				component.swapData(data)
+				entity.addComponent(componentType).swapData(component)
 			}
 
 			if (!entity.hasComponent(ComponentType.Name))

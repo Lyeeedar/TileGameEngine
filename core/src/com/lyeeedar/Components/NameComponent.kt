@@ -16,7 +16,7 @@ class NameComponent(data: NameComponentData) : AbstractComponent<NameComponentDa
 
 class NameComponentData : AbstractComponentData()
 {
-	val classID: String = "Name"
+	override val classID: String = "Name"
 	
 	lateinit var name: String
 	lateinit var title: String

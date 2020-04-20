@@ -94,7 +94,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 						continue
 					}
 				}
-				else if (trimmed.startsWith("@"))
+				else if (trimmed.startsWith("@") && !trimmed.startsWith("@JvmField"))
 				{
 					if (annotations == null)
 					{

@@ -18,7 +18,7 @@ class MetaRegionComponent(data: MetaRegionComponentData) : AbstractComponent<Met
 
 class MetaRegionComponentData : AbstractComponentData()
 {
-	val classID: String = "MetaRegion"
+	override val classID: String = "MetaRegion"
 	
 	val keys: Array<String> = Array<String>()
 

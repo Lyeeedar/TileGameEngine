@@ -89,12 +89,12 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 		val additional = entity.additionalRenderable()
 		if (additional != null)
 		{
-			for (below in additional.data.below.values())
+			for (below in additional.below.values())
 			{
 				renderer.queue(below, ax, ay, pos.data.slot.ordinal, 0)
 			}
 
-			for (above in additional.data.above.values())
+			for (above in additional.above.values())
 			{
 				renderer.queue(above, ax, ay, pos.data.slot.ordinal, 2)
 			}

@@ -35,7 +35,7 @@ class DialogueComponent(data: DialogueComponentData) : AbstractComponent<Dialogu
 
 class DialogueComponentData : AbstractComponentData()
 {
-	val classID: String = "Dialogue"
+	override val classID: String = "Dialogue"
 	
 	var text: String = ""
 	var turnsToShow = -1
