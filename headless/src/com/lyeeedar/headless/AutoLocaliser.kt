@@ -360,7 +360,8 @@ class Localiser
 				}
 			}
 		}
-		parseCodeFilesRecursive(File("../../core/src").absoluteFile)
+		parseCodeFilesRecursive(File("../core/src").absoluteFile)
+		parseCodeFilesRecursive(File("../../engine/core/src").absoluteFile)
 
 		println("ID's found")
 
