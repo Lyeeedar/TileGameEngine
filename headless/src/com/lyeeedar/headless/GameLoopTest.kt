@@ -58,12 +58,13 @@ object GameLoopTest
 		val androidPlatformTools = "$androidHome/platform-tools"
 		println("ANDROID_HOME: $androidPlatformTools")
 
-		"$androidPlatformTools/adb install android/build/outputs/apk/debug/android-debug.apk".runCommand()
+		"$androidPlatformTools/adb install engine/android/build/outputs/apk/debug/android-debug.apk".runCommand()
 		"$androidPlatformTools/adb shell am start -W -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
 		"$androidPlatformTools/adb logcat -c".runCommand()
 		val pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
 		if (pid.isBlank()) {
-			throw RuntimeException("App instantly crashed!\n\n" + "$androidPlatformTools/adb logcat -d".runCommand())
+			"$androidPlatformTools/adb logcat -d".runCommand()
+			throw RuntimeException("App instantly crashed!")
 		}
 
 		val completeLogs = StringBuilder()
