@@ -129,8 +129,9 @@ tasks.whenTaskAdded {
     }
 }
 
-val applicationId: String by project
 tasks.register<Exec>("run") {
+	val applicationId: String by project
+
 	var path: String
 	val localProperties = project.file("../../local.properties")
 	if (localProperties.exists()) {
