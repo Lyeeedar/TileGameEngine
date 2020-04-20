@@ -65,12 +65,21 @@ object GameLoopTest
 		}
 
 		"$androidPlatformTools/adb install ${apkFile.canonicalPath}".runCommand()
-		"$androidPlatformTools/adb shell am start -W -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
+		"$androidPlatformTools/adb shell am start -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
 		"$androidPlatformTools/adb logcat -c".runCommand()
-		val pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
-		if (pid.isBlank()) {
-			val crashLogs = "$androidPlatformTools/adb logcat -d".runCommand().split('\n').filter { it.contains(" E ") || it.contains("lyeeedar") }.joinToString("\n")
-			throw RuntimeException("##########################\nApp instantly crashed!\n##############################\n\n$crashLogs")
+
+		var pidFailedCount = 0
+		var pid = ""
+		while (pid.isBlank())
+		{
+			pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
+			Thread.sleep(1000) // 1 seconds
+
+			pidFailedCount++
+			if (pidFailedCount > 60*5) { // 5 min timeout
+				val crashLogs = "$androidPlatformTools/adb logcat -d".runCommand().split('\n').filter { it.contains(" E ") || it.contains("lyeeedar") }.joinToString("\n")
+				throw RuntimeException("##########################\nApp failed to start!\n##############################\n\n$crashLogs")
+			}
 		}
 
 		val completeLogs = StringBuilder()
