@@ -129,6 +129,7 @@ tasks.whenTaskAdded {
     }
 }
 
+val applicationId: String by project
 tasks.register<Exec>("run") {
 	var path: String
 	val localProperties = project.file("../../local.properties")
@@ -147,7 +148,7 @@ tasks.register<Exec>("run") {
 	}
 
 	val adb = "$path/platform-tools/adb"
-	commandLine(listOf("$adb", "shell am start -n com.lyeeedar/com.lyeeedar.AndroidLauncher"))
+	commandLine(listOf(adb, "shell am start -n $applicationId/com.lyeeedar.AndroidLauncher"))
 }
 
 tasks.register("copyGoogleServices") {
