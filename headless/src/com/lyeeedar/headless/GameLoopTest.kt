@@ -58,13 +58,19 @@ object GameLoopTest
 		val androidPlatformTools = "$androidHome/platform-tools"
 		println("ANDROID_HOME: $androidPlatformTools")
 
-		"$androidPlatformTools/adb install engine/android/build/outputs/apk/debug/android-debug.apk".runCommand()
+		val apkPath = "engine/android/build/outputs/apk/debug/android-debug.apk"
+		val apkFile = File(apkPath)
+		if (!apkFile.exists()) {
+			throw RuntimeException("Apk does not exist at " + apkFile.canonicalPath)
+		}
+
+		"$androidPlatformTools/adb install $apkPath".runCommand()
 		"$androidPlatformTools/adb shell am start -W -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
 		"$androidPlatformTools/adb logcat -c".runCommand()
 		val pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
 		if (pid.isBlank()) {
-			"$androidPlatformTools/adb logcat -d".runCommand()
-			throw RuntimeException("App instantly crashed!")
+			val crashLogs = "$androidPlatformTools/adb logcat -d".runCommand().split('\n').filter { it.contains(" E ") || it.contains("lyeeedar") }.joinToString("\n")
+			throw RuntimeException("##########################\nApp instantly crashed!\n##############################\n\n$crashLogs")
 		}
 
 		val completeLogs = StringBuilder()
