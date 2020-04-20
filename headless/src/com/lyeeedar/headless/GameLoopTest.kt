@@ -6,23 +6,23 @@ import java.util.*
 
 object GameLoopTest
 {
-	@JvmStatic fun String.runCommand(): String {
-		println(this)
+	@JvmStatic fun String.runCommand(print: Boolean = true): String {
+		if (print) println(this)
 		val output = Runtime.getRuntime().exec(this).inputStream.bufferedReader().readText().trim()
-		println(output)
+		if (print) println(output)
 		return output
 	}
 
 	fun readLogs(androidHome: String, pid: String, completeLog: StringBuilder)
 	{
-		val logs = "$androidHome/adb logcat -d".runCommand().split('\n')
+		val logs = "$androidHome/adb logcat -d".runCommand(false).split('\n')
 		for (log in logs)
 		{
 			completeLog.append(log)
 			if (log.contains(" $pid ")) println(log)
 		}
 
-		"$androidHome/adb logcat -c".runCommand()
+		"$androidHome/adb logcat -c".runCommand(false)
 	}
 
 	@JvmStatic fun main(args: Array<String>)
@@ -95,7 +95,9 @@ object GameLoopTest
 		var inCrash = false
 		for (line in completeLogs.lines())
 		{
-			if (line.startsWith("--------- beginning of crash") || line.contains("FATAL EXCEPTION: GLThread"))
+			if (line.startsWith("--------- beginning of crash")
+			    || line.contains("FATAL EXCEPTION: GLThread")
+			    || (line.contentEquals(" E ") && line.contains("Exception")))
 			{
 				inCrash = true
 			}
