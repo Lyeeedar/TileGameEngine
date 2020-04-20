@@ -59,20 +59,11 @@ object GameLoopTest
 		println("ANDROID_HOME: $androidPlatformTools")
 
 		"$androidPlatformTools/adb install android/build/outputs/apk/debug/android-debug.apk".runCommand()
-		"$androidPlatformTools/adb shell am start -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
+		"$androidPlatformTools/adb shell am start -W -a com.google.intent.action.TEST_LOOP -n $appId/com.lyeeedar.AndroidLauncher -S".runCommand()
 		"$androidPlatformTools/adb logcat -c".runCommand()
-
-		var pidFailedCount = 0
-		var pid = ""
-		while (pid.isBlank())
-		{
-			pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
-			Thread.sleep(1000) // 1 seconds
-
-			pidFailedCount++
-			if (pidFailedCount > 60*5) { // 5 min timeout
-				throw RuntimeException("Unable to find pid of started process")
-			}
+		val pid = "$androidPlatformTools/adb shell pidof $appId".runCommand()
+		if (pid.isBlank()) {
+			throw RuntimeException("App instantly crashed!\n\n" + "$androidPlatformTools/adb logcat -d".runCommand())
 		}
 
 		val completeLogs = StringBuilder()
