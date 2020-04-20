@@ -7,7 +7,7 @@ import com.lyeeedar.Util.Localisation
 
 class AndroidLogger : ILogger
 {
-	val LOG_TAG = Localisation.getText("title", "UI", "en").replace(" ", "")
+	val LOG_TAG = "com.lyeeedar"
 
 	override fun logDebug(message: String)
 	{
