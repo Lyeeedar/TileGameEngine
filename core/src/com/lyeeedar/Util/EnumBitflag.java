@@ -61,6 +61,11 @@ public final class EnumBitflag<T extends Enum<T>>
 		return ( ( 1 << ( val.ordinal() + 1 ) ) & bitflag ) != 0;
 	}
 
+	public boolean containsAny( EnumBitflag<T> other )
+	{
+		return intersects(other);
+	}
+
 	public boolean containsAll( EnumBitflag<T> other )
 	{
 		return containsAll(other.bitflag);
