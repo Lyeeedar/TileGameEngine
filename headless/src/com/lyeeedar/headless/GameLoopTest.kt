@@ -86,6 +86,9 @@ object GameLoopTest
 		while ("$androidPlatformTools/adb shell pidof $appId".runCommand().isNotBlank())
 		{
 			readLogs(androidPlatformTools, pid, completeLogs)
+			if (completeLogs.contains("com.lyeeedar: Game Loop Test completed successfully")) {
+				break
+			}
 			Thread.sleep(5000) // 5 seconds
 		}
 		readLogs(androidPlatformTools, pid, completeLogs)

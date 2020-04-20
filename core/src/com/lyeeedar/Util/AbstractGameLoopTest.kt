@@ -41,7 +41,7 @@ abstract class AbstractGameLoopTest(val completionCallback: ()->Unit) {
 			doRun()
 
 			Statics.logger.logDebug("###################################################################")
-			Statics.logger.logDebug("Test completed successfully")
+			Statics.logger.logDebug("Game Loop Test completed successfully")
 			Statics.logger.logDebug("###################################################################")
 
 			delay(2000)
