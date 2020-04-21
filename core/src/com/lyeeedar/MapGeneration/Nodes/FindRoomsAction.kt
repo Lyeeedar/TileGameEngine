@@ -3,10 +3,12 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 import squidpony.squidgrid.mapping.RoomFinder
 
+@DataClass(category = "Rooms", colour = "240,207,1")
 class FindRoomsAction : AbstractMapGenerationAction()
 {
 	lateinit var roomName: String

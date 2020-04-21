@@ -3,11 +3,13 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SymmetryDungeonGenerator
 import squidpony.squidmath.RNG
 
+@DataClass(category = "Squidlib", colour = "89,255,11")
 class SquidlibSymmetryGeneratorAction : AbstractMapGenerationAction()
 {
 	var overwrite: Boolean = true

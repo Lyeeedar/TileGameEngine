@@ -8,12 +8,10 @@ import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
-import com.lyeeedar.Util.DataCompiledExpression
-import com.lyeeedar.Util.DataGraphReference
-import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.floor
+import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Area", colour = "81,154,245")
 class RepeatAction : AbstractMapGenerationAction()
 {
 	enum class RemainderMode

@@ -11,6 +11,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Area", colour = "80,170,230")
 class DivideAction : AbstractMapGenerationAction()
 {
 	val divisions: Array<Division> = Array<Division>()

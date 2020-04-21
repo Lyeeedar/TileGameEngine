@@ -4,10 +4,12 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Symbol
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataXml
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
+@DataClass(category = "Setup", colour = "227,198,16")
 class SymbolAction : AbstractMapGenerationAction()
 {
 	@DataXml(actualClass = "Symbol")

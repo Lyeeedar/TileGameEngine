@@ -10,12 +10,10 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Pathfinding.AStarPathfind
 import com.lyeeedar.SpaceSlot
-import com.lyeeedar.Util.Point
-import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.XmlDataClass
-import com.lyeeedar.Util.random
+import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Rooms", colour = "212,140,22")
 class ConnectRoomsAction : AbstractMapGenerationAction()
 {
 	enum class PathStyle

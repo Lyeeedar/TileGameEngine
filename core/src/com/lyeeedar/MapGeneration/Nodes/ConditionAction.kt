@@ -8,12 +8,10 @@ import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
-import com.lyeeedar.Util.DataCompiledExpression
-import com.lyeeedar.Util.DataGraphReference
-import com.lyeeedar.Util.GraphXmlDataClass
-import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Other", colour = "252,248,131")
 class ConditionAction : AbstractMapGenerationAction()
 {
 	val conditions: Array<Condition> = Array<Condition>()

@@ -7,11 +7,13 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 import java.util.*
 import ktx.collections.toGdxArray
 
+@DataClass(category = "Point", colour = "193,49,199")
 class FilterAction : AbstractMapGenerationAction()
 {
 	enum class Mode

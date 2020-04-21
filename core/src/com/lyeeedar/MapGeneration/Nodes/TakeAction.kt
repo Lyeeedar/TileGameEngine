@@ -12,6 +12,7 @@ import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Point", colour = "214,86,219")
 class TakeAction : AbstractMapGenerationAction()
 {
 	enum class Mode

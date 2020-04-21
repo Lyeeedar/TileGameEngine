@@ -653,7 +653,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		    val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
 		    val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
 
-		    builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
+		    builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="$canSkip" MaxLength="1" Default=$defaultValue $visibleIfStr  meta:RefKey="String" />""")
 	    }
         else if (type == "Int" || type == "Float")
         {

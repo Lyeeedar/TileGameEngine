@@ -11,6 +11,7 @@ import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
 import java.util.*
 
+@DataClass(category = "Rooms", colour = "255,196,0")
 class SelectNamedAreaAction : AbstractMapGenerationAction()
 {
 	enum class Mode

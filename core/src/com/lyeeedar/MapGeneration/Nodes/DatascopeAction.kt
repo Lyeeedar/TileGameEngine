@@ -3,9 +3,11 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 
+@DataClass(category = "Other", colour = "201,80,91")
 class DatascopeAction : AbstractMapGenerationAction()
 {
 	var scopeVariables: Boolean = true

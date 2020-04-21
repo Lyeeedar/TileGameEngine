@@ -3,6 +3,7 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import java.util.*
 import squidpony.squidgrid.mapping.DungeonUtility
@@ -10,6 +11,7 @@ import squidpony.squidgrid.mapping.FlowingCaveGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
 
+@DataClass(category = "Squidlib", colour = "89,255,11")
 class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 {
 	lateinit var tilesetType: TilesetType

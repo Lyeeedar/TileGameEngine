@@ -8,11 +8,13 @@ import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.floor
 import java.util.*
 
+@DataClass(category = "Area", colour = "128,100,227")
 class TranslateAction : AbstractMapGenerationAction()
 {
 	enum class Mode

@@ -21,6 +21,7 @@ enum class SplitSide
 	REMAINDER
 }
 
+@DataClass(category = "Area", colour = "28,168,232")
 class SplitAction : AbstractMapGenerationAction()
 {
 	val splits: Array<Split> = Array<Split>()

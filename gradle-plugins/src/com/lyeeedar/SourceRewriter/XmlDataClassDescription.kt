@@ -9,6 +9,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	val dataClassName: String
 	val dataClassCategory: String
 	val forceGlobal: Boolean
+	var colour: String? = null
 
     init
     {
@@ -20,6 +21,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 			dataClassName = dataClassAnnotation.paramMap["name"] ?: name.capitalize()
 			dataClassCategory = dataClassAnnotation.paramMap["category"] ?: ""
 			forceGlobal = dataClassAnnotation.paramMap["global"] == "true"
+			colour = dataClassAnnotation.paramMap["colour"]
 		}
 		else
 		{
@@ -216,30 +218,32 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
 
+	    val colour = if (this.colour != null) """TextColour="$colour" """ else ""
+
         val dataFileAnnotation = annotations.firstOrNull { it.name == "DataFile" }
         if (dataFileAnnotation != null)
         {
 	        if (nodeMapVariable != null)
 	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $extends meta:RefKey="GraphStruct">""")
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $colour $extends meta:RefKey="GraphStruct">""")
 	        }
 	        else
 	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $extends meta:RefKey="Struct">""")
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $extends meta:RefKey="Struct">""")
 	        }
         }
         else
         {
+	        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
+
 	        val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
 	        if (dataGraphNode != null)
 	        {
-		        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $global $extends meta:RefKey="GraphStructDef">""")
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $global $extends meta:RefKey="GraphStructDef">""")
 	        }
 	        else
 	        {
-		        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $global $extends meta:RefKey="StructDef">""")
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $global $extends meta:RefKey="StructDef">""")
 	        }
         }
 

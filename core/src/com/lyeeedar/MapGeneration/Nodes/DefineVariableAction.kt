@@ -7,11 +7,13 @@ import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.set
 import java.util.*
 
+@DataClass(category = "Setup", colour = "255,246,20")
 class DefineVariableAction : AbstractMapGenerationAction()
 {
 	lateinit var key: String
