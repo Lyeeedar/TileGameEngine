@@ -680,5 +680,6 @@ annotation class DataFileReference(val basePath: String = "", val stripExtension
 annotation class DataCompiledExpression(val createExpressionMethod: String = "")
 annotation class DataGraphNodes()
 annotation class DataGraphNode()
+annotation class DataClassCollection()
 annotation class DataGraphReference(val useParentDescription: Boolean = false)
 annotation class DataXml(val actualClass: String = "")

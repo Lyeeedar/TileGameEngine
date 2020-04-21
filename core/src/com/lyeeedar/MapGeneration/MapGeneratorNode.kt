@@ -9,6 +9,7 @@ import com.lyeeedar.Util.*
 
 @DataClass(colour = "209,209,143")
 @DataGraphNode
+@DataClassCollection
 class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 {
 	val actions: Array<AbstractMapGenerationAction> = Array<AbstractMapGenerationAction>()
@@ -24,7 +25,7 @@ class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		val actionsEl = xmlData.getChildByName("Actions")
+		val actionsEl = xmlData
 		if (actionsEl != null)
 		{
 			for (el in actionsEl.children)

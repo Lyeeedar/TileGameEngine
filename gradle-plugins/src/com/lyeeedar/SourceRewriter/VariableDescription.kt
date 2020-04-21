@@ -301,7 +301,15 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			val elName = name+"El"
 
-			builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
+			if (classDefinition.classDef!!.annotations.any { it.name == "DataClassCollection" })
+			{
+				builder.appendln(indentation, "val $elName = xmlData")
+			}
+			else
+			{
+				builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
+			}
+
 			builder.appendln(indentation, "if ($elName != null)")
 			builder.appendln(indentation, "{")
 			builder.appendln(indentation+1, "for (el in ${elName}.children)")

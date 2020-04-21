@@ -219,43 +219,64 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
 
 	    val colour = if (this.colour != null) """TextColour="$colour" """ else ""
+	    val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
 
-        val dataFileAnnotation = annotations.firstOrNull { it.name == "DataFile" }
-        if (dataFileAnnotation != null)
-        {
-	        if (nodeMapVariable != null)
-	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $colour $extends meta:RefKey="GraphStruct">""")
-	        }
-	        else
-	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $extends meta:RefKey="Struct">""")
-	        }
-        }
-        else
-        {
-	        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
-
-	        val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
-	        if (dataGraphNode != null)
-	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $global $extends meta:RefKey="GraphStructDef">""")
-	        }
-	        else
-	        {
-		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $global $extends meta:RefKey="StructDef">""")
-	        }
-        }
-
-	    if (classDefinition.generatedClassID != null)
+	    val collectionAnnotation = annotations.firstOrNull { it.name == "DataClassCollection" }
+	    if (collectionAnnotation != null)
 	    {
-		    builder.appendln(2, """<Const Name="classID">${classDefinition.generatedClassID!!.replace("\"", "")}</Const>""")
+		    if (variables.size > 1) throw RuntimeException("DataClassAnnotation only works with a single child")
+
+		    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
+		    val type = if (dataGraphNode != null) "GraphCollectionDef" else "CollectionDef"
+
+		    val variable = variables[0]
+		    val annotations = variable.annotations
+
+		    val arrayType = variable.type.replace("Array<", "").dropLast(1)
+
+		    val dataArrayAnnotation = annotations.firstOrNull { it.name == "DataArray" }
+		    val minCount = dataArrayAnnotation?.paramMap?.get("minCount")
+		    val maxCount = dataArrayAnnotation?.paramMap?.get("maxCount")
+		    val minCountStr = if (minCount != null) "MinCount=\"$minCount\"" else ""
+		    val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
+
+		    val classDef = classRegister.getClass(arrayType, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
+
+		    val def = if (classDef.isAbstract) """DefKey="${classDef.classDef!!.dataClassName}Defs" """  else """Keys="${classDef.classDef!!.dataClassName}" """
+
+		    builder.appendlnFix(1, """<Definition Name="$dataClassName" $minCountStr $maxCountStr $def $colour $global meta:RefKey="$type">""")
 	    }
-        for (variable in variables)
-        {
-			if (variable.raw.startsWith("abstract")) continue
-            variable.createDefEntry(builder, classDefinition, classRegister)
-        }
+	    else
+	    {
+		    val dataFileAnnotation = annotations.firstOrNull { it.name == "DataFile" }
+		    if (dataFileAnnotation != null)
+		    {
+			    if (nodeMapVariable != null)
+			    {
+				    builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $colour $extends meta:RefKey="GraphStruct">""")
+			    }
+			    else
+			    {
+				    builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $extends meta:RefKey="Struct">""")
+			    }
+		    }
+		    else
+		    {
+			    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
+			    val type = if (dataGraphNode != null) "GraphStructDef" else "StructDef"
+			    builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $global $extends meta:RefKey="$type">""")
+		    }
+
+		    if (classDefinition.generatedClassID != null)
+		    {
+			    builder.appendln(2, """<Const Name="classID">${classDefinition.generatedClassID!!.replace("\"", "")}</Const>""")
+		    }
+		    for (variable in variables)
+		    {
+			    if (variable.raw.startsWith("abstract")) continue
+			    variable.createDefEntry(builder, classDefinition, classRegister)
+		    }
+	    }
 
         builder.appendln(1, "</Definition>")
     }
