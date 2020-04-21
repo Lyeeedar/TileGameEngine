@@ -136,6 +136,12 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
         {
             variable.writeLoad(builder, classIndentation+2, classDefinition, classRegister, extraVariables)
         }
+	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
+	    if (nodeMapVariable != null)
+	    {
+		    builder.appendln(classIndentation+2, "resolve(${nodeMapVariable.name})")
+	    }
+
         builder.appendln(classIndentation+1, "}")
 
 	    for (line in extraVariables)

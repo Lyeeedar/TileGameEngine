@@ -163,7 +163,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			}
 			else if (trimmed.startsWith("enum class "))
 			{
-				val name = trimmed.replace("enum class ", "").trim().split(" ")[0]
+				val name = trimmed.replace("enum class ", "").trim().split(" ")[0].replace("_Mirror", "")
 
 				val enumDef = EnumDefinition(name, packageStr)
 				enumDef.imports.addAll(imports)
@@ -224,6 +224,14 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 	{
 		val xmlDataClasses = classDefMap.values.filter { it.isXmlDataClass }.toList()
 
+		for (dataClass in xmlDataClasses)
+		{
+			if (dataClass.classDef == null)
+			{
+				System.err.println("Data class ${dataClass.fullName} failed to match to a definition")
+			}
+		}
+
 		val rootClasses = xmlDataClasses.filter { it.classDef!!.annotations.any { it.name == "DataFile" } }.toHashSet()
 		rootClasses.addAll(xmlDataClasses.filter { it.classDef!!.forceGlobal })
 
@@ -268,6 +276,8 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 		val writtenSpecificFiles = HashSet<ClassDefinition>()
 		for (root in rootClasses)
 		{
+			System.out.println("Writing def file for " + root.fullName)
+
 			val otherClasses = HashSet<ClassDefinition>()
 			for (referencedClass in root.getAllReferencedClasses(HashSet()))
 			{

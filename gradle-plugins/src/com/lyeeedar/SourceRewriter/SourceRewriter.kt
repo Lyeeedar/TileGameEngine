@@ -13,11 +13,6 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 	fun parse(): Boolean
 	{
-		if (file.nameWithoutExtension == "XmlData")
-		{
-			return false
-		}
-
 		originalContents = file.readText()
 
 		val lines = originalContents.split('\n')

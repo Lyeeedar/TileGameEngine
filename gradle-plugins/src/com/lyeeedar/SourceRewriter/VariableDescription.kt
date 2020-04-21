@@ -266,6 +266,22 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        }
 	        }
         }
+		else if (type == "XmlData")
+        {
+	        val annotation = annotations.first { it.name == "DataXml" }
+	        val actualClass = annotation.paramMap["actualClass"]!!
+
+	        val classDef = classRegister.getClass(actualClass, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$actualClass'!")
+	        classDefinition.referencedClasses.add(classDef)
+
+	        var line = "$name = xmlData.getChildByName(\"$dataName\")"
+	        if (variableType == VariableType.LATEINIT || !nullable)
+	        {
+		        line += "!!"
+	        }
+
+	        builder.appendln(indentation, line)
+        }
 		else if (classRegister.getEnum(type, classDefinition) != null)
 		{
 			val enumDef = classRegister.getEnum(type, classDefinition)!!
@@ -359,6 +375,45 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			builder.appendln(indentation+1, "}")
 			builder.appendln(indentation, "}")
 		}
+		else if (type.startsWith("ObjectMap<"))
+        {
+	        val dataNodesAnnotation = annotations.firstOrNull { it.name == "DataGraphNodes" }
+	        if (dataNodesAnnotation != null)
+	        {
+		        val elName = name+"El"
+
+		        val nodeType = type.split(",")[1].split(">")[0].trim()
+
+		        builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
+		        builder.appendln(indentation, "if ($elName != null)")
+		        builder.appendln(indentation, "{")
+		        builder.appendln(indentation+1, "for (el in ${elName}.children)")
+		        builder.appendln(indentation+1, "{")
+
+		        val classDef = classRegister.getClass(nodeType, classDefinition) ?: throw RuntimeException("writeLoad: Unknown type '$nodeType' in '$type'!")
+		        classDefinition.referencedClasses.add(classDef)
+
+		        if (classDef.isAbstract)
+		        {
+			        builder.appendln(indentation+2, "val obj = $nodeType.loadPolymorphicClass(el.get(\"classID\"))")
+		        }
+		        else
+		        {
+			        builder.appendln(indentation+2, "val obj = $nodeType()")
+		        }
+
+		        builder.appendln(indentation+2, "obj.load(el)")
+		        builder.appendln(indentation+2, "val guid = el.getAttribute(\"GUID\")")
+		        builder.appendln(indentation+2, "$name[guid] = obj")
+
+		        builder.appendln(indentation+1, "}")
+		        builder.appendln(indentation, "}")
+	        }
+	        else
+	        {
+		        throw RuntimeException("ObjectMap that isnt a @DataGraphNodes not currently supported")
+	        }
+        }
 		else if (type == "FastEnumMap<Statistic, Float>")
 		{
 			builder.appendln(indentation, "Statistic.parse(xmlData.getChildByName(\"$dataName\")!!, $name)")
@@ -448,6 +503,30 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			else
 			{
 				builder.appendln(indentation, "if (!${name}GUID.isNullOrBlank()) $name = nodes[${name}GUID]!!")
+			}
+		}
+		else if (type.startsWith("ObjectMap<"))
+		{
+			val dataNodesAnnotation = annotations.firstOrNull { it.name == "DataGraphNodes" }
+			if (dataNodesAnnotation != null)
+			{
+				if (nullable)
+				{
+					builder.appendln(indentation, "if ($name != null)")
+					builder.appendln(indentation, "{")
+					builder.appendln(indentation+1, "for (item in $name.values())")
+					builder.appendln(indentation+1, "{")
+					builder.appendln(indentation+2, "item.resolve(nodes)")
+					builder.appendln(indentation+1, "}")
+					builder.appendln(indentation, "}")
+				}
+				else
+				{
+					builder.appendln(indentation, "for (item in $name.values())")
+					builder.appendln(indentation, "{")
+					builder.appendln(indentation+1, "item.resolve(nodes)")
+					builder.appendln(indentation, "}")
+				}
 			}
 		}
 		else
@@ -569,7 +648,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendlnFix(2, """<Data Name="$dataName" $needsLocalisation $localisationFile SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
 			}
         }
-	    if (type == "Char")
+	    else if (type == "Char")
 	    {
 		    val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
 		    val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
@@ -623,6 +702,21 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
 	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="False" Default="1" $visibleIfStr meta:RefKey="String" />""")
         }
+		else if (type == "XmlData")
+	    {
+		    val annotation = annotations.first { it.name == "DataXml" }
+		    val actualClass = annotation.paramMap["actualClass"]!!
+
+		    val classDef = classRegister.getClass(actualClass, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$actualClass'!")
+		    if (classDef.isAbstract)
+		    {
+			    builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+		    }
+		    else
+		    {
+			    builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+		    }
+	    }
 		else if (classRegister.getEnum(type, classDefinition) != null)
 		{
 			val enumDef = classRegister.getEnum(type, classDefinition)!!
