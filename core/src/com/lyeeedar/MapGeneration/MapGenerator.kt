@@ -7,6 +7,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Nodes.DeferredNode
 import com.lyeeedar.MapGeneration.Nodes.NodeArguments
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 

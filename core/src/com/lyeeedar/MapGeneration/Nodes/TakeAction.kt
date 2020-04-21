@@ -10,6 +10,7 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Point", colour = "214,86,219")

@@ -54,6 +54,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
         {
             variable.resolveImports(imports, classDefinition, classRegister)
         }
+	    imports.add("import com.lyeeedar.Util.XmlData")
 
         if (classDefinition.isAbstract)
         {

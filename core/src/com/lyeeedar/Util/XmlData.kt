@@ -683,3 +683,4 @@ annotation class DataGraphNode()
 annotation class DataClassCollection()
 annotation class DataGraphReference(val useParentDescription: Boolean = false)
 annotation class DataXml(val actualClass: String = "")
+annotation class DataAsciiGrid

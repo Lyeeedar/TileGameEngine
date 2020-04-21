@@ -2,6 +2,7 @@ package com.lyeeedar.Components
 
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 
 class Entity
 {

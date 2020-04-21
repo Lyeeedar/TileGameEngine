@@ -310,78 +310,94 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
 			}
 
-			builder.appendln(indentation, "if ($elName != null)")
-			builder.appendln(indentation, "{")
-			builder.appendln(indentation+1, "for (el in ${elName}.children)")
-			builder.appendln(indentation+1, "{")
-
-			if (arrayType == "String")
+			if (arrayType == "Point")
 			{
-				builder.appendln(indentation+2, "$name.add(el.text)")
-			}
-			else if (arrayType == "Int")
-			{
-				builder.appendln(indentation+2, "$name.add(el.int())")
-			}
-			else if (arrayType == "Float")
-			{
-				builder.appendln(indentation+2, "$name.add(el.float())")
-			}
-			else if (arrayType == "Boolean")
-			{
-				builder.appendln(indentation+2, "$name.add(el.boolean())")
-			}
-			else if (assetManagerLoadedTypes.contains(arrayType))
-			{
-				val loadName: String
-				if (arrayType == "ParticleEffectDescription" || arrayType == "ParticleEffect")
+				if (annotations.any { it.name == "DataAsciiGrid" })
 				{
-					loadName = "ParticleEffect"
+					builder.appendln(indentation+2, "if ($elName != null) $name.addAll($elName.toHitPointArray())")
+					builder.appendln(indentation+2, "else $name.add(Point(0, 0))")
 				}
 				else
 				{
-					loadName = arrayType
+					throw RuntimeException("Non-ascii grid arrays of points not supported")
 				}
-
-				val loadExtension: String
-				if (arrayType == "ParticleEffect")
-				{
-					loadExtension = ".getParticleEffect()"
-				}
-				else
-				{
-					loadExtension = ""
-				}
-
-				builder.appendln(indentation+2, "val obj = AssetManager.load$loadName(el)$loadExtension")
-				builder.appendln(indentation+2, "$name.add(obj)")
-			}
-			else if (classRegister.getEnum(arrayType, classDefinition) != null)
-			{
-				val enumDef = classRegister.getEnum(arrayType, classDefinition)!!
-				builder.appendln(indentation+2, "val obj = ${enumDef.name}.valueOf(el.text.toUpperCase(Locale.ENGLISH))")
-				builder.appendln(indentation+2, "$name.add(obj)")
 			}
 			else
 			{
-				val classDef = classRegister.getClass(arrayType, classDefinition) ?: throw RuntimeException("writeLoad: Unknown type '$arrayType' in '$type'!")
-				classDefinition.referencedClasses.add(classDef)
+				builder.appendln(indentation, "if ($elName != null)")
+				builder.appendln(indentation, "{")
+				builder.appendln(indentation + 1, "for (el in ${elName}.children)")
+				builder.appendln(indentation + 1, "{")
 
-				if (classDef.isAbstract)
+				if (arrayType == "String")
 				{
-					builder.appendln(indentation+2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
+					builder.appendln(indentation + 2, "$name.add(el.text)")
+				}
+				else if (arrayType == "Int")
+				{
+					builder.appendln(indentation + 2, "$name.add(el.int())")
+				}
+				else if (arrayType == "Float")
+				{
+					builder.appendln(indentation + 2, "$name.add(el.float())")
+				}
+				else if (arrayType == "Boolean")
+				{
+					builder.appendln(indentation + 2, "$name.add(el.boolean())")
+				}
+				else if (assetManagerLoadedTypes.contains(arrayType))
+				{
+					val loadName: String
+					if (arrayType == "ParticleEffectDescription" || arrayType == "ParticleEffect")
+					{
+						loadName = "ParticleEffect"
+					}
+					else
+					{
+						loadName = arrayType
+					}
+
+					val loadExtension: String
+					if (arrayType == "ParticleEffect")
+					{
+						loadExtension = ".getParticleEffect()"
+					}
+					else
+					{
+						loadExtension = ""
+					}
+
+					builder.appendln(indentation + 2, "val obj = AssetManager.load$loadName(el)$loadExtension")
+					builder.appendln(indentation + 2, "$name.add(obj)")
+				}
+				else if (classRegister.getEnum(arrayType, classDefinition) != null)
+				{
+					val enumDef = classRegister.getEnum(arrayType, classDefinition)!!
+					builder.appendln(indentation + 2, "val obj = ${enumDef.name}.valueOf(el.text.toUpperCase(Locale.ENGLISH))")
+					builder.appendln(indentation + 2, "$name.add(obj)")
 				}
 				else
 				{
-					builder.appendln(indentation+2, "val obj = $arrayType()")
+					val classDef = classRegister.getClass(arrayType, classDefinition)
+					               ?: throw RuntimeException("writeLoad: Unknown type '$arrayType' in '$type'!")
+					classDefinition.referencedClasses.add(classDef)
+
+					if (classDef.isAbstract)
+					{
+						builder.appendln(indentation + 2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
+					}
+					else
+					{
+						builder.appendln(indentation + 2, "val obj = $arrayType()")
+					}
+
+					builder.appendln(indentation + 2, "obj.load(el)")
+					builder.appendln(indentation + 2, "$name.add(obj)")
 				}
 
-				builder.appendln(indentation+2, "obj.load(el)")
-				builder.appendln(indentation+2, "$name.add(obj)")
+				builder.appendln(indentation + 1, "}")
+				builder.appendln(indentation, "}")
 			}
-
-			builder.appendln(indentation+1, "}")
-			builder.appendln(indentation, "}")
 		}
 		else if (type.startsWith("ObjectMap<"))
         {
@@ -796,6 +812,17 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
 				builder.appendlnFix(3, """<Data Name="$childName" meta:RefKey="Boolean">""")
 				builder.appendlnFix(2, """</Data>""")
+			}
+			else if (arrayType == "Point")
+			{
+				if (annotations.any { it.name == "DataAsciiGrid" })
+				{
+					builder.appendlnFix(2, """<Data Name="$dataName" Default="#" ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString">""")
+				}
+				else
+				{
+					throw RuntimeException("Not supported")
+				}
 			}
 			else if (assetManagerLoadedTypes.contains(arrayType))
 			{

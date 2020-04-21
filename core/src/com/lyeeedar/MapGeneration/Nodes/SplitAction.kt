@@ -9,6 +9,7 @@ import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import java.util.*
 
 enum class SplitSide

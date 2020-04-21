@@ -6,6 +6,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Nodes.AbstractMapGenerationAction
 import com.lyeeedar.MapGeneration.Nodes.NodeArguments
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 
 @DataClass(colour = "209,209,143")
 @DataGraphNode

@@ -11,6 +11,7 @@ import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Pathfinding.AStarPathfind
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Rooms", colour = "212,140,22")
