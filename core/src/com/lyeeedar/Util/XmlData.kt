@@ -666,7 +666,7 @@ abstract class XmlDataClass
 }
 abstract class GraphXmlDataClass<T> : XmlDataClass()
 {
-	open fun resolve(nodeMap: ObjectMap<String, T>) {}
+	open fun resolve(nodes: ObjectMap<String, T>) {}
 }
 
 annotation class DataFile(val colour: String = "", val icon: String = "")

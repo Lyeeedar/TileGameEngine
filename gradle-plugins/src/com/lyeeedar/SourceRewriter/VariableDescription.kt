@@ -244,7 +244,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        if (annotation != null)
 	        {
 		        val createMethod = annotation.paramMap["createExpressionMethod"]
-		        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
+		        if (variableType == VariableType.LATEINIT || !nullable)
+		        {
+			        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\"))")
+		        }
+		        else
+		        {
+			        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
+		        }
 	        }
 	        else
 	        {
@@ -441,6 +448,50 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			else
 			{
 				builder.appendln(indentation, "if (!${name}GUID.isNullOrBlank()) $name = nodes[${name}GUID]!!")
+			}
+		}
+		else
+		{
+			// recurse into children
+			if (type.startsWith("Array<"))
+			{
+				val arrayType = type.replace("Array<", "").dropLast(1)
+				val classDef = classRegister.getClass(arrayType, classDefinition)
+				if (classDef != null && classDef.isGraphXmlDataClass)
+				{
+					if (nullable)
+					{
+						builder.appendln(indentation, "if ($name != null)")
+						builder.appendln(indentation, "{")
+						builder.appendln(indentation+1, "for (item in $name)")
+						builder.appendln(indentation+1, "{")
+						builder.appendln(indentation+2, "item.resolve(nodes)")
+						builder.appendln(indentation+1, "}")
+						builder.appendln(indentation, "}")
+					}
+					else
+					{
+						builder.appendln(indentation, "for (item in $name)")
+						builder.appendln(indentation, "{")
+						builder.appendln(indentation+1, "item.resolve(nodes)")
+						builder.appendln(indentation, "}")
+					}
+				}
+			}
+			else
+			{
+				val classDef = classRegister.getClass(type, classDefinition)
+				if (classDef != null && classDef.isGraphXmlDataClass)
+				{
+					if (nullable)
+					{
+						builder.appendln(indentation, "$name?.resolve(nodes)")
+					}
+					else
+					{
+						builder.appendln(indentation, "$name.resolve(nodes)")
+					}
+				}
 			}
 		}
 	}

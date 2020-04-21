@@ -100,7 +100,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		}
 
 	    builder.appendln("")
-        builder.appendln(classIndentation+1, "//[generated]")
+        builder.appendln(classIndentation+1, "//region generated")
 
         builder.appendln(classIndentation+1, "override fun load(xmlData: XmlData)")
         builder.appendln(classIndentation+1, "{")
@@ -199,7 +199,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
             builder.appendln(classIndentation+1, "}")
         }
-	    builder.appendln(classIndentation+1, "//[/generated]")
+	    builder.appendln(classIndentation+1, "//endregion")
 
         builder.appendln(classIndentation, "}")
     }

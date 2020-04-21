@@ -190,21 +190,21 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					annotations = null
 				}
 
-				if (trimmed == "//[generated]")
+				if (trimmed == "//region generated")
 				{
 					inGeneratedPart = true
 					continue
 				}
-				else if (trimmed == "//[/generated]")
+				else if (inGeneratedPart && trimmed == "//endregion")
 				{
 					inGeneratedPart = false
 					continue
 				}
-				else if (trimmed == "//[non-data]")
+				else if (trimmed == "//region non-data")
 				{
 					inNonDataPart = true
 				}
-				else if (trimmed == "//[/non-data]")
+				else if (inNonDataPart && trimmed == "//endregion")
 				{
 					inNonDataPart = false
 				}

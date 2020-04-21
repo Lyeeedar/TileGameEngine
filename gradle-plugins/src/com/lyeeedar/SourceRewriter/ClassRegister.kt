@@ -119,13 +119,16 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			classDef.referencedClasses.sortWith(compareBy { it.name })
 		}
 
-		val baseDataClassDef = classDefMap["com.lyeeedar.Util.XmlDataClass"];
-		if (baseDataClassDef != null)
+		val baseDataClassDef = classDefMap["com.lyeeedar.Util.XmlDataClass"]!!
+		for (classDef in baseDataClassDef.inheritingClasses)
 		{
-			for (classDef in baseDataClassDef.inheritingClasses)
-			{
-				classDef.isXmlDataClass = true
-			}
+			classDef.isXmlDataClass = true
+		}
+
+		val baseGraphDataClassDef = classDefMap["com.lyeeedar.Util.GraphXmlDataClass"]!!
+		for (classDef in baseGraphDataClassDef.inheritingClasses)
+		{
+			classDef.isGraphXmlDataClass = true
 		}
 	}
 
@@ -471,6 +474,7 @@ class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name,
 	val inheritingClasses = ArrayList<ClassDefinition>()
 
 	var isXmlDataClass = false
+	var isGraphXmlDataClass = false
 	var classID: String? = null
 	var generatedClassID: String? = null
 	var classDef: XmlDataClassDescription? = null
@@ -490,7 +494,7 @@ class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name,
 				{
 					val nameBase = current.name.replace("Abstract", "")
 					var id = name
-					
+
 					if (id.contains(nameBase))
 					{
 						id = id.replace(nameBase, "")
