@@ -77,7 +77,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
     }
 
-    fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister)
+    fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>)
     {
         var type = type
         var nullable = false
@@ -219,6 +219,27 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
                 builder.appendln(indentation, "$loadLine$loadExtension")
             }
         }
+		else if (type == "CompiledExpression")
+        {
+	        val annotation = annotations.firstOrNull { it.name == "DataCompiledExpression" }
+	        if (annotation != null)
+	        {
+		        val createMethod = annotation.paramMap["createExpressionMethod"]
+		        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null)")
+	        }
+	        else
+	        {
+		        if (variableType == VariableType.LATEINIT || !nullable)
+		        {
+			        builder.appendln(indentation, "$name = CompiledExpression(xmlData.get(\"$dataName\"))")
+		        }
+		        else
+		        {
+			        builder.appendln(indentation, "val ${name}String = xmlData.get(\"$dataName\", null)")
+			        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String) else null")
+		        }
+	        }
+        }
 		else if (classRegister.getEnum(type, classDefinition) != null)
 		{
 			val enumDef = classRegister.getEnum(type, classDefinition)!!
@@ -322,45 +343,62 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
             classDefinition.referencedClasses.add(classDef)
 
-            val el = name+"El"
-            if (variableType == VariableType.LATEINIT || (variableType == VariableType.VAR && !nullable))
-            {
-                builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+	        val graphAnnotation = annotations.firstOrNull { it.name == "DataGraphReference" }
+	        if (graphAnnotation != null)
+	        {
+				if (variableType == VariableType.LATEINIT)
+				{
+					extraVariables.add("lateinit var ${name}GUID: String")
+					builder.appendln(indentation, "${name}GUID = xmlData.get(\"$dataName\")")
+				}
+		        else
+				{
+					extraVariables.add("var ${name}GUID: String? = null")
+					builder.appendln(indentation, "${name}GUID = xmlData.get(\"$dataName\", null)")
+				}
+	        }
+	        else
+	        {
+		        val el = name + "El"
+		        if (variableType == VariableType.LATEINIT || (variableType == VariableType.VAR && !nullable))
+		        {
+			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
 
-                if (classDef.isAbstract)
-                {
-                    builder.appendln(indentation, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
-                }
-                else
-                {
-                    builder.appendln(indentation, "$name = $type()")
-                }
+			        if (classDef.isAbstract)
+			        {
+				        builder.appendln(indentation, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "$name = $type()")
+			        }
 
-                builder.appendln(indentation, "$name.load($el)")
-            }
-            else if (variableType == VariableType.VAR)
-            {
-                builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")")
-                builder.appendln(indentation, "if ($el != null)")
-                builder.appendln(indentation, "{")
+			        builder.appendln(indentation, "$name.load($el)")
+		        }
+		        else if (variableType == VariableType.VAR)
+		        {
+			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")")
+			        builder.appendln(indentation, "if ($el != null)")
+			        builder.appendln(indentation, "{")
 
-                if (classDef.isAbstract)
-                {
-                    builder.appendln(indentation+1, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
-                }
-                else
-                {
-                    builder.appendln(indentation+1, "$name = $type()")
-                }
+			        if (classDef.isAbstract)
+			        {
+				        builder.appendln(indentation + 1, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation + 1, "$name = $type()")
+			        }
 
-                builder.appendln(indentation+1, "$name!!.load($el)")
-                builder.appendln(indentation, "}")
-            }
-            else
-            {
-                builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
-                builder.appendln(indentation, "$name.load($el)")
-            }
+			        builder.appendln(indentation + 1, "$name!!.load($el)")
+			        builder.appendln(indentation, "}")
+		        }
+		        else
+		        {
+			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+			        builder.appendln(indentation, "$name.load($el)")
+		        }
+	        }
         }
     }
 
@@ -413,7 +451,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
 			val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
 
-			val fileReferenceAnnotation = annotations.firstOrNull { it.name == "FileReference" }
+			val fileReferenceAnnotation = annotations.firstOrNull { it.name == "DataFileReference" }
 			if (fileReferenceAnnotation != null)
 			{
 				val basePath = fileReferenceAnnotation.paramMap["basePath"]
@@ -430,7 +468,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			}
 			else
 			{
-				val localisationAnnotation = annotations.firstOrNull { it.name == "NeedsLocalisation" }
+				val localisationAnnotation = annotations.firstOrNull { it.name == "DataNeedsLocalisation" }
 				val needsLocalisation = if (localisationAnnotation != null) "NeedsLocalisation=\"True\"" else ""
 				val localisationFile = if (localisationAnnotation != null) "LocalisationFile=\"${localisationAnnotation.paramMap["file"]!!}\"" else ""
 
@@ -439,7 +477,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
         else if (type == "Int" || type == "Float")
         {
-            val numericAnnotation = annotations.firstOrNull { it.name == "NumericRange" }
+            val numericAnnotation = annotations.firstOrNull { it.name == "DataNumericRange" }
             val min = numericAnnotation?.paramMap?.get("min")?.replace("f", "")
             val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
             val minStr = if (min != null) """Min="$min"""" else ""
@@ -450,7 +488,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
 		else if (type == "Point" || type == "Vector2" || type == "Vector3" || type == "Vector4")
 		{
-			val numericAnnotation = annotations.firstOrNull { it.name == "NumericRange" }
+			val numericAnnotation = annotations.firstOrNull { it.name == "DataNumericRange" }
 			val min = numericAnnotation?.paramMap?.get("min")?.replace("f", "")
 			val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
 			val minStr = if (min != null) """Min="$min"""" else ""
@@ -458,7 +496,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val defaultValue = this.defaultValue.split('(')[1].dropLast(1).replace("f", "")
 			val numericType = if (type == "Point") "Type=\"Int\"" else ""
 
-			val vectorAnnotation = annotations.firstOrNull { it.name == "Vector" }
+			val vectorAnnotation = annotations.firstOrNull { it.name == "DataVector" }
 			val name1 = vectorAnnotation?.paramMap?.get("name1")
 			val name2 = vectorAnnotation?.paramMap?.get("name2")
 			val name3 = vectorAnnotation?.paramMap?.get("name3")
@@ -479,6 +517,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
 			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect" else type
             builder.appendlnFix(2, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+        }
+		else if (type == "CompiledExpression")
+        {
+	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="False" Default="1" $visibleIfStr meta:RefKey="String" />""")
         }
 		else if (classRegister.getEnum(type, classDefinition) != null)
 		{
@@ -506,7 +548,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val childName = if (dataName.endsWith('s')) dataName.dropLast(1) else arrayType
 			if (arrayType == "String")
 			{
-				val fileReferenceAnnotation = annotations.firstOrNull { it.name == "FileReference" }
+				val fileReferenceAnnotation = annotations.firstOrNull { it.name == "DataFileReference" }
 				if (fileReferenceAnnotation != null)
 				{
 					val basePath = fileReferenceAnnotation.paramMap["basePath"]
@@ -525,7 +567,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				}
 				else
 				{
-					val localisationAnnotation = annotations.firstOrNull { it.name == "NeedsLocalisation" }
+					val localisationAnnotation = annotations.firstOrNull { it.name == "DataNeedsLocalisation" }
 					val needsLocalisation = if (localisationAnnotation != null) "NeedsLocalisation=\"True\"" else ""
 					val localisationFile = if (localisationAnnotation != null) "LocalisationFile=\"${localisationAnnotation.paramMap["localisationFile"]!!}\"" else ""
 
@@ -536,7 +578,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			}
 			else if (arrayType == "Int" || arrayType == "Float")
 			{
-				val numericAnnotation = annotations.firstOrNull { it.name == "NumericRange" }
+				val numericAnnotation = annotations.firstOrNull { it.name == "DataNumericRange" }
 				val min = numericAnnotation?.paramMap?.get("min")?.replace("f", "")
 				val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
 				val minStr = if (min != null) """Min="$min"""" else ""

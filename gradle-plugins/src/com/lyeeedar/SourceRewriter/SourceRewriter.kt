@@ -26,7 +26,8 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 		var doneImports = false
 		var currentMiscPart: MiscFilePart? = null
 		var currentClassPart: DataClassFilePart? = null
-		var funcDepth: Int? = null
+		var currentFuncDepth: Int = 0
+		var inGeneratedPart = false
 		var annotations: ArrayList<AnnotationDescription>? = null
 		for (line in lines)
 		{
@@ -44,9 +45,9 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					doneImports = true
 					continue
 				}
-				else if (trimmed.startsWith("class "))
+				else if (trimmed.startsWith("class ") || trimmed.startsWith("abstract class "))
 				{
-					val name = trimmed.split(':')[0].replace("class ", "").trim()
+					val name = trimmed.split(':')[0].split("class ")[1].trim()
 					val namespace = packagePart.packageStr.replace("package ", "")
 					val classDefinition = classRegister.classDefMap["$namespace.$name"]
 					if (classDefinition?.isXmlDataClass == true)
@@ -66,30 +67,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 						fileContents.add(currentClassPart)
 
-						continue
-					}
-				}
-				else if (trimmed.startsWith("abstract class "))
-				{
-					val name = trimmed.split(':')[0].replace("abstract class ", "").trim()
-					val namespace = packagePart.packageStr.replace("package ", "")
-					val classDefinition = classRegister.classDefMap["$namespace.$name"]
-					if (classDefinition?.isXmlDataClass == true)
-					{
-						currentMiscPart = null
-
-						currentClassPart = DataClassFilePart(
-							name,
-							trimmed.split(':')[1].trim(),
-							line.length - line.trimStart().length,
-							classDefinition,
-							classRegister,
-							annotations ?: ArrayList())
-						annotations = null
-
-						dataClasses.add(currentClassPart.desc)
-
-						fileContents.add(currentClassPart)
+						currentFuncDepth = if (trimmed.endsWith("{")) 1 else 0
 
 						continue
 					}
@@ -125,85 +103,92 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 			}
 			else
 			{
-				if (funcDepth != null)
+				if (trimmed.contains("{"))
 				{
-					if (trimmed == "}" && line.trimEnd().length == funcDepth+1)
-					{
-						funcDepth = null
-					}
+					currentFuncDepth++
 
-					continue
+					if (currentFuncDepth == 1)
+					{
+						continue
+					}
 				}
-				else if (trimmed == "{")
+				if (trimmed.contains("}"))
 				{
-					val depth = line.trimEnd().length-1
+					currentFuncDepth--
 
-					if (depth > currentClassPart.desc.classIndentation)
-					{
-						funcDepth = depth
-					}
-
-					continue
-				}
-
-				if (trimmed.startsWith("@"))
-				{
-					if (annotations == null)
-					{
-						annotations = ArrayList()
-					}
-
-					annotations.add(AnnotationDescription(trimmed))
-				}
-				else
-				{
-					val matches = variableRegex.matchEntire(trimmed)
-					if (matches != null)
-					{
-						val namedGroups = matches.groups as MatchNamedGroupCollection
-						val variableType = when (namedGroups["VariableType"]!!.value)
-						{
-							"val" -> VariableType.VAL
-							"var" -> VariableType.VAR
-							"lateinit var" -> VariableType.LATEINIT
-							else -> throw RuntimeException("Unknown variable type ${namedGroups["VariableType"]!!.value}")
-						}
-						val name = namedGroups["Name"]!!.value
-						val type = namedGroups["Type"]?.value ?: "String"
-						val default = namedGroups["DefaultValue"]?.value ?: ""
-
-						val variableDesc = VariableDescription(variableType, name, type.trim(), default, trimmed, annotations ?: ArrayList())
-						currentClassPart.desc.variables.add(variableDesc)
-
-						if (variableDesc.variableType == VariableType.VAL && variableDesc.name == "classID")
-						{
-							currentClassPart.desc.classDefinition.classID = variableDesc.defaultValue
-						}
-
-						annotations = null
-					}
-					else if (trimmed == "}" && line.trimEnd().length == currentClassPart.desc.classIndentation + 1)
+					if (currentFuncDepth == 0)
 					{
 						println("Found data class ${currentClassPart.desc.name}")
 
 						currentClassPart = null
 						annotations = null
-
 						continue
+					}
+				}
+
+				if (currentFuncDepth == 1)
+				{
+					if (trimmed.startsWith("@"))
+					{
+						if (annotations == null)
+						{
+							annotations = ArrayList()
+						}
+
+						annotations.add(AnnotationDescription(trimmed))
 					}
 					else
 					{
-						annotations = null
+						val matches = variableRegex.matchEntire(trimmed)
+						if (matches != null)
+						{
+							val namedGroups = matches.groups as MatchNamedGroupCollection
+							val variableType = when (namedGroups["VariableType"]!!.value)
+							{
+								"val" -> VariableType.VAL
+								"var" -> VariableType.VAR
+								"lateinit var" -> VariableType.LATEINIT
+								else -> throw RuntimeException("Unknown variable type ${namedGroups["VariableType"]!!.value}")
+							}
+							val name = namedGroups["Name"]!!.value
+							val type = namedGroups["Type"]?.value ?: "String"
+							val default = namedGroups["DefaultValue"]?.value ?: ""
+
+							val variableDesc = VariableDescription(variableType, name, type.trim(), default, trimmed, annotations ?: ArrayList())
+							currentClassPart.desc.variables.add(variableDesc)
+
+							if (variableDesc.variableType == VariableType.VAL && variableDesc.name == "classID")
+							{
+								currentClassPart.desc.classDefinition.classID = variableDesc.defaultValue
+							}
+
+							annotations = null
+						}
+						else
+						{
+							annotations = null
+						}
 					}
-				}
-
-				if (trimmed.contains(" fun ") || trimmed.contains("companion "))
-				{
-
 				}
 				else
 				{
-					currentClassPart.desc.classContents.add(trimmed)
+					annotations = null
+				}
+
+				if (trimmed == "//[generated]")
+				{
+					inGeneratedPart = true
+					continue
+				}
+				if (trimmed == "//[/generated]")
+				{
+					inGeneratedPart = false
+					continue
+				}
+
+				if (!inGeneratedPart)
+				{
+					currentClassPart.desc.classContents.add(line.trimEnd())
 				}
 			}
 		}
@@ -213,7 +198,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 	fun write()
 	{
-		if (!fileContents.any { it is DataClassFilePart }) return
+		if (!fileContents.any { it is DataClassFilePart } || file.name == "XmlData") return
 
 		val imports = fileContents[1] as ImportsFilePart
 		for (part in fileContents)
