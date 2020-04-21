@@ -2,36 +2,31 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
-import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.floor
-import com.lyeeedar.Util.round
+import com.lyeeedar.Util.*
 import java.util.*
 
-class SplitAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+enum class SplitSide
 {
-	enum class SplitSide
-	{
-		NORTH,
-		SOUTH,
-		EAST,
-		WEST,
-		EDGE,
-		REMAINDER
-	}
+	NORTH,
+	SOUTH,
+	EAST,
+	WEST,
+	EDGE,
+	REMAINDER
+}
 
-	class Split(val side: SplitSide, val size: CompiledExpression, val childGUID: String)
-	{
-		var child: MapGeneratorNode? = null
-	}
-
-	val splits = Array<Split>()
+class SplitAction : AbstractMapGenerationAction()
+{
+	val splits: Array<Split> = Array<Split>()
 
 	val variables = ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		var currentArea = args.area.copy()
 		for (i in 0 until splits.size)
@@ -189,26 +184,60 @@ class SplitAction(generator: MapGenerator) : AbstractMapGenerationAction(generat
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		for (el in xmlData.children())
+		super.load(xmlData)
+		val splitsEl = xmlData.getChildByName("Splits")
+		if (splitsEl != null)
 		{
-			val side = SplitSide.valueOf(el.get("Side", "North")!!.toUpperCase(Locale.ENGLISH))
-			val size = CompiledExpression(el.get("Size", "1")!!.toLowerCase(Locale.ENGLISH).replace("%", "#size"), Area.defaultVariables)
-			val child = el.get("Node")
-
-			splits.add(Split(side, size, child))
-		}
-	}
-
-	override fun resolve()
-	{
-		for (split in splits)
-		{
-			if (split.childGUID.isNotBlank())
+			for (el in splitsEl.children)
 			{
-				split.child = generator.nodeMap[split.childGUID]
+				val obj = Split()
+				obj.load(el)
+				splits.add(obj)
 			}
 		}
 	}
+	override val classID: String = "Split"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+		for (item in splits)
+		{
+			item.resolve(nodes)
+		}
+	}
+	//endregion
+}
+
+class Split : GraphXmlDataClass<MapGeneratorNode>()
+{
+	lateinit var side: SplitSide
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
+	lateinit var size: CompiledExpression
+
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
+
+	@DataGraphReference
+	var child: MapGeneratorNode? = null
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		side = SplitSide.valueOf(xmlData.get("Side").toUpperCase(Locale.ENGLISH))
+		size = createExpression(xmlData.get("Size"))
+		childGUID = xmlData.get("Child", null)
+	}
+	var childGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		if (!childGUID.isNullOrBlank()) child = nodes[childGUID]!!
+	}
+	//endregion
 }

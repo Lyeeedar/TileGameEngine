@@ -1,16 +1,20 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Direction
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.random
 import squidpony.squidmath.LightRNG
 
-class ChambersGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class ChambersGeneratorAction : AbstractMapGenerationAction()
 {
-	var overwrite = true
+	override val classID: String = "ChambersGenerator"
+
+	var overwrite: Boolean = true
 
 	// ----------------------------------------------------------------------
 	class BSPTree(var x: Int, var y: Int, var width: Int, var height: Int)
@@ -135,7 +139,7 @@ class ChambersGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAc
 	}
 
 	// ----------------------------------------------------------------------
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val grid = Array2D<Char>(args.area.width, args.area.height) { x, y -> '#' }
 
@@ -243,13 +247,15 @@ class ChambersGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAc
 		return true
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
+		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
 	}
-
-	override fun resolve()
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

@@ -1,7 +1,9 @@
 package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
@@ -9,7 +11,7 @@ import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
 import java.util.*
 
-class SelectNamedAreaAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SelectNamedAreaAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
@@ -21,18 +23,26 @@ class SelectNamedAreaAction(generator: MapGenerator) : AbstractMapGenerationActi
 	}
 
 	lateinit var mode: Mode
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var countExp: CompiledExpression
+
 	lateinit var name: String
 
-	lateinit var nodeGuid: String
-	lateinit var remainderGuid: String
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#count").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
 
+	@DataGraphReference
 	var node: MapGeneratorNode? = null
+	@DataGraphReference
 	var remainder: MapGeneratorNode? = null
 
 	val tempArray = Array<Area>(false, 8)
 	val variables = com.badlogic.gdx.utils.ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val areas = generator.namedAreas[name]!!
 
@@ -126,19 +136,24 @@ class SelectNamedAreaAction(generator: MapGenerator) : AbstractMapGenerationActi
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		mode = Mode.valueOf(xmlData.get("Mode", "Random")!!.toUpperCase(Locale.ENGLISH))
-		countExp = CompiledExpression(xmlData.get("Count", "1")!!.toLowerCase(Locale.ENGLISH).replace("%", "#count"), ObjectFloatMap(mapOf(Pair("count", 0f))))
+		super.load(xmlData)
+		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		countExp = createExpression(xmlData.get("CountExp"))
 		name = xmlData.get("Name")
-
-		nodeGuid = xmlData.get("Node", "")!!
-		remainderGuid = xmlData.get("Remainder", "")!!
+		nodeGUID = xmlData.get("Node", null)
+		remainderGUID = xmlData.get("Remainder", null)
 	}
-
-	override fun resolve()
+	override val classID: String = "SelectNamedArea"
+	var nodeGUID: String? = null
+	var remainderGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-		if (nodeGuid.isNotBlank()) node = generator.nodeMap[nodeGuid]
-		if (remainderGuid.isNotBlank()) remainder = generator.nodeMap[remainderGuid]
+		super.resolve(nodes)
+		if (!nodeGUID.isNullOrBlank()) node = nodes[nodeGUID]!!
+		if (!remainderGUID.isNullOrBlank()) remainder = nodes[remainderGUID]!!
 	}
+	//endregion
 }

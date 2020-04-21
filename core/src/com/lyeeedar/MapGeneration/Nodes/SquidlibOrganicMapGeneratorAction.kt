@@ -6,11 +6,11 @@ import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.OrganicMapGenerator
 import squidpony.squidmath.RNG
 
-class SquidlibOrganicMapGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibOrganicMapGeneratorAction : AbstractMapGenerationAction()
 {
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = OrganicMapGenerator(args.area.width, args.area.height, RNG(generator.ran))
 		gen.generate()
@@ -31,15 +31,5 @@ class SquidlibOrganicMapGeneratorAction(generator: MapGenerator) : AbstractMapGe
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

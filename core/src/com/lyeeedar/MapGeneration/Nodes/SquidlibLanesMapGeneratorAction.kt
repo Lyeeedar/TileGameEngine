@@ -6,19 +6,19 @@ import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.LanesMapGenerator
 import squidpony.squidmath.RNG
 
-class SquidlibLanesMapGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibLanesMapGeneratorAction : AbstractMapGenerationAction()
 {
 	var numLanes: Int = 1
 
-	var numCaveCarvers = 0
-	var numBoxRoomCarvers = 0
-	var numWalledBoxRoomCarvers = 0
-	var numRoundRoomCarvers = 0
-	var numWalledRoundRoomCarvers = 0
+	var numCaveCarvers: Int = 0
+	var numBoxRoomCarvers: Int = 0
+	var numWalledBoxRoomCarvers: Int = 0
+	var numRoundRoomCarvers: Int = 0
+	var numWalledRoundRoomCarvers: Int = 0
 
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = LanesMapGenerator(args.area.width, args.area.height, RNG(generator.ran), numLanes)
 		gen.putCaveCarvers(numCaveCarvers)
@@ -44,21 +44,5 @@ class SquidlibLanesMapGeneratorAction(generator: MapGenerator) : AbstractMapGene
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		numLanes = xmlData.getInt("NumLanes", 1)
-		numCaveCarvers = xmlData.getInt("NumCaveCarvers", 0)
-		numBoxRoomCarvers = xmlData.getInt("NumBoxRoomCarvers", 0)
-		numWalledBoxRoomCarvers = xmlData.getInt("NumWalledBoxRoomCarvers", 0)
-		numRoundRoomCarvers = xmlData.getInt("NumRoundRoomCarvers", 0)
-		numWalledRoundRoomCarvers = xmlData.getInt("NumWalledRoundRoomCarvers", 0)
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

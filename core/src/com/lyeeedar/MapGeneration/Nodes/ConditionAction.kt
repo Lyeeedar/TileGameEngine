@@ -2,20 +2,27 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
 import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataCompiledExpression
+import com.lyeeedar.Util.DataGraphReference
+import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-class ConditionAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class ConditionAction : AbstractMapGenerationAction()
 {
-	val conditions = Array<Condition>()
+	val conditions: Array<Condition> = Array<Condition>()
 
+	//region non-data
 	val variables = ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	//endregion
+
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		for (cond in conditions)
 		{
@@ -31,7 +38,7 @@ class ConditionAction(generator: MapGenerator) : AbstractMapGenerationAction(gen
 				args.area.writeVariables(variables)
 
 				val seed = generator.ran.nextLong()
-				execute = cond.condition.evaluate(variables, seed) > 0
+				execute = cond.condition!!.evaluate(variables, seed) > 0
 			}
 
 			if (execute)
@@ -42,32 +49,64 @@ class ConditionAction(generator: MapGenerator) : AbstractMapGenerationAction(gen
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		for (el in xmlData.children())
+		super.load(xmlData)
+		val conditionsEl = xmlData.getChildByName("Conditions")
+		if (conditionsEl != null)
 		{
-			val condition = el.get("Condition").toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
-			val node = el.get("Node", "")!!
-
-			val compiled = if (condition == "else") null else CompiledExpression(condition, Area.defaultVariables)
-
-			conditions.add(Condition(compiled, node))
-		}
-	}
-
-	override fun resolve()
-	{
-		for (cond in conditions)
-		{
-			if (cond.childGUID.isNotBlank())
+			for (el in conditionsEl.children)
 			{
-				cond.child = generator.nodeMap[cond.childGUID]
+				val obj = Condition()
+				obj.load(el)
+				conditions.add(obj)
 			}
 		}
 	}
+	override val classID: String = "Condition"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+		for (item in conditions)
+		{
+			item.resolve(nodes)
+		}
+	}
+	//endregion
 }
 
-class Condition(val condition: CompiledExpression?, val childGUID: String)
+class Condition : GraphXmlDataClass<MapGeneratorNode>()
 {
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
+	var condition: CompiledExpression? = null
+
+	@DataGraphReference
 	var child: MapGeneratorNode? = null
+
+	fun createExpression(raw: String?): CompiledExpression?
+	{
+		if (raw == null || raw == "else")
+		{
+			return null
+		}
+		else
+		{
+			val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
+			return CompiledExpression(cond, Area.defaultVariables)
+		}
+	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		condition = createExpression(xmlData.get("Condition", null))
+		childGUID = xmlData.get("Child", null)
+	}
+	var childGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		if (!childGUID.isNullOrBlank()) child = nodes[childGUID]!!
+	}
+	//endregion
 }

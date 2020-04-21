@@ -2,14 +2,16 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.Pos
+import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.floor
 import java.util.*
 
-class TranslateAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class TranslateAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
@@ -17,12 +19,21 @@ class TranslateAction(generator: MapGenerator) : AbstractMapGenerationAction(gen
 		ABSOLUTE
 	}
 
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var xEqn: CompiledExpression
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var yEqn: CompiledExpression
+
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
+
 	lateinit var mode: Mode
 
 	val variables = ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		variables.clear()
 		variables.putAll(args.variables)
@@ -56,17 +67,5 @@ class TranslateAction(generator: MapGenerator) : AbstractMapGenerationAction(gen
 				args.area.points.forEachIndexed { i, pos -> args.area.points[i] = Pos(pos.x + dx, pos.y + dy) }
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		xEqn = CompiledExpression(xmlData.get("X", "0")!!.toLowerCase(Locale.ENGLISH).replace("%", "#size"), Area.defaultVariables)
-		yEqn = CompiledExpression(xmlData.get("Y", "0")!!.toLowerCase(Locale.ENGLISH).replace("%", "#size"), Area.defaultVariables)
-		mode = Mode.valueOf(xmlData.get("Mode", "Relative")!!.toUpperCase(Locale.ENGLISH))
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

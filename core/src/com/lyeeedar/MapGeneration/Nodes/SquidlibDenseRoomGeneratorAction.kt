@@ -1,16 +1,18 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 import squidpony.squidgrid.mapping.DenseRoomMapGenerator
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidmath.RNG
 
-class SquidlibDenseRoomGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibDenseRoomGeneratorAction : AbstractMapGenerationAction()
 {
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = DenseRoomMapGenerator(args.area.width, args.area.height, RNG(generator.ran))
 		gen.generate()
@@ -33,13 +35,16 @@ class SquidlibDenseRoomGeneratorAction(generator: MapGenerator) : AbstractMapGen
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
+		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
 	}
-
-	override fun resolve()
+	override val classID: String = "SquidlibDenseRoomGenerator"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

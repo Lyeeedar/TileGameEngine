@@ -1,16 +1,18 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Direction
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
-import ktx.collections.toGdxArray
 import java.util.*
+import ktx.collections.toGdxArray
 
-class FilterAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class FilterAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
@@ -24,16 +26,16 @@ class FilterAction(generator: MapGenerator) : AbstractMapGenerationAction(genera
 	lateinit var mode: Mode
 
 	var char: Char = ' '
-	var centerDist = 2
+	var centerDist: Int = 2
 
-	lateinit var nodeGuid: String
-	lateinit var remainderGuid: String
-
+	@DataGraphReference
 	var node: MapGeneratorNode? = null
+
+	@DataGraphReference
 	var remainder: MapGeneratorNode? = null
 
 	val tempArray = com.badlogic.gdx.utils.Array<Pos>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val newArea = args.area.copy()
 		if (!newArea.isPoints) newArea.convertToPoints()
@@ -135,20 +137,24 @@ class FilterAction(generator: MapGenerator) : AbstractMapGenerationAction(genera
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		mode = Mode.valueOf(xmlData.get("Mode", "Type")!!.toUpperCase(Locale.ENGLISH))
-
-		char = xmlData.get("Character", " ")!![0]
+		super.load(xmlData)
+		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		char = xmlData.get("Char", " ")!![0]
 		centerDist = xmlData.getInt("CenterDist", 2)
-
-		nodeGuid = xmlData.get("Node", "")!!
-		remainderGuid = xmlData.get("Remainder", "")!!
+		nodeGUID = xmlData.get("Node", null)
+		remainderGUID = xmlData.get("Remainder", null)
 	}
-
-	override fun resolve()
+	override val classID: String = "Filter"
+	var nodeGUID: String? = null
+	var remainderGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-		if (nodeGuid.isNotBlank()) node = generator.nodeMap[nodeGuid]
-		if (remainderGuid.isNotBlank()) remainder = generator.nodeMap[remainderGuid]
+		super.resolve(nodes)
+		if (!nodeGUID.isNullOrBlank()) node = nodes[nodeGUID]!!
+		if (!remainderGUID.isNullOrBlank()) remainder = nodes[remainderGUID]!!
 	}
+	//endregion
 }

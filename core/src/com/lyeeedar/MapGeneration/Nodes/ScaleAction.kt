@@ -1,14 +1,18 @@
 package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.Direction
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-class ScaleAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class ScaleAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
@@ -18,12 +22,23 @@ class ScaleAction(generator: MapGenerator) : AbstractMapGenerationAction(generat
 	}
 
 	lateinit var mode: Mode
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var xEqn: CompiledExpression
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var yEqn: CompiledExpression
+
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
+
 	lateinit var snap: Direction
 
 	val variables = ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		variables.clear()
 		variables.putAll(args.variables)
@@ -95,16 +110,19 @@ class ScaleAction(generator: MapGenerator) : AbstractMapGenerationAction(generat
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		mode = Mode.valueOf(xmlData.get("Mode", "Additive")!!.toUpperCase(Locale.ENGLISH))
-		xEqn = CompiledExpression(xmlData.get("X").toLowerCase(Locale.ENGLISH).replace("%", "#size"), Area.defaultVariables)
-		yEqn = CompiledExpression(xmlData.get("Y").toLowerCase(Locale.ENGLISH).replace("%", "#size"), Area.defaultVariables)
-		snap = Direction.valueOf(xmlData.get("Snap", "Center")!!.toUpperCase(Locale.ENGLISH))
+		super.load(xmlData)
+		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		xEqn = createExpression(xmlData.get("XEqn"))
+		yEqn = createExpression(xmlData.get("YEqn"))
+		snap = Direction.valueOf(xmlData.get("Snap").toUpperCase(Locale.ENGLISH))
 	}
-
-	override fun resolve()
+	override val classID: String = "Scale"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

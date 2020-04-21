@@ -1,15 +1,17 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 
-class PerPointAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class PerPointAction : AbstractMapGenerationAction()
 {
-	lateinit var nodeGuid: String
+	@DataGraphReference
 	lateinit var node: MapGeneratorNode
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		for (point in args.area.getAllPoints())
 		{
@@ -23,13 +25,18 @@ class PerPointAction(generator: MapGenerator) : AbstractMapGenerationAction(gene
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		nodeGuid = xmlData.get("Node")
+		super.load(xmlData)
+		nodeGUID = xmlData.get("Node")
 	}
-
-	override fun resolve()
+	override val classID: String = "PerPoint"
+	lateinit var nodeGUID: String
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-		node = generator.nodeMap[nodeGuid]
+		super.resolve(nodes)
+		node = nodes[nodeGUID]!!
 	}
+	//endregion
 }

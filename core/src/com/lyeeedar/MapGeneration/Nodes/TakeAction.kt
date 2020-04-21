@@ -3,16 +3,15 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
-import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.floor
-import com.lyeeedar.Util.removeRandom
+import com.lyeeedar.Util.*
 import java.util.*
 
-class TakeAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class TakeAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
@@ -20,17 +19,23 @@ class TakeAction(generator: MapGenerator) : AbstractMapGenerationAction(generato
 	}
 
 	lateinit var mode: Mode
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var countExp: CompiledExpression
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#count").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
 
-	lateinit var nodeGuid: String
-	lateinit var remainderGuid: String
-
+	@DataGraphReference
 	var node: MapGeneratorNode? = null
+	@DataGraphReference
 	var remainder: MapGeneratorNode? = null
 
 	val variables = ObjectFloatMap<String>()
 	val tempArray = Array<Pos>(false, 16)
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val newArea = args.area.copy()
 		if (!newArea.isPoints) newArea.convertToPoints()
@@ -77,20 +82,5 @@ class TakeAction(generator: MapGenerator) : AbstractMapGenerationAction(generato
 			val newArgs = NodeArguments(remainderArea, args.variables, args.symbolTable)
 			remainder!!.execute(newArgs)
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		mode = Mode.valueOf(xmlData.get("Mode", "Random")!!.toUpperCase(Locale.ENGLISH))
-		countExp = CompiledExpression(xmlData.get("Count").toLowerCase(Locale.ENGLISH).replace("%", "#count"), Area.defaultVariables)
-
-		nodeGuid = xmlData.get("Node", "")!!
-		remainderGuid = xmlData.get("Remainder", "")!!
-	}
-
-	override fun resolve()
-	{
-		if (nodeGuid.isNotBlank()) node = generator.nodeMap[nodeGuid]
-		if (remainderGuid.isNotBlank()) remainder = generator.nodeMap[remainderGuid]
 	}
 }

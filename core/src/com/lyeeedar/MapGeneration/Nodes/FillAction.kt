@@ -1,14 +1,16 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 
-class FillAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class FillAction : AbstractMapGenerationAction()
 {
 	var char: Char = ' '
-	var overwrite = false
+	var overwrite: Boolean = false
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val symbolToWrite = args.symbolTable[char]
 
@@ -20,15 +22,17 @@ class FillAction(generator: MapGenerator) : AbstractMapGenerationAction(generato
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		char = xmlData.get("Character")[0]
+		super.load(xmlData)
+		char = xmlData.get("Char", " ")!![0]
 		overwrite = xmlData.getBoolean("Overwrite", false)
 	}
-
-	override fun resolve()
+	override val classID: String = "Fill"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
-
+	//endregion
 }

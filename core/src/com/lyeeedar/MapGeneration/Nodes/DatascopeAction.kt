@@ -1,34 +1,41 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 
-class DatascopeAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class DatascopeAction : AbstractMapGenerationAction()
 {
-	var scopeVariables = true
-	var scopeSymbols = true
-	var scopeArea = true
+	var scopeVariables: Boolean = true
+	var scopeSymbols: Boolean = true
+	var scopeArea: Boolean = true
 
-	lateinit var childGUID: String
+	@DataGraphReference
 	lateinit var child: MapGeneratorNode
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val cpy = args.copy(scopeArea, scopeVariables, scopeSymbols)
 		child.execute(cpy)
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		scopeArea = xmlData.getBoolean("Area", true)
-		scopeVariables = xmlData.getBoolean("Variables", true)
-		scopeSymbols = xmlData.getBoolean("Symbols", true)
-		childGUID = xmlData.get("Node")
+		super.load(xmlData)
+		scopeVariables = xmlData.getBoolean("ScopeVariables", true)
+		scopeSymbols = xmlData.getBoolean("ScopeSymbols", true)
+		scopeArea = xmlData.getBoolean("ScopeArea", true)
+		childGUID = xmlData.get("Child")
 	}
-
-	override fun resolve()
+	override val classID: String = "Datascope"
+	lateinit var childGUID: String
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-		child = generator.nodeMap[childGUID]
+		super.resolve(nodes)
+		child = nodes[childGUID]!!
 	}
+	//endregion
 }

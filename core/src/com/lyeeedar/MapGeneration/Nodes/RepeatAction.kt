@@ -2,15 +2,19 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
+import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.DataCompiledExpression
+import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.floor
 import java.util.*
 
-class RepeatAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class RepeatAction : AbstractMapGenerationAction()
 {
 	enum class RemainderMode
 	{
@@ -20,17 +24,25 @@ class RepeatAction(generator: MapGenerator) : AbstractMapGenerationAction(genera
 	}
 
 	lateinit var remainderMode: RemainderMode
-	var onX = true
+	var onX: Boolean = true
+
+	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	lateinit var size: CompiledExpression
 
-	lateinit var remainderGUID: String
-	lateinit var childGUID: String
-
+	@DataGraphReference
 	lateinit var child: MapGeneratorNode
+
+	@DataGraphReference
 	var remainder: MapGeneratorNode? = null
 
+	fun createExpression(raw: String): CompiledExpression
+	{
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
+		return CompiledExpression(cond, Area.defaultVariables)
+	}
+
 	val variables = ObjectFloatMap<String>()
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		args.area.xMode = onX
 
@@ -139,24 +151,26 @@ class RepeatAction(generator: MapGenerator) : AbstractMapGenerationAction(genera
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		onX = xmlData.get("Axis", "X") == "X"
-		size = CompiledExpression(xmlData.get("Size").replace("%", "#size").toLowerCase(Locale.ENGLISH), Area.defaultVariables)
-		childGUID = xmlData.get("Node")
-		remainderGUID = xmlData.get("Remainder", "")!!
-		remainderMode = RemainderMode.valueOf(xmlData.get("RemainderMode", "Node")!!.toUpperCase(Locale.ENGLISH))
+		super.load(xmlData)
+		remainderMode = RemainderMode.valueOf(xmlData.get("RemainderMode").toUpperCase(Locale.ENGLISH))
+		onX = xmlData.getBoolean("OnX", true)
+		size = createExpression(xmlData.get("Size"))
+		childGUID = xmlData.get("Child")
+		remainderGUID = xmlData.get("Remainder", null)
 	}
-
-	override fun resolve()
+	override val classID: String = "Repeat"
+	lateinit var childGUID: String
+	var remainderGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-		child = generator.nodeMap[childGUID]
-
-		if (remainderGUID.isNotBlank())
-		{
-			remainder = generator.nodeMap[remainderGUID]
-		}
+		super.resolve(nodes)
+		child = nodes[childGUID]!!
+		if (!remainderGUID.isNullOrBlank()) remainder = nodes[remainderGUID]!!
 	}
+	//endregion
 }
 
 class RepeatDivision(var pos: Int, var size: Int)

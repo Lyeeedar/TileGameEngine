@@ -1,16 +1,18 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 import squidpony.squidgrid.mapping.RoomFinder
 
-class FindRoomsAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class FindRoomsAction : AbstractMapGenerationAction()
 {
 	lateinit var roomName: String
 	lateinit var corridorName: String
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val asChars = Array<CharArray>(args.area.width) { x -> CharArray(args.area.height) { y -> args.area[x, y]!!.char } }
 		val roomFinder = RoomFinder(asChars)
@@ -48,14 +50,17 @@ class FindRoomsAction(generator: MapGenerator) : AbstractMapGenerationAction(gen
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		roomName = xmlData.get("RoomName", "")!!
-		corridorName = xmlData.get("CorridorName", "")!!
+		super.load(xmlData)
+		roomName = xmlData.get("RoomName")
+		corridorName = xmlData.get("CorridorName")
 	}
-
-	override fun resolve()
+	override val classID: String = "FindRooms"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

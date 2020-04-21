@@ -5,23 +5,13 @@ import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-class SymbolAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SymbolAction : AbstractMapGenerationAction()
 {
 	lateinit var symbolDef: XmlData
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val symbol = Symbol.load(symbolDef, args.symbolTable)
 		args.symbolTable[symbol.char] = symbol
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		symbolDef = xmlData.getChildByName("Symbol")!!
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

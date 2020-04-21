@@ -1,13 +1,15 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 
-class FlipAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class FlipAction : AbstractMapGenerationAction()
 {
-	var onX = true
+	var onX: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		if (onX)
 		{
@@ -19,13 +21,16 @@ class FlipAction(generator: MapGenerator) : AbstractMapGenerationAction(generato
 		}
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		onX = xmlData.get("Axis", "X") == "X"
+		super.load(xmlData)
+		onX = xmlData.getBoolean("OnX", true)
 	}
-
-	override fun resolve()
+	override val classID: String = "Flip"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

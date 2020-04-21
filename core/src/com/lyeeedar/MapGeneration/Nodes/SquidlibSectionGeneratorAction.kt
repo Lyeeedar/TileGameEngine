@@ -8,7 +8,7 @@ import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
 import java.util.*
 
-class SquidlibSectionGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibSectionGeneratorAction : AbstractMapGenerationAction()
 {
 	lateinit var tilesetType: TilesetType
 	var water: Int = 0
@@ -18,9 +18,9 @@ class SquidlibSectionGeneratorAction(generator: MapGenerator) : AbstractMapGener
 	var doors: Int = 0
 	var startChar: Char = ' '
 	var endChar: Char = ' '
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = SectionDungeonGenerator(args.area.width, args.area.height, RNG(generator.ran))
 		gen.addWater(SectionDungeonGenerator.ALL, water)
@@ -71,23 +71,5 @@ class SquidlibSectionGeneratorAction(generator: MapGenerator) : AbstractMapGener
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
-		lake = xmlData.getInt("PercentLake", 0)
-		maze = xmlData.getInt("PercentMaze", 0)
-		water = xmlData.getInt("PercentWater", 0)
-		traps = xmlData.getInt("PercentTraps", 0)
-		doors = xmlData.getInt("PercentDoors", 0)
-		startChar = xmlData.get("StartChar", " ")!![0]
-		endChar = xmlData.get("EndChar", " ")!![0]
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

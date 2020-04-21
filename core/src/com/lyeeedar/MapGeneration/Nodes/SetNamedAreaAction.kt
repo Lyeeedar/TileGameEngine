@@ -1,16 +1,18 @@
 package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-class SetNamedAreaAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SetNamedAreaAction : AbstractMapGenerationAction()
 {
 	lateinit var name: String
-	var overwrite = false
+	var overwrite: Boolean = false
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val newArea = args.area.copy()
 
@@ -29,14 +31,17 @@ class SetNamedAreaAction(generator: MapGenerator) : AbstractMapGenerationAction(
 		areas.add(newArea)
 	}
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
+		super.load(xmlData)
 		name = xmlData.get("Name")
 		overwrite = xmlData.getBoolean("Overwrite", false)
 	}
-
-	override fun resolve()
+	override val classID: String = "SetNamedArea"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }

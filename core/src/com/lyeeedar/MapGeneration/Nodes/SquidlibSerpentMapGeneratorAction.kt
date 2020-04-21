@@ -6,22 +6,22 @@ import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SerpentMapGenerator
 import squidpony.squidmath.RNG
 
-class SquidlibSerpentMapGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibSerpentMapGeneratorAction : AbstractMapGenerationAction()
 {
-	var branchingChance = 0.0
-	var symmetrical = false
+	var branchingChance: Float = 0.0f
+	var symmetrical: Boolean = false
 
-	var numCaveCarvers = 0
-	var numBoxRoomCarvers = 0
-	var numWalledBoxRoomCarvers = 0
-	var numRoundRoomCarvers = 0
-	var numWalledRoundRoomCarvers = 0
+	var numCaveCarvers: Int = 0
+	var numBoxRoomCarvers: Int = 0
+	var numWalledBoxRoomCarvers: Int = 0
+	var numRoundRoomCarvers: Int = 0
+	var numWalledRoundRoomCarvers: Int = 0
 
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = SerpentMapGenerator(args.area.width, args.area.height, RNG(generator.ran), branchingChance, symmetrical)
+		val gen = SerpentMapGenerator(args.area.width, args.area.height, RNG(generator.ran), branchingChance.toDouble(), symmetrical)
 		gen.putCaveCarvers(numCaveCarvers)
 		gen.putBoxRoomCarvers(numBoxRoomCarvers)
 		gen.putWalledBoxRoomCarvers(numWalledBoxRoomCarvers)
@@ -45,22 +45,5 @@ class SquidlibSerpentMapGeneratorAction(generator: MapGenerator) : AbstractMapGe
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		branchingChance = xmlData.getFloat("BranchingChance", 0f).toDouble()
-		symmetrical = xmlData.getBoolean("Symmetrical", false)
-		numCaveCarvers = xmlData.getInt("NumCaveCarvers", 0)
-		numBoxRoomCarvers = xmlData.getInt("NumBoxRoomCarvers", 0)
-		numWalledBoxRoomCarvers = xmlData.getInt("NumWalledBoxRoomCarvers", 0)
-		numRoundRoomCarvers = xmlData.getInt("NumRoundRoomCarvers", 0)
-		numWalledRoundRoomCarvers = xmlData.getInt("NumWalledRoundRoomCarvers", 0)
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

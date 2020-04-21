@@ -4,62 +4,68 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Symbol
+import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.copy
 import java.util.*
 
-abstract class AbstractMapGenerationAction(val generator: MapGenerator)
+abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>()
 {
-	abstract fun execute(args: NodeArguments)
-	abstract fun parse(xmlData: XmlData)
-	abstract fun resolve()
+	abstract fun execute(generator: MapGenerator, args: NodeArguments)
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+	}
+	abstract val classID: String
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+	}
 
 	companion object
 	{
-		fun load(xmlData: XmlData, generator: MapGenerator): AbstractMapGenerationAction
+		fun loadPolymorphicClass(classID: String): AbstractMapGenerationAction
 		{
-			val refKey = xmlData.name.toUpperCase(Locale.ENGLISH)
-			val action = when(refKey)
+			return when (classID)
 			{
-				"CONDITION" -> ConditionAction(generator)
-				"DATASCOPE" -> DatascopeAction(generator)
-				"DEFER" -> DeferAction(generator)
-				"DEFINEVARIABLE" -> DefineVariableAction(generator)
-				"DIVIDE" -> DivideAction(generator)
-				"FILL" -> FillAction(generator)
-				"FILTER" -> FilterAction(generator)
-				"FLIP" -> FlipAction(generator)
-				"CHILD" -> NodeAction(generator)
-				"PERPOINT" -> PerPointAction(generator)
-				"REPEAT" -> RepeatAction(generator)
-				"ROTATE" -> RotateAction(generator)
-				"SCALE" -> ScaleAction(generator)
-				"SPLIT" -> SplitAction(generator)
-				"SQUIDLIBDUNGEONGENERATOR" -> SquidlibDungeonGeneratorAction(generator)
-				"SQUIDLIBSECTIONGENERATOR" -> SquidlibSectionGeneratorAction(generator)
-				"SQUIDLIBDENSEROOMGENERATOR" -> SquidlibDenseRoomGeneratorAction(generator)
-				"SQUIDLIBFLOWINGCAVEGENERATOR" -> SquidlibFlowingCaveGeneratorAction(generator)
-				"SQUIDLIBLANESMAPGENERATOR" -> SquidlibLanesMapGeneratorAction(generator)
-				"SQUIDLIBORGANICMAPGENERATOR" -> SquidlibOrganicMapGeneratorAction(generator)
-				"SQUIDLIBSERPENTMAPGENERATOR" -> SquidlibSerpentMapGeneratorAction(generator)
-				"SQUIDLIBSYMMETRYGENERATOR" -> SquidlibSymmetryGeneratorAction(generator)
-				"CHAMBERSGENERATOR" -> ChambersGeneratorAction(generator)
-				"FINDROOMS" -> FindRoomsAction(generator)
-				"SETNAMEDAREA" -> SetNamedAreaAction(generator)
-				"SELECTNAMEDAREA" -> SelectNamedAreaAction(generator)
-				"CONNECTROOMS" -> ConnectRoomsAction(generator)
-				"SYMBOL" -> SymbolAction(generator)
-				"TAKE" -> TakeAction(generator)
-				"TRANSLATE" -> TranslateAction(generator)
-				else -> throw Exception("Unknown MapGeneratorAction '$refKey'!")
+				"ChambersGenerator" -> ChambersGeneratorAction()
+				"Condition" -> ConditionAction()
+				"DefineVariable" -> DefineVariableAction()
+				"Fill" -> FillAction()
+				"Filter" -> FilterAction()
+				"FindRooms" -> FindRoomsAction()
+				"Flip" -> FlipAction()
+				"PerPoint" -> PerPointAction()
+				"Repeat" -> RepeatAction()
+				"Scale" -> ScaleAction()
+				"SelectNamedArea" -> SelectNamedAreaAction()
+				"Split" -> SplitAction()
+				"SquidlibDungeonGenerator" -> SquidlibDungeonGeneratorAction()
+				"SquidlibLanesMapGenerator" -> SquidlibLanesMapGeneratorAction()
+				"SquidlibOrganicMapGenerator" -> SquidlibOrganicMapGeneratorAction()
+				"SquidlibSerpentMapGenerator" -> SquidlibSerpentMapGeneratorAction()
+				"SquidlibSymmetryGenerator" -> SquidlibSymmetryGeneratorAction()
+				"Symbol" -> SymbolAction()
+				"Translate" -> TranslateAction()
+				"SquidlibDenseRoomGenerator" -> SquidlibDenseRoomGeneratorAction()
+				"Node" -> NodeAction()
+				"Divide" -> DivideAction()
+				"ConnectRooms" -> ConnectRoomsAction()
+				"Defer" -> DeferAction()
+				"SquidlibFlowingCaveGenerator" -> SquidlibFlowingCaveGeneratorAction()
+				"Take" -> TakeAction()
+				"Datascope" -> DatascopeAction()
+				"Rotate" -> RotateAction()
+				"SetNamedArea" -> SetNamedAreaAction()
+				"SquidlibSectionGenerator" -> SquidlibSectionGeneratorAction()
+				else -> throw RuntimeException("Unknown classID '$classID' for AbstractMapGenerationAction!")
 			}
-
-			action.parse(xmlData)
-
-			return action
 		}
 	}
+	//endregion
 }
 
 class NodeArguments(val area: Area, val variables: ObjectFloatMap<String>, val symbolTable: ObjectMap<Char, Symbol>)
@@ -73,4 +79,3 @@ class NodeArguments(val area: Area, val variables: ObjectFloatMap<String>, val s
 		return NodeArguments(area, variables, symbols)
 	}
 }
-

@@ -6,11 +6,11 @@ import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SymmetryDungeonGenerator
 import squidpony.squidmath.RNG
 
-class SquidlibSymmetryGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibSymmetryGeneratorAction : AbstractMapGenerationAction()
 {
-	var overwrite = true
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = SymmetryDungeonGenerator(args.area.width, args.area.height, RNG(generator.ran))
 		gen.generate()
@@ -31,15 +31,5 @@ class SquidlibSymmetryGeneratorAction(generator: MapGenerator) : AbstractMapGene
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }

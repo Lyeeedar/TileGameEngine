@@ -3,17 +3,20 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.math.DelaunayTriangulator
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Pathfinding.AStarPathfind
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.random
 import java.util.*
 
-class ConnectRoomsAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class ConnectRoomsAction : AbstractMapGenerationAction()
 {
 	enum class PathStyle
 	{
@@ -28,7 +31,7 @@ class ConnectRoomsAction(generator: MapGenerator) : AbstractMapGenerationAction(
 	var central: CorridorFeature? = null
 	var side: CorridorFeature? = null
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val rooms = generator.namedAreas[roomName]!!
 
@@ -354,34 +357,34 @@ class ConnectRoomsAction(generator: MapGenerator) : AbstractMapGenerationAction(
 
 	fun isEmpty(symbol: Symbol) = symbol.placerHashCode == -1 && symbol.content == null && symbol.char == '.'
 
-	override fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		pathStyle = PathStyle.valueOf(xmlData.get("PathStyle", "Straight")!!.toUpperCase(Locale.ENGLISH))
-		width = xmlData.getInt("Width", 1)
+		super.load(xmlData)
+		pathStyle = PathStyle.valueOf(xmlData.get("PathStyle").toUpperCase(Locale.ENGLISH))
 		roomName = xmlData.get("RoomName")
-
 		val centralEl = xmlData.getChildByName("Central")
 		if (centralEl != null)
 		{
 			central = CorridorFeature()
-			central?.parse(centralEl)
+			central!!.load(centralEl)
 		}
-
 		val sideEl = xmlData.getChildByName("Side")
 		if (sideEl != null)
 		{
 			side = CorridorFeature()
-			side?.parse(sideEl)
+			side!!.load(sideEl)
 		}
 	}
-
-	override fun resolve()
+	override val classID: String = "ConnectRooms"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
-
+		super.resolve(nodes)
 	}
+	//endregion
 }
 
-class CorridorFeature
+class CorridorFeature : XmlDataClass()
 {
 	enum class PlacementMode
 	{
@@ -392,13 +395,15 @@ class CorridorFeature
 	}
 
 	lateinit var placementMode: PlacementMode
-	var interval = 0
-	var char = ' '
+	var interval: Int = 0
+	var char: Char = ' '
 
-	fun parse(xmlData: XmlData)
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		placementMode = PlacementMode.valueOf(xmlData.get("PlacementMode", "Both")!!.toUpperCase(Locale.ENGLISH))
+		placementMode = PlacementMode.valueOf(xmlData.get("PlacementMode").toUpperCase(Locale.ENGLISH))
 		interval = xmlData.getInt("Interval", 0)
-		char = xmlData.get("Character")[0]
+		char = xmlData.get("Char", " ")!![0]
 	}
+	//endregion
 }

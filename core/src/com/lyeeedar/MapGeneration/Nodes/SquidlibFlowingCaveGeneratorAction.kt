@@ -8,16 +8,16 @@ import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
 import java.util.*
 
-class SquidlibFlowingCaveGeneratorAction(generator: MapGenerator) : AbstractMapGenerationAction(generator)
+class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 {
 	lateinit var tilesetType: TilesetType
-	var roomChance = 0.0
-	var overwrite = true
+	var roomChance: Float = 0.0f
+	var overwrite: Boolean = true
 
-	override fun execute(args: NodeArguments)
+	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val gen = FlowingCaveGenerator(args.area.width, args.area.height, tilesetType, RNG(generator.ran))
-		gen.generate(tilesetType, roomChance)
+		gen.generate(tilesetType, roomChance.toDouble())
 
 		val map = gen.dungeon
 		DungeonUtility.closeDoors(map)
@@ -35,17 +35,5 @@ class SquidlibFlowingCaveGeneratorAction(generator: MapGenerator) : AbstractMapG
 				symbol.write(symbolToWrite, overwrite)
 			}
 		}
-	}
-
-	override fun parse(xmlData: XmlData)
-	{
-		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
-		roomChance = xmlData.getFloat("RoomChance", 0f).toDouble()
-		overwrite = xmlData.getBoolean("Overwrite", true)
-	}
-
-	override fun resolve()
-	{
-
 	}
 }
