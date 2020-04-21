@@ -1,6 +1,11 @@
 package com.lyeeedar.build.SourceRewriter
 
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+
 
 class ClassRegister(val files: List<File>, val defFolder: File)
 {
@@ -74,8 +79,9 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 		for (classDef in classDefMap.values)
 		{
 			var didSuperClass = false
-			for (inheritFrom in classDef.inheritDeclarations)
+			for (inheritFromRaw in classDef.inheritDeclarations)
 			{
+				val inheritFrom = inheritFromRaw.split("<")[0]
 				if (!didSuperClass)
 				{
 					didSuperClass = true
@@ -197,7 +203,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 						val split = inheritsFrom.value.split(",")
 						for (other in split)
 						{
-							classDef.inheritDeclarations.add(other.split("<", "(")[0].trim())
+							classDef.inheritDeclarations.add(other.split("(")[0].trim())
 						}
 					}
 
@@ -466,8 +472,44 @@ class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name,
 
 	var isXmlDataClass = false
 	var classID: String? = null
+	var generatedClassID: String? = null
 	var classDef: XmlDataClassDescription? = null
 	var referencedClasses = ArrayList<ClassDefinition>()
+
+	fun generateClassID()
+	{
+		if (generatedClassID != null) return
+
+		// find if any parent is abstract
+		var current: ClassDefinition? = superClass
+		while (current != null)
+		{
+			if (current.isAbstract)
+			{
+				if (!current.name.endsWith("XmlDataClass"))
+				{
+					val nameBase = current.name.replace("Abstract", "")
+					var id = name
+					
+					if (id.contains(nameBase))
+					{
+						id = id.replace(nameBase, "")
+					}
+					else
+					{
+						val camelCaseWords = id.split("(?<=.)(?=\\p{Lu})".toRegex())
+						id = camelCaseWords.take(camelCaseWords.size-1).joinToString("")
+					}
+
+					generatedClassID = "\"$id\""
+				}
+
+				break
+			}
+
+			current = current.superClass
+		}
+	}
 
 	fun updateParents(classDef: ClassDefinition? = null)
 	{

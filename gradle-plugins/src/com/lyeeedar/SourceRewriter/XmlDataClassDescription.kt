@@ -29,6 +29,23 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		}
     }
 
+	fun getGraphNodeType(): Pair<String, ClassDefinition>?
+	{
+		var current = classDefinition
+		while (current.superClass != null)
+		{
+			val superClass = current.superClass!!
+			if (superClass.name == "GraphXmlDataClass")
+			{
+				return Pair(current.inheritDeclarations[0].split("<")[1].split(">")[0], current)
+			}
+
+			current = superClass
+		}
+
+		return null
+	}
+
     fun resolveImports(imports: HashSet<String>)
     {
         for (variable in variables)
@@ -49,6 +66,15 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
                 }
             }
         }
+
+	    val graphNodeType = getGraphNodeType()
+	    if (graphNodeType != null)
+	    {
+		    imports.add("import com.badlogic.gdx.utils.ObjectMap")
+
+		    val graphNodeClass = classRegister.getClass(graphNodeType.first, graphNodeType.second)!!
+		    imports.add("import " + graphNodeClass.fullName)
+	    }
     }
 
     fun write(builder: IndentedStringBuilder)
@@ -75,15 +101,37 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
 	    builder.appendln("")
         builder.appendln(classIndentation+1, "//[generated]")
+
         builder.appendln(classIndentation+1, "override fun load(xmlData: XmlData)")
         builder.appendln(classIndentation+1, "{")
 
-        if (classDefinition.superClass != null && classDefinition.superClass!!.name != "XmlDataClass")
+	    // write load
+        if (classDefinition.superClass != null && !classDefinition.superClass!!.name.endsWith("XmlDataClass"))
         {
             builder.appendln(classIndentation+2, "super.load(xmlData)")
         }
 
 	    val extraVariables = ArrayList<String>()
+	    if (classDefinition.isAbstract && classDefinition.superClass!!.name.endsWith("XmlDataClass"))
+	    {
+		    if (!variables.any { it.name == "classID" })
+		    {
+			    extraVariables.add("abstract val classID: String")
+		    }
+	    }
+	    else
+	    {
+		    if (classDefinition.classID == null)
+		    {
+			    classDefinition.generateClassID()
+
+			    if (classDefinition.generatedClassID != null)
+			    {
+				    extraVariables.add("override val classID: String = ${classDefinition.generatedClassID}")
+			    }
+		    }
+	    }
+
         for (variable in variables)
         {
             variable.writeLoad(builder, classIndentation+2, classDefinition, classRegister, extraVariables)
@@ -95,6 +143,26 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		    builder.appendln(classIndentation+1, line)
 	    }
 
+	    // write resolve
+		val graphNodeType = getGraphNodeType()
+	    if (graphNodeType != null)
+	    {
+		    builder.appendln(classIndentation + 1, "override fun resolve(nodes: ObjectMap<String, ${graphNodeType.first}>)")
+		    builder.appendln(classIndentation + 1, "{")
+
+		    if (classDefinition.superClass != null && !classDefinition.superClass!!.name.endsWith("XmlDataClass"))
+		    {
+			    builder.appendln(classIndentation + 2, "super.resolve(nodes)")
+		    }
+
+		    for (variable in variables)
+		    {
+			    variable.writeResolve(builder, classIndentation + 2, classDefinition, classRegister)
+		    }
+		    builder.appendln(classIndentation + 1, "}")
+	    }
+
+	    // write loadpolymorphic
         if (classDefinition.isAbstract)
         {
             builder.appendln("")
@@ -113,7 +181,14 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
             {
                 if (!childClass.isAbstract)
                 {
-                    builder.appendln(classIndentation+4, "${childClass.classID} -> ${childClass.name}()")
+	                var id = childClass.classID
+	                if (id == null)
+	                {
+						childClass.generateClassID()
+		                id = childClass.generatedClassID
+	                }
+
+                    builder.appendln(classIndentation+4, "$id -> ${childClass.name}()")
                 }
             }
 

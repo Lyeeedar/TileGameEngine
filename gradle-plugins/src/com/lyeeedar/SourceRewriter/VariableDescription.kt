@@ -421,6 +421,30 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
     }
 
+	fun writeResolve(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister)
+	{
+		var type = type
+		var nullable = false
+		if (type.endsWith('?'))
+		{
+			type = type.substring(0, type.length-1)
+			nullable = true
+		}
+
+		val annotation = annotations.firstOrNull { it.name == "DataGraphReference" }
+		if (annotation != null)
+		{
+			if (variableType == VariableType.LATEINIT || !nullable)
+			{
+				builder.appendln(indentation, "$name = nodes[${name}GUID]!!")
+			}
+			else
+			{
+				builder.appendln(indentation, "if (!${name}GUID.isNullOrBlank()) $name = nodes[${name}GUID]!!")
+			}
+		}
+	}
+
     fun createDefEntry(builder: IndentedStringBuilder, classDefinition: ClassDefinition, classRegister: ClassRegister)
     {
         if (variableType == VariableType.VAL && name == "classID")
