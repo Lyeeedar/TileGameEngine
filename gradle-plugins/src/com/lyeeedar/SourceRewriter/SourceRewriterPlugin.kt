@@ -10,6 +10,7 @@ import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 
+//gradlew :core:build  --stacktrace -Dorg.gradle.daemon=false   -Dorg.gradle.debug=true
 class SourceRewriterPlugin : Plugin<Project>
 {
 	override fun apply(target: Project)

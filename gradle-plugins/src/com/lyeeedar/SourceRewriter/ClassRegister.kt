@@ -4,6 +4,8 @@ import java.io.File
 
 class ClassRegister(val files: List<File>, val defFolder: File)
 {
+	val classDefRegex = "(?<IsAbstract>abstract )?class (?<ClassName>[^\\(:<]*)(\\<.*?\\>)?(\\(([^\\(\\)](\\(\\))?)*?\\))?([\\s]*:[\\s]*(?<InheritsFrom>.*))?".toRegex()
+
 	val classDefMap = HashMap<String, ClassDefinition>()
 	val interfaceDefMap = HashMap<String, InterfaceDefinition>()
 	val enumDefMap = HashMap<String, EnumDefinition>()
@@ -36,7 +38,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			{
 				for (def in sourceMap)
 				{
-					if (def.key.startsWith(import.substring(0, import.length-1)) && def.key.endsWith(name))
+					if (def.key.startsWith(import.substring(0, import.length-1)) && def.key.endsWith(".$name"))
 					{
 						return def.value
 					}
@@ -78,13 +80,10 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				{
 					didSuperClass = true
 
-					if (inheritFrom.endsWith(")"))
+					val superClass = getClass(inheritFrom, classDef)
+					if (superClass != null)
 					{
-						val superClass = getClass(inheritFrom.replace("()", ""), classDef)
-						if (superClass != null)
-						{
-							classDef.superClass = superClass
-						}
+						classDef.superClass = superClass
 					}
 					else
 					{
@@ -144,45 +143,6 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			{
 				imports.add(trimmed.replace("import ", "").trim())
 			}
-			else if (trimmed.startsWith("class "))
-			{
-				val split = trimmed.split(':')
-
-				val name = split[0].replace("class ", "").trim()
-				val classDef = ClassDefinition(name, packageStr)
-				classDef.imports.addAll(imports)
-
-				if (split.size > 1)
-				{
-					val inheritsFrom = split[1].split(',')
-					for (other in inheritsFrom)
-					{
-						classDef.inheritDeclarations.add(other.trim())
-					}
-				}
-
-				classDefMap.put(classDef.fullName, classDef)
-			}
-			else if (trimmed.startsWith("abstract class "))
-			{
-				val split = trimmed.split(':')
-
-				val name = split[0].replace("abstract class ", "").trim()
-				val classDef = ClassDefinition(name, packageStr)
-				classDef.isAbstract = true
-				classDef.imports.addAll(imports)
-
-				if (split.size > 1)
-				{
-					val inheritsFrom = split[1].split(',')
-					for (other in inheritsFrom)
-					{
-						classDef.inheritDeclarations.add(other.trim())
-					}
-				}
-
-				classDefMap.put(classDef.fullName, classDef)
-			}
 			else if (trimmed.startsWith("interface "))
 			{
 				val name = trimmed.replace("interface ", "").trim()
@@ -215,6 +175,38 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				}
 
 				enumDefMap.put(enumDef.fullName, enumDef)
+			}
+			else if (trimmed.startsWith("data class") || trimmed.startsWith("annotation class") || trimmed.startsWith("open class"))
+			{
+
+			}
+			else if (trimmed.contains("class "))
+			{
+				val matches = classDefRegex.matchEntire(trimmed)
+				if (matches != null)
+				{
+					val namedGroups = matches.groups as MatchNamedGroupCollection
+
+					val classDef = ClassDefinition(namedGroups["ClassName"]!!.value, packageStr)
+					classDef.isAbstract = namedGroups["IsAbstract"] != null
+					classDef.imports.addAll(imports)
+
+					val inheritsFrom = namedGroups["InheritsFrom"]
+					if (inheritsFrom != null)
+					{
+						val split = inheritsFrom.value.split(",")
+						for (other in split)
+						{
+							classDef.inheritDeclarations.add(other.split("<", "(")[0].trim())
+						}
+					}
+
+					classDefMap.put(classDef.fullName, classDef)
+				}
+				else
+				{
+					System.err.println("Failed to match $trimmed")
+				}
 			}
 		}
 	}

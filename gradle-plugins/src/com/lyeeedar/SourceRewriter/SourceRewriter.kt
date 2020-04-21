@@ -13,6 +13,11 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 	fun parse(): Boolean
 	{
+		if (file.nameWithoutExtension == "XmlData")
+		{
+			return false
+		}
+
 		originalContents = file.readText()
 
 		val lines = originalContents.split('\n')
@@ -47,7 +52,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 				}
 				else if (trimmed.startsWith("class ") || trimmed.startsWith("abstract class "))
 				{
-					val name = trimmed.split(':')[0].split("class ")[1].trim()
+					val name = trimmed.split(':', '<', '(')[0].split("class ")[1].trim()
 					val namespace = packagePart.packageStr.replace("package ", "")
 					val classDefinition = classRegister.classDefMap["$namespace.$name"]
 					if (classDefinition?.isXmlDataClass == true)
@@ -56,7 +61,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 						currentClassPart = DataClassFilePart(
 							name,
-							trimmed.split(':')[1].trim(),
+							trimmed,
 							line.length - line.trimStart().length,
 							classDefinition,
 							classRegister,
@@ -198,7 +203,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 	fun write()
 	{
-		if (!fileContents.any { it is DataClassFilePart } || file.name == "XmlData") return
+		if (!fileContents.any { it is DataClassFilePart } || file.nameWithoutExtension == "XmlData") return
 
 		val imports = fileContents[1] as ImportsFilePart
 		for (part in fileContents)

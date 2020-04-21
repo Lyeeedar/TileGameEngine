@@ -666,23 +666,7 @@ abstract class XmlDataClass
 }
 abstract class GraphXmlDataClass<T> : XmlDataClass()
 {
-
-	//[generated]
-	override fun load(xmlData: XmlData)
-	{
-	}
-
-	companion object
-	{
-		fun loadPolymorphicClass(classID: String): GraphXmlDataClass<T>
-		{
-			return when (classID)
-			{
-				else -> throw RuntimeException("Unknown classID '$classID' for GraphXmlDataClass<T>!")
-			}
-		}
-	}
-	//[/generated]
+	open fun resolve(nodeMap: ObjectMap<String, T>) {}
 }
 
 annotation class DataFile(val colour: String = "", val icon: String = "")

@@ -1,6 +1,6 @@
 package com.lyeeedar.build.SourceRewriter
 
-class XmlDataClassDescription(val name: String, val superClass: String, val classIndentation: Int, val classDefinition: ClassDefinition, val classRegister: ClassRegister, val annotations: ArrayList<AnnotationDescription>)
+class XmlDataClassDescription(val name: String, val defLine: String, val classIndentation: Int, val classDefinition: ClassDefinition, val classRegister: ClassRegister, val annotations: ArrayList<AnnotationDescription>)
 {
     val variables = ArrayList<VariableDescription>()
 
@@ -58,8 +58,7 @@ class XmlDataClassDescription(val name: String, val superClass: String, val clas
             builder.appendln(classIndentation, annotation.annotationString)
         }
 
-        val classType = if (classDefinition.isAbstract) "abstract class" else "class"
-        builder.appendln(classIndentation, "$classType $name : $superClass")
+        builder.appendln(classIndentation, defLine)
         builder.appendln(classIndentation, "{")
 
 		// remove blank lines from end of content
