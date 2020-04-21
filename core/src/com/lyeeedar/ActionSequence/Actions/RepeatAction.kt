@@ -3,25 +3,59 @@ package com.lyeeedar.ActionSequence.Actions
 import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Meta", colour = "255,0,0,255")
-class RepeatBeginAction : AbstractActionSequenceAction()
+class RepeatAction : AbstractActionSequenceAction()
 {
+	val key = "repeat"
 	var count: Int = 1
 
 	override fun onTurn(state: ActionSequenceState): ActionState
 	{
-		throw UnsupportedOperationException()
+		val count = state.data[key] as Int
+		return if (count <= 0) ActionState.Completed else ActionState.Blocked
 	}
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		throw UnsupportedOperationException()
+		if (state.data.containsKey(key))
+		{
+			var count = state.data[key] as Int
+			count--
+			state.data[key] = count
+		}
+		else
+		{
+			state.data[key] = count
+			state.data["i"] = state.index
+		}
+
+		return ActionState.Blocked
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState
 	{
-		throw UnsupportedOperationException()
+		val count = state.data[key] as Int
+
+		if (count <= 0)
+		{
+			state.data.remove(key)
+			return ActionState.Completed
+		}
+		else
+		{
+			state.currentTime = time
+			state.index = state.data["i"] as Int
+
+			for (action in state.enteredActions)
+			{
+				action.exit(state)
+			}
+			state.enteredActions.clear()
+
+			return ActionState.Blocked
+		}
 	}
 
 	//region generated
@@ -30,33 +64,6 @@ class RepeatBeginAction : AbstractActionSequenceAction()
 		super.load(xmlData)
 		count = xmlData.getInt("Count", 1)
 	}
-	override val classID: String = "RepeatBegin"
-	//endregion
-}
-
-@DataClass(category = "Meta", colour = "255,0,0,255")
-class RepeatEndAction : AbstractActionSequenceAction()
-{
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		throw UnsupportedOperationException()
-	}
-
-	override fun enter(state: ActionSequenceState): ActionState
-	{
-		throw UnsupportedOperationException()
-	}
-
-	override fun exit(state: ActionSequenceState): ActionState
-	{
-		throw UnsupportedOperationException()
-	}
-
-	//region generated
-	override fun load(xmlData: XmlData)
-	{
-		super.load(xmlData)
-	}
-	override val classID: String = "RepeatEnd"
+	override val classID: String = "Repeat"
 	//endregion
 }

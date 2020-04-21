@@ -56,18 +56,6 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
         }
 	    imports.add("import com.lyeeedar.Util.XmlData")
 
-        if (classDefinition.isAbstract)
-        {
-	        loaderImports.add(classDefinition.fullName)
-            for (childClass in classDefinition.inheritingClasses)
-            {
-                if (!childClass.isAbstract)
-                {
-	                loaderImports.add(childClass.namespace + ".${childClass.name}")
-                }
-            }
-        }
-
 	    val graphNodeType = getGraphNodeType()
 	    if (graphNodeType != null)
 	    {
@@ -172,7 +160,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    // write loadpolymorphic
         if (classDefinition.isAbstract)
         {
-	        loaderBuilder.appendln(classIndentation+2, "fun load$name(classID: String): $name")
+	        loaderBuilder.appendln(classIndentation+2, "fun load$name(classID: String): ${classDefinition.fullName}")
 	        loaderBuilder.appendln(classIndentation+2, "{")
 
 	        loaderBuilder.appendln(classIndentation+3, "return when (classID)")
@@ -189,7 +177,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		                id = childClass.generatedClassID
 	                }
 
-	                loaderBuilder.appendln(classIndentation+4, "$id -> ${childClass.name}()")
+	                loaderBuilder.appendln(classIndentation+4, "$id -> ${childClass.fullName}()")
                 }
             }
 

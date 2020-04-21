@@ -9,6 +9,7 @@ import com.lyeeedar.Util.DataAsciiGrid
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.toHitPointArray
 import kotlin.math.roundToInt
 
 @DataClass(category = "Permute", colour = "247,176,78,47")
@@ -17,7 +18,7 @@ class PermuteAction() : AbstractActionSequenceAction()
 	var appendTargets: Boolean = false
 
 	@DataAsciiGrid
-	val hitPoints = Array<Point>(4)
+	val hitPoints: Array<Point> = Array<Point>(4)
 
 	//region non-data
 	val mat = Matrix3()
@@ -77,6 +78,9 @@ class PermuteAction() : AbstractActionSequenceAction()
 	{
 		super.load(xmlData)
 		appendTargets = xmlData.getBoolean("AppendTargets", false)
+		val hitPointsEl = xmlData.getChildByName("HitPoints")
+		if (hitPointsEl != null) hitPoints.addAll(hitPointsEl.toHitPointArray())
+		else hitPoints.add(Point(0, 0))
 	}
 	override val classID: String = "Permute"
 	//endregion

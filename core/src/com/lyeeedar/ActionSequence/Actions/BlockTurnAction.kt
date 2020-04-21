@@ -6,28 +6,38 @@ import ktx.collections.set
 
 class BlockTurnAction : AbstractActionSequenceAction()
 {
+	val key = "blocked"
 	var turns: Int = 1
 
 	override fun onTurn(state: ActionSequenceState): ActionState
 	{
-		var counter = state.data["blocked"] as Int
+		var counter = state.data[key] as Int
 		counter--
-		state.data["blocked"] = counter
+		state.data[key] = counter
 
 		return if (counter <= 0) ActionState.Completed else ActionState.Blocked
 	}
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		state.data["blocked"] = turns
+		state.data[key] = turns
 
 		return ActionState.Blocked
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState
 	{
-		val counter = state.data["blocked"] as Int
-		return if (counter <= 0) ActionState.Completed else ActionState.Blocked
+		val counter = state.data[key] as Int
+
+		if (counter <= 0)
+		{
+			state.data.remove(key)
+			return ActionState.Completed
+		}
+		else
+		{
+			return ActionState.Blocked
+		}
 	}
 
 	//region generated

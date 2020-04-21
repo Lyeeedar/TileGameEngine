@@ -74,6 +74,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				imports.add("import java.util.*")
 			}
+			else if (arrayType == "Point" && annotations.any { it.name == "DataAsciiGrid" })
+			{
+				imports.add("import com.lyeeedar.Util.toHitPointArray")
+			}
 		}
     }
 
@@ -314,8 +318,8 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				if (annotations.any { it.name == "DataAsciiGrid" })
 				{
-					builder.appendln(indentation+2, "if ($elName != null) $name.addAll($elName.toHitPointArray())")
-					builder.appendln(indentation+2, "else $name.add(Point(0, 0))")
+					builder.appendln(indentation, "if ($elName != null) $name.addAll($elName.toHitPointArray())")
+					builder.appendln(indentation, "else $name.add(Point(0, 0))")
 				}
 				else
 				{

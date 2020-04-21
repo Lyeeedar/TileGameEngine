@@ -684,3 +684,4 @@ annotation class DataClassCollection()
 annotation class DataGraphReference(val useParentDescription: Boolean = false)
 annotation class DataXml(val actualClass: String = "")
 annotation class DataAsciiGrid
+annotation class DataTimeline(val timelineGroup: Boolean = false)
