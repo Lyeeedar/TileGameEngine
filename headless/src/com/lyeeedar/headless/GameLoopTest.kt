@@ -76,7 +76,7 @@ object GameLoopTest
 			Thread.sleep(1000) // 1 seconds
 
 			pidFailedCount++
-			if (pidFailedCount > 60*5) { // 5 min timeout
+			if (pidFailedCount > 30) { // 30 sec timeout
 				val crashLogs = "$androidPlatformTools/adb logcat -d".runCommand().split('\n').filter { it.contains(" E ") || it.contains("lyeeedar") }.joinToString("\n")
 				throw RuntimeException("##########################\nApp failed to start!\n##############################\n\n$crashLogs")
 			}
