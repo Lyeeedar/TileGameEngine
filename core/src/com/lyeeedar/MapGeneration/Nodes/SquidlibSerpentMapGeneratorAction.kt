@@ -1,6 +1,8 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SerpentMapGenerator
@@ -46,4 +48,24 @@ class SquidlibSerpentMapGeneratorAction : AbstractMapGenerationAction()
 			}
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		branchingChance = xmlData.getFloat("BranchingChance", 0.0f)
+		symmetrical = xmlData.getBoolean("Symmetrical", false)
+		numCaveCarvers = xmlData.getInt("NumCaveCarvers", 0)
+		numBoxRoomCarvers = xmlData.getInt("NumBoxRoomCarvers", 0)
+		numWalledBoxRoomCarvers = xmlData.getInt("NumWalledBoxRoomCarvers", 0)
+		numRoundRoomCarvers = xmlData.getInt("NumRoundRoomCarvers", 0)
+		numWalledRoundRoomCarvers = xmlData.getInt("NumWalledRoundRoomCarvers", 0)
+		overwrite = xmlData.getBoolean("Overwrite", true)
+	}
+	override val classID: String = "SquidlibSerpentMapGenerator"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+	}
+	//endregion
 }

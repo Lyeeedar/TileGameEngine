@@ -21,7 +21,7 @@ class PerPointAction : AbstractMapGenerationAction()
 
 			val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
 
-			node.execute(newArgs)
+			node.execute(generator, newArgs)
 		}
 	}
 

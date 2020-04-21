@@ -13,7 +13,7 @@ class NodeAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		child.execute(args)
+		child.execute(generator, args)
 	}
 
 	//region generated

@@ -130,7 +130,7 @@ class RepeatAction : AbstractMapGenerationAction()
 			if (newArea.hasContents)
 			{
 				val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-				child.execute(newArgs)
+				child.execute(generator, newArgs)
 			}
 		}
 
@@ -146,7 +146,7 @@ class RepeatAction : AbstractMapGenerationAction()
 			if (newArea.hasContents)
 			{
 				val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-				remainder!!.execute(newArgs)
+				remainder!!.execute(generator, newArgs)
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
 import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
@@ -74,13 +75,33 @@ class TakeAction : AbstractMapGenerationAction()
 		if (node != null && newArea.points.size > 0)
 		{
 			val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-			node!!.execute(newArgs)
+			node!!.execute(generator, newArgs)
 		}
 
 		if (remainder != null && remainderArea!!.points.size > 0)
 		{
 			val newArgs = NodeArguments(remainderArea, args.variables, args.symbolTable)
-			remainder!!.execute(newArgs)
+			remainder!!.execute(generator, newArgs)
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		countExp = createExpression(xmlData.get("CountExp"))
+		nodeGUID = xmlData.get("Node", null)
+		remainderGUID = xmlData.get("Remainder", null)
+	}
+	override val classID: String = "Take"
+	var nodeGUID: String? = null
+	var remainderGUID: String? = null
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+		if (!nodeGUID.isNullOrBlank()) node = nodes[nodeGUID]!!
+		if (!remainderGUID.isNullOrBlank()) remainder = nodes[remainderGUID]!!
+	}
+	//endregion
 }

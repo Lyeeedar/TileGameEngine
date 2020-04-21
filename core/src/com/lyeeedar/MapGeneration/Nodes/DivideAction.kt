@@ -44,7 +44,7 @@ class DivideAction : AbstractMapGenerationAction()
 				if (newArea.hasContents)
 				{
 					val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-					division.child!!.execute(newArgs)
+					division.child!!.execute(generator, newArgs)
 				}
 			}
 

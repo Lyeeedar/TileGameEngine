@@ -127,13 +127,13 @@ class FilterAction : AbstractMapGenerationAction()
 		if (node != null && newArea.points.size > 0)
 		{
 			val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-			node!!.execute(newArgs)
+			node!!.execute(generator, newArgs)
 		}
 
 		if (remainder != null && remainderArea!!.points.size > 0)
 		{
 			val newArgs = NodeArguments(remainderArea, args.variables, args.symbolTable)
-			remainder!!.execute(newArgs)
+			remainder!!.execute(generator, newArgs)
 		}
 	}
 

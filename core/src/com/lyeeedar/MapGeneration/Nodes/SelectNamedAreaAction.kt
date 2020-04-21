@@ -63,7 +63,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 					val area = tempArray.removeRandom(generator.ran)
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
-					node?.execute(newArgs)
+					node?.execute(generator, newArgs)
 
 					if (tempArray.size == 0) break
 				}
@@ -77,7 +77,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
-					node?.execute(newArgs)
+					node?.execute(generator, newArgs)
 
 					if (tempArray.size == 0) break
 				}
@@ -91,7 +91,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
-					node?.execute(newArgs)
+					node?.execute(generator, newArgs)
 
 					if (tempArray.size == 0) break
 				}
@@ -105,7 +105,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
-					node?.execute(newArgs)
+					node?.execute(generator, newArgs)
 
 					if (tempArray.size == 0) break
 				}
@@ -119,7 +119,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
-					node?.execute(newArgs)
+					node?.execute(generator, newArgs)
 
 					if (tempArray.size == 0) break
 				}
@@ -131,7 +131,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 			for (area in tempArray)
 			{
 				val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
-				remainder!!.execute(newArgs)
+				remainder!!.execute(generator, newArgs)
 			}
 		}
 	}

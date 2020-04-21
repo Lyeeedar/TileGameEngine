@@ -167,7 +167,7 @@ class SplitAction : AbstractMapGenerationAction()
 				if (split.child != null)
 				{
 					val newArgs = NodeArguments(currentArea, args.variables, args.symbolTable)
-					split.child!!.execute(newArgs)
+					split.child!!.execute(generator, newArgs)
 				}
 
 				break
@@ -179,7 +179,7 @@ class SplitAction : AbstractMapGenerationAction()
 			if (split.child != null)
 			{
 				val newArgs = NodeArguments(newArea, args.variables, args.symbolTable)
-				split.child!!.execute(newArgs)
+				split.child!!.execute(generator, newArgs)
 			}
 		}
 	}

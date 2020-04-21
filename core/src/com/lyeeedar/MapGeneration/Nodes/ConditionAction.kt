@@ -43,7 +43,7 @@ class ConditionAction : AbstractMapGenerationAction()
 
 			if (execute)
 			{
-				cond.child?.execute(args)
+				cond.child?.execute(generator, args)
 				break
 			}
 		}

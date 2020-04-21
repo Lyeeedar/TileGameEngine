@@ -3,24 +3,30 @@ package com.lyeeedar.MapGeneration
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Nodes.DeferredNode
 import com.lyeeedar.MapGeneration.Nodes.NodeArguments
 import com.lyeeedar.Util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
-class MapGenerator
+class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 {
-	var baseSize = Point(0, 0)
+	var baseSize: Point = Point(0, 0)
 
-	lateinit var ran: LightRNG
-	val nodeMap = ObjectMap<String, MapGeneratorNode>()
+	@DataGraphNodes
+	val nodeMap: ObjectMap<String, MapGeneratorNode> = ObjectMap<String, MapGeneratorNode>()
+
+	@DataGraphReference
 	lateinit var root: MapGeneratorNode
 
+	//region non-data
 	val deferredNodes = Array<DeferredNode>()
 	val namedAreas = ObjectMap<String, Array<Area>>()
-
+	lateinit var ran: LightRNG
 	private val executingArray = Array<DeferredNode>()
+	//endregion
+
 	fun execute(seed: Long)
 	{
 		ran = LightRNG(seed)
@@ -39,7 +45,7 @@ class MapGenerator
 			for (i in 0 until executingArray.size)
 			{
 				val node = executingArray[i]
-				node.node.execute(node.args)
+				node.node.execute(this, node.args)
 			}
 		}
 
@@ -56,30 +62,6 @@ class MapGenerator
 		}
 	}
 
-	fun parse(xmlData: XmlData)
-	{
-		baseSize.parse(xmlData.get("Size"))
-		val rootGuid = xmlData.get("Root")
-
-		val nodesEl = xmlData.getChildByName("Nodes")!!
-		for (nodeEl in nodesEl.children)
-		{
-			val guid = nodeEl.getAttribute("GUID")
-
-			val node = MapGeneratorNode()
-			node.parse(nodeEl, this)
-
-			nodeMap[guid] = node
-		}
-
-		for (node in nodeMap.values())
-		{
-			node.resolve()
-		}
-
-		root = nodeMap[rootGuid]
-	}
-
 	companion object
 	{
 		fun load(path: String): MapGenerator
@@ -87,9 +69,39 @@ class MapGenerator
 			val xml = getXml("Maps/$path")
 
 			val generator = MapGenerator()
-			generator.parse(xml)
+			generator.load(xml)
 
 			return generator
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		val baseSizeRaw = xmlData.get("BaseSize", "0, 0")!!.split(',')
+		baseSize = Point(baseSizeRaw[0].trim().toInt(), baseSizeRaw[1].trim().toInt())
+		val nodeMapEl = xmlData.getChildByName("NodeMap")
+		if (nodeMapEl != null)
+		{
+			for (el in nodeMapEl.children)
+			{
+				val obj = MapGeneratorNode()
+				obj.load(el)
+				val guid = el.getAttribute("GUID")
+				nodeMap[guid] = obj
+			}
+		}
+		rootGUID = xmlData.get("Root")
+		resolve(nodeMap)
+	}
+	lateinit var rootGUID: String
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		for (item in nodeMap.values())
+		{
+			item.resolve(nodes)
+		}
+		root = nodes[rootGUID]!!
+	}
+	//endregion
 }

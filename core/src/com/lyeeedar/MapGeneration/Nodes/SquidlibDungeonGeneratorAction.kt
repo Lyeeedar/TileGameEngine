@@ -1,12 +1,14 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
+import java.util.*
 import squidpony.squidgrid.mapping.DungeonGenerator
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
-import java.util.*
 
 class SquidlibDungeonGeneratorAction : AbstractMapGenerationAction()
 {
@@ -69,4 +71,24 @@ class SquidlibDungeonGeneratorAction : AbstractMapGenerationAction()
 			}
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
+		water = xmlData.getInt("Water", 0)
+		grass = xmlData.getInt("Grass", 0)
+		traps = xmlData.getInt("Traps", 0)
+		doors = xmlData.getInt("Doors", 0)
+		startChar = xmlData.get("StartChar", " ")!![0]
+		endChar = xmlData.get("EndChar", " ")!![0]
+		overwrite = xmlData.getBoolean("Overwrite", true)
+	}
+	override val classID: String = "SquidlibDungeonGenerator"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+	}
+	//endregion
 }

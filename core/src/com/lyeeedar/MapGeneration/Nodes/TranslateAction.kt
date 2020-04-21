@@ -1,10 +1,12 @@
 package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
+import com.badlogic.gdx.utils.ObjectMap
 import com.exp4j.Helpers.CompiledExpression
 import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
@@ -68,4 +70,19 @@ class TranslateAction : AbstractMapGenerationAction()
 			}
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		xEqn = createExpression(xmlData.get("XEqn"))
+		yEqn = createExpression(xmlData.get("YEqn"))
+		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+	}
+	override val classID: String = "Translate"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+	}
+	//endregion
 }

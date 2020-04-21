@@ -1,12 +1,14 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
+import java.util.*
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.FlowingCaveGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
-import java.util.*
 
 class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 {
@@ -36,4 +38,19 @@ class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 			}
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
+		roomChance = xmlData.getFloat("RoomChance", 0.0f)
+		overwrite = xmlData.getBoolean("Overwrite", true)
+	}
+	override val classID: String = "SquidlibFlowingCaveGenerator"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+	}
+	//endregion
 }

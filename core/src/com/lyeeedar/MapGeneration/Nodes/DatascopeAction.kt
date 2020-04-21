@@ -18,7 +18,7 @@ class DatascopeAction : AbstractMapGenerationAction()
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
 		val cpy = args.copy(scopeArea, scopeVariables, scopeSymbols)
-		child.execute(cpy)
+		child.execute(generator, cpy)
 	}
 
 	//region generated

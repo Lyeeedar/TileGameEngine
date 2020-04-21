@@ -1,6 +1,8 @@
 package com.lyeeedar.MapGeneration.Nodes
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.XmlData
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SymmetryDungeonGenerator
@@ -32,4 +34,17 @@ class SquidlibSymmetryGeneratorAction : AbstractMapGenerationAction()
 			}
 		}
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		super.load(xmlData)
+		overwrite = xmlData.getBoolean("Overwrite", true)
+	}
+	override val classID: String = "SquidlibSymmetryGenerator"
+	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
+	{
+		super.resolve(nodes)
+	}
+	//endregion
 }
