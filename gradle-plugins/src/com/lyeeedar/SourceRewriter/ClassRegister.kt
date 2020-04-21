@@ -187,7 +187,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				{
 					val namedGroups = matches.groups as MatchNamedGroupCollection
 
-					val classDef = ClassDefinition(namedGroups["ClassName"]!!.value, packageStr)
+					val classDef = ClassDefinition(namedGroups["ClassName"]!!.value.trim(), packageStr)
 					classDef.isAbstract = namedGroups["IsAbstract"] != null
 					classDef.imports.addAll(imports)
 

@@ -103,6 +103,25 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
                 builder.appendln(indentation, loadLine)
             }
         }
+        else if (type == "Char")
+        {
+	        if (variableType == VariableType.LATEINIT)
+	        {
+		        builder.appendln(indentation, "$name = xmlData.get(\"$dataName\")[0]")
+	        }
+	        else if (variableType == VariableType.VAR)
+	        {
+		        if (nullable)
+		        {
+			        builder.appendln(indentation, "${name}Raw = xmlData.get(\"$dataName\", ${defaultValue.replace("'", "\"")})")
+			        builder.appendln(indentation, "if (${name}Raw != null) $name = ${name}Raw[0]")
+		        }
+		        else
+		        {
+			        builder.appendln(indentation, "$name = xmlData.get(\"$dataName\", ${defaultValue.replace("'", "\"")})!![0]")
+		        }
+	        }
+        }
         else if (type == "Int")
         {
             if (variableType == VariableType.VAR)
@@ -225,7 +244,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        if (annotation != null)
 	        {
 		        val createMethod = annotation.paramMap["createExpressionMethod"]
-		        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null)")
+		        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
 	        }
 	        else
 	        {
@@ -475,6 +494,13 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendlnFix(2, """<Data Name="$dataName" $needsLocalisation $localisationFile SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
 			}
         }
+	    if (type == "Char")
+	    {
+		    val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
+		    val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
+
+		    builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
+	    }
         else if (type == "Int" || type == "Float")
         {
             val numericAnnotation = annotations.firstOrNull { it.name == "DataNumericRange" }

@@ -33,6 +33,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 		var currentClassPart: DataClassFilePart? = null
 		var currentFuncDepth: Int = 0
 		var inGeneratedPart = false
+		var inNonDataPart = false
 		var annotations: ArrayList<AnnotationDescription>? = null
 		for (line in lines)
 		{
@@ -55,6 +56,11 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					val name = trimmed.split(':', '<', '(')[0].split("class ")[1].trim()
 					val namespace = packagePart.packageStr.replace("package ", "")
 					val classDefinition = classRegister.classDefMap["$namespace.$name"]
+					if (classDefinition == null)
+					{
+						System.err.println("Failed to find class def for $namespace.$name")
+					}
+
 					if (classDefinition?.isXmlDataClass == true)
 					{
 						currentMiscPart = null
@@ -73,6 +79,9 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 						fileContents.add(currentClassPart)
 
 						currentFuncDepth = if (trimmed.endsWith("{")) 1 else 0
+						inGeneratedPart = false
+						inNonDataPart = false
+						doneImports = true
 
 						continue
 					}
@@ -85,6 +94,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					}
 					annotations.add(AnnotationDescription(trimmed))
 
+					doneImports = true
 					continue
 				}
 
@@ -142,7 +152,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 						annotations.add(AnnotationDescription(trimmed))
 					}
-					else
+					else if (!inNonDataPart && !inGeneratedPart)
 					{
 						val matches = variableRegex.matchEntire(trimmed)
 						if (matches != null)
@@ -185,10 +195,18 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 					inGeneratedPart = true
 					continue
 				}
-				if (trimmed == "//[/generated]")
+				else if (trimmed == "//[/generated]")
 				{
 					inGeneratedPart = false
 					continue
+				}
+				else if (trimmed == "//[non-data]")
+				{
+					inNonDataPart = true
+				}
+				else if (trimmed == "//[/non-data]")
+				{
+					inNonDataPart = false
 				}
 
 				if (!inGeneratedPart)
