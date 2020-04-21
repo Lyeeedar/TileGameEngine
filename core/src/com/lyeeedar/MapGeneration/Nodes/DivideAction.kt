@@ -86,7 +86,7 @@ class Division : GraphXmlDataClass<MapGeneratorNode>()
 	@DataCompiledExpression(createExpressionMethod = "createExpression")
 	var size: CompiledExpression? = null
 
-	@DataGraphReference
+	@DataGraphReference(useParentDescription = true)
 	var child: MapGeneratorNode? = null
 
 	fun createExpression(raw: String?): CompiledExpression?

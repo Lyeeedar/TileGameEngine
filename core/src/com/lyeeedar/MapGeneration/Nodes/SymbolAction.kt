@@ -15,7 +15,8 @@ class SymbolAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val symbol = Symbol.load(symbolDef, args.symbolTable)
+		val symbol = Symbol()
+		symbol.load(symbolDef)
 		args.symbolTable[symbol.char] = symbol
 	}
 

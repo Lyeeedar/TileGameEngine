@@ -5,10 +5,12 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.MapGeneration.Nodes.AbstractMapGenerationAction
 import com.lyeeedar.MapGeneration.Nodes.NodeArguments
+import com.lyeeedar.Util.DataGraphNode
 import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 
+@DataGraphNode
 class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 {
 	val actions: Array<AbstractMapGenerationAction> = Array<AbstractMapGenerationAction>()

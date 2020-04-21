@@ -819,6 +819,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				}
 			}
 		}
+		else if (type.startsWith("ObjectMap<"))
+        {
+
+        }
 		else if (type == "FastEnumMap<Statistic, Float>")
 		{
 			builder.appendlnFix(2, """<Data Name="$dataName" Keys="Statistics" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
@@ -827,14 +831,31 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
             val classDef = classRegister.getClass(type, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$type'!")
 
-            if (classDef.isAbstract)
-            {
-                builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
-            }
-            else
-            {
-                builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
-            }
+	        val dataGraphAnnotation = annotations.firstOrNull { it.name == "DataGraphReference" }
+	        if (dataGraphAnnotation != null)
+	        {
+		        val useParentDesc = if (dataGraphAnnotation.paramMap["useParentDescription"] != null) "UseParentDescription=\"True\"" else ""
+
+		        if (classDef.isAbstract)
+		        {
+			        builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
+		        }
+		        else
+		        {
+			        builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
+		        }
+	        }
+	        else
+	        {
+		        if (classDef.isAbstract)
+		        {
+			        builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+		        }
+		        else
+		        {
+			        builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+		        }
+	        }
         }
     }
 }

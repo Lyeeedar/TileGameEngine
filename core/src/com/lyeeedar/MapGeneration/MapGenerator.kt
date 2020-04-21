@@ -10,6 +10,7 @@ import com.lyeeedar.Util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
+@DataFile(colour = "201,200,153", icon="Sprites/Icons/map.png")
 class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 {
 	var baseSize: Point = Point(0, 0)
@@ -31,7 +32,7 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	{
 		ran = LightRNG(seed)
 
-		val grid = Array2D<Symbol>(baseSize.x, baseSize.y) { x,y -> Symbol(' ') }
+		val grid = Array2D<Symbol>(baseSize.x, baseSize.y) { x,y -> Symbol() }
 		val area = Area(baseSize.x, baseSize.y, grid)
 		val args = NodeArguments(area, ObjectFloatMap(), ObjectMap())
 

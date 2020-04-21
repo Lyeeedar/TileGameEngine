@@ -18,6 +18,8 @@ class AnnotationDescription(val annotationString: String)
 
     fun parse()
     {
+	    if (!annotationString.contains("(")) return
+
         val parameters = annotationString.replace("@$name(", "").replace(")", "")
 
 		if (!parameters.isBlank())
@@ -30,8 +32,7 @@ class AnnotationDescription(val annotationString: String)
 
 				if (!parameter.contains("="))
 				{
-					System.err.println("Non-named annotation parameters are not currently supported! ($annotationString) ($parameter)")
-					continue
+					throw RuntimeException("Non-named annotation parameters are not currently supported! $name ($annotationString) ($parameter)")
 				}
 
 				val split = parameter.split("=")

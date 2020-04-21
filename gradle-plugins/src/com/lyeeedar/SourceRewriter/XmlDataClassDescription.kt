@@ -212,19 +212,41 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
     fun createDefFile(builder: IndentedStringBuilder, needsGlobalScope: Boolean)
     {
-		val extends = if (classDefinition.superClass?.superClass != null) "Extends=\"${classDefinition.superClass!!.classDef!!.dataClassName}\"" else ""
+		val extends = if (classDefinition.superClass?.classDef?.name?.endsWith("XmlDataClass") == false) "Extends=\"${classDefinition.superClass!!.classDef!!.dataClassName}\"" else ""
+
+	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
 
         val dataFileAnnotation = annotations.firstOrNull { it.name == "DataFile" }
         if (dataFileAnnotation != null)
         {
-            builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $extends meta:RefKey="Struct">""")
+	        if (nodeMapVariable != null)
+	        {
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $extends meta:RefKey="GraphStruct">""")
+	        }
+	        else
+	        {
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $extends meta:RefKey="Struct">""")
+	        }
         }
         else
         {
-            val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
-            builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $global $extends meta:RefKey="StructDef">""")
+	        val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
+	        if (dataGraphNode != null)
+	        {
+		        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $global $extends meta:RefKey="GraphStructDef">""")
+	        }
+	        else
+	        {
+		        val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
+		        builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $global $extends meta:RefKey="StructDef">""")
+	        }
         }
 
+	    if (classDefinition.generatedClassID != null)
+	    {
+		    builder.appendln(2, """<Const Name="classID">${classDefinition.generatedClassID!!.replace("\"", "")}</Const>""")
+	    }
         for (variable in variables)
         {
 			if (variable.raw.startsWith("abstract")) continue

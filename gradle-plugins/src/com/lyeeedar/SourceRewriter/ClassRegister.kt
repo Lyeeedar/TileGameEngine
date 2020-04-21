@@ -306,6 +306,10 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 
 			for (classDef in otherClasses.sortedBy { it.name })
 			{
+				if (classDef.classDef == null)
+				{
+					throw RuntimeException("Missing class def for " + classDef.fullName)
+				}
 				if (classDef.classDef!!.forceGlobal) continue
 
 				if (writtenSpecificFiles.contains(classDef)) throw RuntimeException("Class written twice!")
