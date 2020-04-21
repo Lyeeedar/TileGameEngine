@@ -49,7 +49,7 @@ class EntityData : XmlDataClass()
 
 	val components: Array<AbstractComponentData> = Array<AbstractComponentData>()
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		extends = xmlData.get("Extends", "")!!
@@ -64,5 +64,5 @@ class EntityData : XmlDataClass()
 			}
 		}
 	}
-	//[/generated]
+	//endregion
 }

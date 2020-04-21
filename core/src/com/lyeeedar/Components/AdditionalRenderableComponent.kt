@@ -44,15 +44,32 @@ class AdditionalRenderableComponent(data: AdditionalRenderableComponentData) : A
 
 class AdditionalRenderableComponentData : AbstractComponentData()
 {
-	override val classID: String = "AdditionalRenderable"
+	val below: Array<Renderable> = Array<Renderable>()
+	val above: Array<Renderable> = Array<Renderable>()
 
-	val below = Array<Renderable>()
-	val above = Array<Renderable>()
-
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
+		val belowEl = xmlData.getChildByName("Below")
+		if (belowEl != null)
+		{
+			for (el in belowEl.children)
+			{
+				val obj = AssetManager.loadRenderable(el)
+				below.add(obj)
+			}
+		}
+		val aboveEl = xmlData.getChildByName("Above")
+		if (aboveEl != null)
+		{
+			for (el in aboveEl.children)
+			{
+				val obj = AssetManager.loadRenderable(el)
+				above.add(obj)
+			}
+		}
 	}
-	//[/generated]
+	override val classID: String = "AdditionalRenderable"
+	//endregion
 }

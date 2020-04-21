@@ -35,16 +35,15 @@ class DialogueComponent(data: DialogueComponentData) : AbstractComponent<Dialogu
 
 class DialogueComponentData : AbstractComponentData()
 {
-	override val classID: String = "Dialogue"
-
 	var text: String = ""
 	var turnsToShow = -1
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
 		text = xmlData.get("Text", "")!!
 	}
-	//[/generated]
+	override val classID: String = "Dialogue"
+	//endregion
 }

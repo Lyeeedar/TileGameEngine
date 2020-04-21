@@ -4,12 +4,12 @@ import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 abstract class AbstractComponentData : XmlDataClass()
 {
-	abstract val classID: String
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 	}
+	abstract val classID: String
 
 	companion object
 	{
@@ -29,18 +29,18 @@ abstract class AbstractComponentData : XmlDataClass()
 			}
 		}
 	}
-	//[/generated]
+	//endregion
 }
 class EmptyComponentData : AbstractComponentData()
 {
-	override val classID: String = "Empty"
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
 	}
-	//[/generated]
+	override val classID: String = "Empty"
+	//endregion
 }
 abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
 {

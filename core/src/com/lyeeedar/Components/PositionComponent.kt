@@ -57,13 +57,11 @@ class PositionComponent(data: PositionComponentData): AbstractComponent<Position
 
 class PositionComponentData : AbstractComponentData()
 {
-	override val classID: String = "Position"
-
 	var slot: SpaceSlot = SpaceSlot.ENTITY
 	var moveable: Boolean = true
 	var size: Int = 1
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
@@ -71,5 +69,6 @@ class PositionComponentData : AbstractComponentData()
 		moveable = xmlData.getBoolean("Moveable", true)
 		size = xmlData.getInt("Size", 1)
 	}
-	//[/generated]
+	override val classID: String = "Position"
+	//endregion
 }

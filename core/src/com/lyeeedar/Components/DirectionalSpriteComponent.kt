@@ -23,15 +23,14 @@ class DirectionalSpriteComponent(data: DirectionalSpriteComponentData) : Abstrac
 
 class DirectionalSpriteComponentData : AbstractComponentData()
 {
-	override val classID: String = "DirectionalSprite"
-
 	lateinit var directionalSprite: DirectionalSprite
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
 		directionalSprite = AssetManager.loadDirectionalSprite(xmlData.getChildByName("DirectionalSprite")!!)
 	}
-	//[/generated]
+	override val classID: String = "DirectionalSprite"
+	//endregion
 }

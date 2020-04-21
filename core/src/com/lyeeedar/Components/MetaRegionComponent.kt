@@ -18,11 +18,9 @@ class MetaRegionComponent(data: MetaRegionComponentData) : AbstractComponent<Met
 
 class MetaRegionComponentData : AbstractComponentData()
 {
-	override val classID: String = "MetaRegion"
-
 	val keys: Array<String> = Array<String>()
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
@@ -35,5 +33,6 @@ class MetaRegionComponentData : AbstractComponentData()
 			}
 		}
 	}
-	//[/generated]
+	override val classID: String = "MetaRegion"
+	//endregion
 }

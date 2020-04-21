@@ -16,17 +16,16 @@ class NameComponent(data: NameComponentData) : AbstractComponent<NameComponentDa
 
 class NameComponentData : AbstractComponentData()
 {
-	override val classID: String = "Name"
-
 	lateinit var name: String
 	lateinit var title: String
 
-	//[generated]
+	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
 		name = xmlData.get("Name")
 		title = xmlData.get("Title")
 	}
-	//[/generated]
+	override val classID: String = "Name"
+	//endregion
 }
