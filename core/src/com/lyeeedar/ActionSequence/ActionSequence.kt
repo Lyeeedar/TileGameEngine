@@ -172,11 +172,15 @@ class ActionSequence : XmlDataClass()
 		{
 			for (el in actionsEl.children)
 			{
-				val obj = XmlDataClassLoader.loadAbstractActionSequenceAction(el.get("classID"))
-				obj.load(el)
-				actions.add(obj)
+				for (keyframeEl in el.children)
+				{
+					val obj = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID"))
+					obj.load(keyframeEl)
+					actions.add(obj)
+				}
 			}
 		}
+		actions.sort(compareBy{ it.time })
 		obtained = xmlData.getBoolean("Obtained", false)
 	}
 	//endregion

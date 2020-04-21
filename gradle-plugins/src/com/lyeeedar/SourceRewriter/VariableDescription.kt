@@ -328,6 +328,9 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			}
 			else
 			{
+				val timelineAnnotation = annotations.firstOrNull { it.name == "DataTimeline" }
+				val isTimelineGroup = timelineAnnotation != null && timelineAnnotation.paramMap["timelineGroup"] == "true"
+
 				builder.appendln(indentation, "if ($elName != null)")
 				builder.appendln(indentation, "{")
 				builder.appendln(indentation + 1, "for (el in ${elName}.children)")
@@ -386,21 +389,46 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 					               ?: throw RuntimeException("writeLoad: Unknown type '$arrayType' in '$type'!")
 					classDefinition.referencedClasses.add(classDef)
 
-					if (classDef.isAbstract)
+					if (isTimelineGroup)
 					{
-						builder.appendln(indentation + 2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
+						builder.appendln(indentation + 2, "for (keyframeEl in el.children)")
+						builder.appendln(indentation + 2, "{")
+						if (classDef.isAbstract)
+						{
+							builder.appendln(indentation + 3, "val obj = XmlDataClassLoader.load$arrayType(keyframeEl.get(\"classID\"))")
+						}
+						else
+						{
+							builder.appendln(indentation + 3, "val obj = $arrayType()")
+						}
+
+						builder.appendln(indentation + 3, "obj.load(keyframeEl)")
+						builder.appendln(indentation + 3, "$name.add(obj)")
+						builder.appendln(indentation + 2, "}")
 					}
 					else
 					{
-						builder.appendln(indentation + 2, "val obj = $arrayType()")
-					}
+						if (classDef.isAbstract)
+						{
+							builder.appendln(indentation + 2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
+						}
+						else
+						{
+							builder.appendln(indentation + 2, "val obj = $arrayType()")
+						}
 
-					builder.appendln(indentation + 2, "obj.load(el)")
-					builder.appendln(indentation + 2, "$name.add(obj)")
+						builder.appendln(indentation + 2, "obj.load(el)")
+						builder.appendln(indentation + 2, "$name.add(obj)")
+					}
 				}
 
 				builder.appendln(indentation + 1, "}")
 				builder.appendln(indentation, "}")
+
+				if (isTimelineGroup)
+				{
+					builder.appendln(indentation, "$name.sort(compareBy{ it.time })")
+				}
 			}
 		}
 		else if (type.startsWith("ObjectMap<"))
