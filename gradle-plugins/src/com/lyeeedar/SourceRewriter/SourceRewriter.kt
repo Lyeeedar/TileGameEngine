@@ -214,7 +214,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 		return true
 	}
 
-	fun write()
+	fun write(loaderBuilder: IndentedStringBuilder, loaderImports: HashSet<String>)
 	{
 		if (!fileContents.any { it is DataClassFilePart } || file.nameWithoutExtension == "XmlData") return
 
@@ -223,14 +223,14 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 		{
 			if (part is DataClassFilePart)
 			{
-				part.desc.resolveImports(imports.imports)
+				part.desc.resolveImports(imports.imports, loaderImports)
 			}
 		}
 
 		val output = IndentedStringBuilder()
 		for (part in fileContents)
 		{
-			part.write(output)
+			part.write(output, loaderBuilder)
 		}
 
 		val newContents = output.toString().trim()

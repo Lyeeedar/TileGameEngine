@@ -1,6 +1,7 @@
 package com.lyeeedar.build
 
 import com.lyeeedar.build.SourceRewriter.ClassRegister
+import com.lyeeedar.build.SourceRewriter.IndentedStringBuilder
 import com.lyeeedar.build.SourceRewriter.SourceRewriter
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
@@ -55,11 +56,37 @@ open class SourceRewriterTask : DefaultTask()
 				}
 			}
 
+			val loaderBuilder = IndentedStringBuilder()
+			val loaderImports = HashSet<String>()
+
 			println("Writing changes")
 			for (rewriter in dataClassFiles)
 			{
-				rewriter.write()
+				rewriter.write(loaderBuilder, loaderImports)
 			}
+
+			println("Writing xml loader")
+			val destPath = File(srcDirs!!.first().absolutePath + "/../../../../../game/core/src/com/lyeeedar/Util/XmlDataClassLoader.kt").canonicalFile
+			val output = IndentedStringBuilder()
+			output.appendln("package com.lyeeedar.Util")
+			output.appendln("")
+			for (import in loaderImports)
+			{
+				output.appendln("import $import")
+			}
+			output.appendln("")
+			output.appendln("class XmlDataClassLoader")
+			output.appendln("{")
+			output.appendln(1, "companion object")
+			output.appendln(1, "{")
+
+			output.appendln(loaderBuilder.toString())
+
+			output.appendln(1, "}")
+			output.appendln("}")
+
+			destPath.writeText(output.toString())
+			println("Wrote loader to " + destPath.canonicalPath)
 
 			println("Writing def files")
 			classRegister.writeXmlDefFiles()

@@ -369,7 +369,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 				if (classDef.isAbstract)
 				{
-					builder.appendln(indentation+2, "val obj = $arrayType.loadPolymorphicClass(el.get(\"classID\"))")
+					builder.appendln(indentation+2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
 				}
 				else
 				{
@@ -403,7 +403,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 		        if (classDef.isAbstract)
 		        {
-			        builder.appendln(indentation+2, "val obj = $nodeType.loadPolymorphicClass(el.get(\"classID\"))")
+			        builder.appendln(indentation+2, "val obj =  XmlDataClassLoader.load$nodeType(el.get(\"classID\"))")
 		        }
 		        else
 		        {
@@ -455,7 +455,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
+				        builder.appendln(indentation, "$name =  XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
 			        }
 			        else
 			        {
@@ -472,7 +472,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation + 1, "$name = $type.loadPolymorphicClass(${el}.get(\"classID\"))")
+				        builder.appendln(indentation + 1, "$name =  XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
 			        }
 			        else
 			        {

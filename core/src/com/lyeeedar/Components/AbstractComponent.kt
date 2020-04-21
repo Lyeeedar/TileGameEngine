@@ -10,25 +10,6 @@ abstract class AbstractComponentData : XmlDataClass()
 	{
 	}
 	abstract val classID: String
-
-	companion object
-	{
-		fun loadPolymorphicClass(classID: String): AbstractComponentData
-		{
-			return when (classID)
-			{
-				"AdditionalRenderable" -> AdditionalRenderableComponentData()
-				"DirectionalSprite" -> DirectionalSpriteComponentData()
-				"Renderable" -> RenderableComponentData()
-				"Name" -> NameComponentData()
-				"Dialogue" -> DialogueComponentData()
-				"Empty" -> EmptyComponentData()
-				"Position" -> PositionComponentData()
-				"MetaRegion" -> MetaRegionComponentData()
-				else -> throw RuntimeException("Unknown classID '$classID' for AbstractComponentData!")
-			}
-		}
-	}
 	//endregion
 }
 class EmptyComponentData : AbstractComponentData()

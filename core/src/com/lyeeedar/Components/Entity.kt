@@ -58,7 +58,7 @@ class EntityData : XmlDataClass()
 		{
 			for (el in componentsEl.children)
 			{
-				val obj = AbstractComponentData.loadPolymorphicClass(el.get("classID"))
+				val obj = XmlDataClassLoader.loadAbstractComponentData(el.get("classID"))
 				obj.load(el)
 				components.add(obj)
 			}

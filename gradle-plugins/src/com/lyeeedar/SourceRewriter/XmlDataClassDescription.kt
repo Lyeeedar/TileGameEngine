@@ -48,7 +48,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		return null
 	}
 
-    fun resolveImports(imports: HashSet<String>)
+    fun resolveImports(imports: HashSet<String>, loaderImports: HashSet<String>)
     {
         for (variable in variables)
         {
@@ -57,14 +57,12 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
         if (classDefinition.isAbstract)
         {
+	        loaderImports.add(classDefinition.fullName)
             for (childClass in classDefinition.inheritingClasses)
             {
                 if (!childClass.isAbstract)
                 {
-                    if (childClass.namespace != classDefinition.namespace)
-                    {
-                        imports.add(childClass.namespace + ".${childClass.name}")
-                    }
+	                loaderImports.add(childClass.namespace + ".${childClass.name}")
                 }
             }
         }
@@ -79,7 +77,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    }
     }
 
-    fun write(builder: IndentedStringBuilder)
+    fun write(builder: IndentedStringBuilder, loaderBuilder: IndentedStringBuilder)
     {
         for (annotation in annotations)
         {
@@ -173,17 +171,11 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    // write loadpolymorphic
         if (classDefinition.isAbstract)
         {
-            builder.appendln("")
+	        loaderBuilder.appendln(classIndentation+2, "fun load$name(classID: String): $name")
+	        loaderBuilder.appendln(classIndentation+2, "{")
 
-            // write switch loader
-            builder.appendln(classIndentation+1, "companion object")
-            builder.appendln(classIndentation+1, "{")
-
-            builder.appendln(classIndentation+2, "fun loadPolymorphicClass(classID: String): $name")
-            builder.appendln(classIndentation+2, "{")
-
-            builder.appendln(classIndentation+3, "return when (classID)")
-            builder.appendln(classIndentation+3, "{")
+	        loaderBuilder.appendln(classIndentation+3, "return when (classID)")
+	        loaderBuilder.appendln(classIndentation+3, "{")
 
             for (childClass in classDefinition.inheritingClasses)
             {
@@ -196,16 +188,14 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		                id = childClass.generatedClassID
 	                }
 
-                    builder.appendln(classIndentation+4, "$id -> ${childClass.name}()")
+	                loaderBuilder.appendln(classIndentation+4, "$id -> ${childClass.name}()")
                 }
             }
 
-            builder.appendln(classIndentation+4, "else -> throw RuntimeException(\"Unknown classID '\$classID' for $name!\")")
-            builder.appendln(classIndentation+3, "}")
+	        loaderBuilder.appendln(classIndentation+4, "else -> throw RuntimeException(\"Unknown classID '\$classID' for $name!\")")
+	        loaderBuilder.appendln(classIndentation+3, "}")
 
-            builder.appendln(classIndentation+2, "}")
-
-            builder.appendln(classIndentation+1, "}")
+	        loaderBuilder.appendln(classIndentation+2, "}")
         }
 	    builder.appendln(classIndentation+1, "//endregion")
 

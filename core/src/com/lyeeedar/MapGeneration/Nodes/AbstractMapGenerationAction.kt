@@ -24,47 +24,6 @@ abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 	}
-
-	companion object
-	{
-		fun loadPolymorphicClass(classID: String): AbstractMapGenerationAction
-		{
-			return when (classID)
-			{
-				"ChambersGenerator" -> ChambersGeneratorAction()
-				"Condition" -> ConditionAction()
-				"DefineVariable" -> DefineVariableAction()
-				"Fill" -> FillAction()
-				"Filter" -> FilterAction()
-				"FindRooms" -> FindRoomsAction()
-				"Flip" -> FlipAction()
-				"PerPoint" -> PerPointAction()
-				"Repeat" -> RepeatAction()
-				"Scale" -> ScaleAction()
-				"SelectNamedArea" -> SelectNamedAreaAction()
-				"Split" -> SplitAction()
-				"SquidlibDungeonGenerator" -> SquidlibDungeonGeneratorAction()
-				"SquidlibLanesMapGenerator" -> SquidlibLanesMapGeneratorAction()
-				"SquidlibOrganicMapGenerator" -> SquidlibOrganicMapGeneratorAction()
-				"SquidlibSerpentMapGenerator" -> SquidlibSerpentMapGeneratorAction()
-				"SquidlibSymmetryGenerator" -> SquidlibSymmetryGeneratorAction()
-				"Symbol" -> SymbolAction()
-				"Translate" -> TranslateAction()
-				"SquidlibDenseRoomGenerator" -> SquidlibDenseRoomGeneratorAction()
-				"Node" -> NodeAction()
-				"Divide" -> DivideAction()
-				"ConnectRooms" -> ConnectRoomsAction()
-				"Defer" -> DeferAction()
-				"SquidlibFlowingCaveGenerator" -> SquidlibFlowingCaveGeneratorAction()
-				"Take" -> TakeAction()
-				"Datascope" -> DatascopeAction()
-				"Rotate" -> RotateAction()
-				"SetNamedArea" -> SetNamedAreaAction()
-				"SquidlibSectionGenerator" -> SquidlibSectionGeneratorAction()
-				else -> throw RuntimeException("Unknown classID '$classID' for AbstractMapGenerationAction!")
-			}
-		}
-	}
 	//endregion
 }
 

@@ -30,7 +30,7 @@ class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 		{
 			for (el in actionsEl.children)
 			{
-				val obj = AbstractMapGenerationAction.loadPolymorphicClass(el.get("classID"))
+				val obj = XmlDataClassLoader.loadAbstractMapGenerationAction(el.get("classID"))
 				obj.load(el)
 				actions.add(obj)
 			}
