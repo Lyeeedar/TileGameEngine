@@ -77,3 +77,14 @@ class ArchetypeBuilderComponent : AbstractComponent<EmptyComponentData>(EmptyCom
 
 	override fun reset() {}
 }
+
+val transientParticleArchetype =
+	EntityArchetypeBuilder()
+		.add(ComponentType.Position)
+		.add(ComponentType.Renderable)
+		.add(ComponentType.Transient)
+
+val nonTransientParticleArchetype =
+	EntityArchetypeBuilder()
+		.add(ComponentType.Position)
+		.add(ComponentType.Renderable)

@@ -16,7 +16,7 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 
 	protected val ambientLight = Colour.WHITE
 	protected val batch: SpriteBatch by lazy { SpriteBatch() }
-	protected val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, Statics.resolution[0] / tileSize, Statics.resolution[1] / tileSize, SpaceSlot.Values.size, false) }
+	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, Statics.resolution[0] / tileSize, Statics.resolution[1] / tileSize, SpaceSlot.Values.size, false) }
 
 	protected var playerOffsetX: Float = 0f
 	protected var playerOffsetY: Float = 0f

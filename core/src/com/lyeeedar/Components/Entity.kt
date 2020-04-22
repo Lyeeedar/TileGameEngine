@@ -9,6 +9,17 @@ class Entity
 	val signature = EnumBitflag<ComponentType>()
 	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent<*>>(ComponentType::class.java)
 
+	fun addOrGet(componentType: ComponentType): AbstractComponent<*>
+	{
+		var comp = components[componentType]
+		if (comp == null)
+		{
+			comp = addComponent(componentType)
+		}
+
+		return comp
+	}
+
 	fun addComponent(component: AbstractComponent<*>)
 	{
 		components[component.type] = component

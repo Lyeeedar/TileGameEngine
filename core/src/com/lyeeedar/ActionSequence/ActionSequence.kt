@@ -31,7 +31,7 @@ class ActionSequenceState
 	var currentTime: Float = 0f
 	var index = 0
 
-	var data = ObjectMap<String, Any>()
+	var data = ObjectMap<String, Any?>()
 
 	init
 	{
