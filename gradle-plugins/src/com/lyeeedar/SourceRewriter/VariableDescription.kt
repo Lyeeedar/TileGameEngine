@@ -1,6 +1,8 @@
 package com.lyeeedar.build.SourceRewriter
 
 import com.lyeeedar.SourceRewriter.colourFromStringHash
+import javax.swing.text.html.StyleSheet
+
 
 enum class VariableType
 {
@@ -12,6 +14,7 @@ enum class VariableType
 val assetManagerLoadedTypes = setOf("ParticleEffect", "ParticleEffectDescription",
                                     "Sprite", "SpriteWrapper", "DirectionalSprite",
                                     "Sound",
+                                    "Colour",
                                     "Light",
                                     "Texture", "TextureRegion",
                                     "Renderable")
@@ -767,6 +770,19 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		{
 			builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Boolean" />""")
 		}
+        else if (type == "Colour")
+        {
+	        var defaultColour = ""
+	        if (defaultValue.contains("Colour."))
+	        {
+		        val colName = defaultValue.split(".")[1]
+
+		        val c = StyleSheet().stringToColor(colName)
+		        defaultColour = "Default=\"${c.red},${c.green},${c.blue}\""
+	        }
+
+	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="false" $defaultColour $visibleIfStr meta:RefKey="Colour" />""")
+        }
         else if (assetManagerLoadedTypes.contains(type))
         {
 			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect" else type

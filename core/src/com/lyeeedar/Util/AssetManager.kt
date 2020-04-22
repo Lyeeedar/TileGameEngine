@@ -437,6 +437,12 @@ class AssetManager
 			return light
 		}
 
+		fun tryLoadLight(xml: XmlData?): Light?
+		{
+			if (xml == null) return null
+			return loadLight(xml)
+		}
+
 		fun loadColour(stringCol: String, colour: Colour = Colour()): Colour
 		{
 			val cols = stringCol.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -453,9 +459,21 @@ class AssetManager
 			return loadColour(xml.text)
 		}
 
+		fun tryLoadColour(xml: XmlData?): Colour?
+		{
+			if (xml == null) return null
+			return loadColour(xml)
+		}
+
 		fun loadTilingSprite(xml:XmlData): TilingSprite
 		{
 			return TilingSprite.load(xml)
+		}
+
+		fun tryLoadTilingSprite(xml: XmlData?): TilingSprite?
+		{
+			if (xml == null) return null
+			return loadTilingSprite(xml)
 		}
 
 		fun loadLayeredSprite(xml: XmlData): Sprite
@@ -488,6 +506,12 @@ class AssetManager
 			return sprite
 		}
 
+		fun tryLoadLayeredSprite(xml: XmlData?): Sprite?
+		{
+			if (xml == null) return null
+			return loadLayeredSprite(xml)
+		}
+
 		fun loadDirectionalSprite(xml:XmlData, size: Int = 1): DirectionalSprite
 		{
 			val directionalSprite = DirectionalSprite()
@@ -512,6 +536,12 @@ class AssetManager
 			return directionalSprite
 		}
 
+		fun tryLoadDirectionalSprite(xml: XmlData?): DirectionalSprite?
+		{
+			if (xml == null) return null
+			return loadDirectionalSprite(xml)
+		}
+
 		fun loadRenderable(xml:XmlData): Renderable
 		{
 			val type = xml.getAttribute("meta:RefKey", null)?.toUpperCase(Locale.ENGLISH) ?: xml.name.toUpperCase(Locale.ENGLISH)
@@ -523,6 +553,12 @@ class AssetManager
 				"TILINGSPRITE" -> AssetManager.loadTilingSprite(xml)
 				else -> throw Exception("Unknown renderable type '$type'!")
 			};
+		}
+
+		fun tryLoadRenderable(xml: XmlData?): Renderable?
+		{
+			if (xml == null) return null
+			return loadRenderable(xml)
 		}
 	}
 }
