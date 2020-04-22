@@ -1,5 +1,7 @@
 package com.lyeeedar.build.SourceRewriter
 
+import com.lyeeedar.SourceRewriter.colourFromStringHash
+
 class XmlDataClassDescription(val name: String, val defLine: String, val classIndentation: Int, val classDefinition: ClassDefinition, val classRegister: ClassRegister, val annotations: ArrayList<AnnotationDescription>)
 {
     val variables = ArrayList<VariableDescription>()
@@ -29,6 +31,11 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 			dataClassCategory = ""
 			forceGlobal = false
 		}
+
+	    if (colour == null)
+	    {
+		    colour = colourFromStringHash(name, 0.8f)
+	    }
     }
 
 	fun getGraphNodeType(): Pair<String, ClassDefinition>?
@@ -197,7 +204,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
 
-	    val colour = if (this.colour != null) """TextColour="$colour" """ else ""
+	    val colour = """TextColour="$colour" """
 	    val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
 
 	    val collectionAnnotation = annotations.firstOrNull { it.name == "DataClassCollection" }

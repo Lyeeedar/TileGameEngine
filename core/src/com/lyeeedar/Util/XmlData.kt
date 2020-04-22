@@ -675,7 +675,7 @@ annotation class DataNumericRange(val min: Float = -9999999f, val max: Float = 9
 annotation class DataValue(val dataName: String = "", val visibleIf: String = "")
 annotation class DataVector(val name1: String = "", val name2: String = "", val name3: String = "", val name4: String = "")
 annotation class DataNeedsLocalisation(val file: String = "")
-annotation class DataArray(val minCount: Int = 0, val maxCount: Int = 9999999)
+annotation class DataArray(val minCount: Int = 0, val maxCount: Int = 9999999, val childrenAreUnique: Boolean = false)
 annotation class DataFileReference(val basePath: String = "", val stripExtension: Boolean = true, val resourceType: String = "", val allowedFileTypes: String = "")
 annotation class DataCompiledExpression(val createExpressionMethod: String = "", val knownVariables: String = "", val default: String = "")
 annotation class DataGraphNodes()

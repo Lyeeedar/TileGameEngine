@@ -168,15 +168,25 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				val enumDef = EnumDefinition(name, packageStr)
 				enumDef.imports.addAll(imports)
 
+				var category = ""
+
 				var ii = i+2
 				while (true)
 				{
 					val line = lines[ii]
 
 					val enumValue = line.split(',', '(', ';')[0].trim()
-					enumDef.values.add(enumValue)
 
-					if (!line.trim().endsWith(','))
+					if (enumValue.startsWith("//"))
+					{
+						category = enumValue.replace("//", "").trim()
+					}
+					else if (enumValue.length > 2)
+					{
+						enumDef.addValue(enumValue, category)
+					}
+
+					if (line.trim().endsWith(';') || line.trim().endsWith('}'))
 					{
 						break
 					}
@@ -570,7 +580,45 @@ class InterfaceDefinition(name: String, namespace: String): BaseTypeDefinition(n
 	var packageStr: String = ""
 }
 
-class EnumDefinition(name: String, namespace: String): BaseTypeDefinition(name, namespace)
+class CategorisedValues(val category: String)
 {
 	val values = ArrayList<String>()
+}
+class EnumDefinition(name: String, namespace: String): BaseTypeDefinition(name, namespace)
+{
+	val values = ArrayList<CategorisedValues>()
+	private var currentCategory: CategorisedValues? = null
+
+	fun addValue(value: String, category: String)
+	{
+		if (currentCategory == null || currentCategory!!.category != category)
+		{
+			currentCategory = CategorisedValues(category)
+			values.add(currentCategory!!)
+		}
+
+		currentCategory!!.values.add(value)
+	}
+
+	fun getAsString(): String
+	{
+		if (values.size == 1)
+		{
+			val list = values[0]
+			return list.values.joinToString(",")
+		}
+		else
+		{
+			val output = StringBuilder()
+			for (category in values)
+			{
+				if (output.isNotEmpty()) { output.append(",") }
+				output.append(category).append("(")
+				output.append(category.values.joinToString(","))
+				output.append(")")
+			}
+
+			return output.toString()
+		}
+	}
 }

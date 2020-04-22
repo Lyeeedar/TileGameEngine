@@ -1,5 +1,7 @@
 package com.lyeeedar.build.SourceRewriter
 
+import com.lyeeedar.SourceRewriter.colourFromStringHash
+
 enum class VariableType
 {
     VAR,
@@ -807,7 +809,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		else if (classRegister.getEnum(type, classDefinition) != null)
 		{
 			val enumDef = classRegister.getEnum(type, classDefinition)!!
-            val enumVals = enumDef.values.joinToString(",")
+            val enumVals = enumDef.getAsString()
 
             var defaultStr = ""
             if (defaultValue.isNotBlank())
@@ -897,7 +899,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			else if (classRegister.getEnum(arrayType, classDefinition) != null)
 			{
 				val enumDef = classRegister.getEnum(arrayType, classDefinition)!!
-				val enumVals = enumDef.values.joinToString(",")
+				val enumVals = enumDef.getAsString()
 
 				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
 				builder.appendlnFix(3, """<Data Name="$childName" EnumValues="$enumVals" meta:RefKey="Enum" />""")
@@ -937,13 +939,15 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				}
 				else
 				{
+					val uniqueChildren = if (dataArrayAnnotation?.paramMap?.get("childrenAreUnique") != null) """ChildrenAreUnique="True" """ else ""
+
 					if (classDef.isAbstract)
 					{
-						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
 					}
 					else
 					{
-						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
 					}
 				}
 			}
@@ -954,7 +958,21 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
 		else if (type == "FastEnumMap<Statistic, Float>")
 		{
-			builder.appendlnFix(2, """<Data Name="$dataName" Keys="Statistics" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+			val statsEnum = classRegister.getEnum("Statistic", classDefinition)!!
+			builder.appendlnFix(2, """<Data Name="$dataName" $nullable $skipIfDefault $visibleIfStr  meta:RefKey="Struct">""")
+
+			for (category in statsEnum.values)
+			{
+				builder.appendlnFix(3, """<!--${category.category}-->""")
+
+				for (value in category.values)
+				{
+					val colour = colourFromStringHash(value, 0.4f)
+					builder.appendlnFix(3, """<Data Name="${value.toLowerCase().capitalize()}" TextColour="$colour" meta:RefKey="Number"/>""")
+				}
+			}
+
+			builder.appendlnFix(2, """</Data>""")
 		}
         else
         {

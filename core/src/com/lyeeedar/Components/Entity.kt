@@ -48,6 +48,7 @@ class EntityData : XmlDataClass()
 	@DataFileReference(resourceType = "Entity")
 	var extends: String = ""
 
+	@DataArray(childrenAreUnique = true)
 	val components: Array<AbstractComponentData> = Array<AbstractComponentData>()
 
 	//region generated
