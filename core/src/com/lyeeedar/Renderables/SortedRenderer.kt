@@ -198,14 +198,14 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		if (inBegin) throw Exception("Begin called again before flush!")
 
 		this.ambientLight.set(ambientLight)
-		delta = deltaTime
 		this.offsetx = offsetx
 		this.offsety = offsety
+		delta = deltaTime
 		inBegin = true
 	}
 
 	// ----------------------------------------------------------------------
-	fun beginStatic()
+	fun beginStatic(offsetx: Float, offsety: Float, ambientLight: Colour)
 	{
 		if (inBegin) throw Exception("BeginStatic called within begin!")
 		if (inStaticBegin) throw Exception("BeginStatic called BeginStatic!")
@@ -216,6 +216,9 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		}
 		staticBuffers.clear()
 
+		this.ambientLight.set(ambientLight)
+		this.offsetx = offsetx
+		this.offsety = offsety
 		delta = 0f
 		inStaticBegin = true
 	}

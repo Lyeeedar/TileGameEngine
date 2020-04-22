@@ -12,7 +12,7 @@ import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.toHitPointArray
 import kotlin.math.roundToInt
 
-@DataClass(category = "Permute", colour = "247,176,78,47")
+@DataClass(category = "Permute", colour = "247,176,78")
 class PermuteAction() : AbstractOneShotActionSequenceAction()
 {
 	var appendTargets: Boolean = false
@@ -26,11 +26,6 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 	val addedset = ObjectSet<Point>(4)
 	val currentTargets = Array<Point>(false, 4)
 	//endregion
-
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
@@ -65,11 +60,6 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 			}
 		}
 
-		return ActionState.Completed
-	}
-
-	override fun exit(state: ActionSequenceState): ActionState
-	{
 		return ActionState.Completed
 	}
 

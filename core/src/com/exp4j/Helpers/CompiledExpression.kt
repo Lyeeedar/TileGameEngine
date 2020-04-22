@@ -6,11 +6,26 @@ import com.exp4j.Functions.*
 import com.exp4j.Operators.BooleanOperators
 import com.exp4j.Operators.PercentageOperator
 import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.set
 import net.objecthunter.exp4j.Expression
 import net.objecthunter.exp4j.ExpressionBuilder
 
+private fun createVariableMap(variables: String): ObjectFloatMap<String>
+{
+	val split = variables.split(",")
+
+	val map = ObjectFloatMap<String>()
+	for (variable in split)
+	{
+		map[variable] = 0f
+	}
+
+	return map
+}
 class CompiledExpression(private val eqnStr: String, variableMap: ObjectFloatMap<String> = ObjectFloatMap())
 {
+	constructor(eqnStr: String, knownVariables: String) : this(eqnStr, createVariableMap(knownVariables))
+
 	private val cachedValue: Float?
 	private val expression: Expression?
 	private val seededFunctions = Array<SeededFunction>(3)

@@ -248,13 +248,29 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        if (annotation != null)
 	        {
 		        val createMethod = annotation.paramMap["createExpressionMethod"]
-		        if (variableType == VariableType.LATEINIT || !nullable)
+		        if (createMethod != null)
 		        {
-			        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\"))")
+			        if (variableType == VariableType.LATEINIT || !nullable)
+			        {
+				        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\"))")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
+			        }
 		        }
 		        else
 		        {
-			        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
+			        val knownVariables = annotation.paramMap["knownVariables"] ?: ""
+			        if (variableType == VariableType.LATEINIT || !nullable)
+			        {
+				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.get(\"$dataName\"), \"$knownVariables\")")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "val ${name}String = xmlData.get(\"$dataName\", null)")
+				        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String, \"$knownVariables\") else null")
+			        }
 		        }
 	        }
 	        else
@@ -756,7 +772,22 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
 		else if (type == "CompiledExpression")
         {
-	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="False" Default="1" $visibleIfStr meta:RefKey="String" />""")
+	        var default = "1"
+	        var tooltip = ""
+
+	        val annotation = annotations.firstOrNull { it.name == "DataCompiledExpression" }
+	        if (annotation != null)
+	        {
+		        if (annotation.paramMap["default"] != null)
+		        {
+			        default = annotation.paramMap["default"]!!
+		        }
+		        if (annotation.paramMap["knownVariables"] != null)
+		        {
+			        tooltip = "Tooltip=\"Known variables: ${annotation.paramMap["knownVariables"]}\""
+		        }
+	        }
+	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="False" Default="$default" $tooltip $visibleIfStr meta:RefKey="String" />""")
         }
 		else if (type == "XmlData")
 	    {

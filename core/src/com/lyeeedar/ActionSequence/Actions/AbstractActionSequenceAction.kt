@@ -39,6 +39,16 @@ abstract class AbstractOneShotActionSequenceAction : AbstractActionSequenceActio
 		get() = time
 	//endregion
 
+	override fun onTurn(state: ActionSequenceState): ActionState
+	{
+		return ActionState.Completed
+	}
+
+	override fun exit(state: ActionSequenceState): ActionState
+	{
+		return ActionState.Completed
+	}
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{

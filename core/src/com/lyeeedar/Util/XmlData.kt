@@ -677,7 +677,7 @@ annotation class DataVector(val name1: String = "", val name2: String = "", val 
 annotation class DataNeedsLocalisation(val file: String = "")
 annotation class DataArray(val minCount: Int = 0, val maxCount: Int = 9999999)
 annotation class DataFileReference(val basePath: String = "", val stripExtension: Boolean = true, val resourceType: String = "", val allowedFileTypes: String = "")
-annotation class DataCompiledExpression(val createExpressionMethod: String = "")
+annotation class DataCompiledExpression(val createExpressionMethod: String = "", val knownVariables: String = "", val default: String = "")
 annotation class DataGraphNodes()
 annotation class DataGraphNode()
 annotation class DataClassCollection()

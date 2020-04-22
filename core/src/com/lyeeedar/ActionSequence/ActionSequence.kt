@@ -8,6 +8,7 @@ import com.lyeeedar.ActionSequence.Actions.ActionState
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.pos
 import com.lyeeedar.Direction
+import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
@@ -17,11 +18,14 @@ import ktx.collections.set
 class ActionSequenceState
 {
 	lateinit var source: Entity
+	lateinit var world: World
 
 	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 4)
 	val targets: Array<Point> = Array(1)
 	val lockedEntityTargets: Array<Entity> = Array(1)
 	var facing: Direction = Direction.NORTH
+
+	var seed: Long = 0
 
 	var blocked = false
 	var currentTime: Float = 0f

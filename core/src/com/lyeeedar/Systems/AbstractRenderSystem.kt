@@ -7,10 +7,7 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.SortedRenderer
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.SpaceSlot
-import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.Statics
-import com.lyeeedar.Util.ciel
+import com.lyeeedar.Util.*
 
 abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, EntitySignature().all(ComponentType.Position, ComponentType.Renderable))
 {
@@ -25,6 +22,9 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 	protected var playerOffsetY: Float = 0f
 	protected var offsetx: Float = 0f
 	protected var offsety: Float = 0f
+
+	private var renderedStaticOffsetX: Float = -10000f
+	private var renderedStaticOffsetY: Float = -10000f
 
 	protected val outOfSightCutoff = 50f*50f
 
@@ -41,7 +41,44 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 		offsetx = (Statics.resolution.x * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f)
 		offsety = (Statics.resolution.y * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f)
 
+		val screenTileWidth = (Statics.resolution.x / tileSize).toInt() + 2
+		val screenTileHeight = (Statics.resolution.y / tileSize).toInt() + 2
+		val xs = max(0, playerOffsetX.toInt()-screenTileWidth/2)
+		val xe = min(world.grid.width, playerOffsetX.toInt()+screenTileWidth/2)
+		val ys = max(0, playerOffsetY.toInt()-screenTileHeight/2)
+		val ye = min(world.grid.height, playerOffsetY.toInt()+screenTileHeight/2)
+
+		if (renderedStaticOffsetX != offsetx || renderedStaticOffsetY != offsety)
+		{
+			renderedStaticOffsetX = offsetx
+			renderedStaticOffsetY = offsety
+
+			renderer.beginStatic(offsetx, offsety, ambientLight)
+
+			for (x in xs until xe)
+			{
+				for (y in ys until ye)
+				{
+					renderer.queueSpriteWrapper(world.grid[x, y].floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal)
+				}
+			}
+
+			renderer.endStatic()
+		}
+
 		renderer.begin(deltaTime, offsetx, offsety, ambientLight)
+
+		for (x in xs until xe)
+		{
+			for (y in ys until ye)
+			{
+				val wall = world.grid[x, y].wall
+				if (wall != null)
+				{
+					renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal)
+				}
+			}
+		}
 	}
 
 	override fun updateEntity(entity: Entity, deltaTime: Float)

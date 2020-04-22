@@ -34,6 +34,14 @@ class Array2D<T> (val xSize: Int, val ySize: Int, val array: Array<Array<T>>): S
 
 	internal inline fun inBounds(x: Int, y: Int) = x in 0..(xSize - 1) && y in 0..(ySize - 1)
 
+	internal inline fun tryGet(p: Point, fallback:T?): T?
+	{
+		val x = p.x
+		val y = p.y
+		if (!inBounds(x, y)) return fallback
+		else return this[x, y]
+	}
+
 	internal inline fun tryGet(x:Int, y:Int, fallback:T?): T?
 	{
 		if (!inBounds(x, y)) return fallback
