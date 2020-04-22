@@ -13,7 +13,7 @@ import com.lyeeedar.Util.toHitPointArray
 import kotlin.math.roundToInt
 
 @DataClass(category = "Permute", colour = "247,176,78,47")
-class PermuteAction() : AbstractActionSequenceAction()
+class PermuteAction() : AbstractOneShotActionSequenceAction()
 {
 	var appendTargets: Boolean = false
 

@@ -4,7 +4,7 @@ import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-class BlockTurnAction : AbstractActionSequenceAction()
+class BlockTurnAction : AbstractOneShotActionSequenceAction()
 {
 	val key = "blocked"
 	var turns: Int = 1

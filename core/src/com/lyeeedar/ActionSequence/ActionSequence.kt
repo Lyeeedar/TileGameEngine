@@ -35,7 +35,7 @@ class ActionSequenceState
 	}
 }
 
-@DataFile
+@DataFile(colour="228,78,255", icon="Sprites/EffectSprites/Explosion/Explosion_2.png")
 class ActionSequence : XmlDataClass()
 {
 	var cancellable = true
@@ -145,7 +145,6 @@ class ActionSequence : XmlDataClass()
 		}
 	}
 
-	var obtained: Boolean = false
 	companion object
 	{
 		val loadedSequences = IntMap<ActionSequence>()
@@ -181,7 +180,6 @@ class ActionSequence : XmlDataClass()
 			}
 		}
 		actions.sort(compareBy{ it.time })
-		obtained = xmlData.getBoolean("Obtained", false)
 	}
 	//endregion
 }

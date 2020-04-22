@@ -7,7 +7,7 @@ import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 import ktx.collections.toGdxArray
 
-class StoreTargetsAction : AbstractActionSequenceAction()
+class StoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
 	lateinit var key: String
 
@@ -38,7 +38,7 @@ class StoreTargetsAction : AbstractActionSequenceAction()
 	//endregion
 }
 
-class RestoreTargetsAction : AbstractActionSequenceAction()
+class RestoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
 	lateinit var key: String
 

@@ -849,7 +849,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				if (annotations.any { it.name == "DataAsciiGrid" })
 				{
-					builder.appendlnFix(2, """<Data Name="$dataName" Default="#" ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString">""")
+					builder.appendlnFix(2, """<Data Name="$dataName" Default="#" ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString"/>""")
 				}
 				else
 				{
@@ -876,13 +876,44 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				val classDef = classRegister.getClass(arrayType, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
 
-				if (classDef.isAbstract)
+				val timelineAnnotation = annotations.firstOrNull { it.name == "DataTimeline" }
+				if (timelineAnnotation != null)
 				{
-					builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+					if (timelineAnnotation.paramMap["timelineGroup"] == "true")
+					{
+						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
+						if (classDef.isAbstract)
+						{
+							builder.appendlnFix(3, """<Data Name="Timeline" DefKey="${classDef.classDef!!.dataClassName}Defs" meta:RefKey="Timeline" />""")
+						}
+						else
+						{
+							builder.appendlnFix(3, """<Data Name="Timeline" Keys="${classDef.classDef!!.dataClassName}" meta:RefKey="Timeline" />""")
+						}
+						builder.appendlnFix(2, """</Data>""")
+					}
+					else
+					{
+						if (classDef.isAbstract)
+						{
+							builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Timeline" />""")
+						}
+						else
+						{
+							builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Timeline" />""")
+						}
+					}
 				}
 				else
 				{
-					builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+					if (classDef.isAbstract)
+					{
+						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+					}
+					else
+					{
+						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+					}
 				}
 			}
 		}
