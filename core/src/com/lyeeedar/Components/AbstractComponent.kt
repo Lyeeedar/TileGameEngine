@@ -42,3 +42,5 @@ abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
 
 	abstract fun reset()
 }
+
+abstract class NonDataComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())

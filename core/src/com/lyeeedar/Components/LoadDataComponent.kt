@@ -3,7 +3,7 @@ package com.lyeeedar.Components
 import com.lyeeedar.Util.XmlData
 
 inline fun Entity.loadData(): LoadDataComponent? = this.components[ComponentType.LoadData] as LoadDataComponent?
-class LoadDataComponent() : AbstractComponent<EmptyComponentData>(EmptyComponentData())
+class LoadDataComponent() : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.LoadData
 

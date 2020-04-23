@@ -12,7 +12,7 @@ fun Entity.event(): EventComponent? {
 
 	return event
 }
-class EventComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
+class EventComponent : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.Event
 

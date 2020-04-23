@@ -8,7 +8,7 @@ fun Entity.markForDeletion(delay: Float, reason: String = "")
 
 inline fun Entity.markedForDeletion(): MarkedForDeletionComponent? = this.components[ComponentType.MarkedForDeletion] as MarkedForDeletionComponent?
 inline fun Entity.isMarkedForDeletion() = this.markedForDeletion() != null
-class MarkedForDeletionComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
+class MarkedForDeletionComponent : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.MarkedForDeletion
 

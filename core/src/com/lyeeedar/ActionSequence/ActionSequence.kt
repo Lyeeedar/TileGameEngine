@@ -3,11 +3,13 @@ package com.lyeeedar.ActionSequence
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.IntMap
 import com.badlogic.gdx.utils.ObjectMap
+import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.ActionSequence.Actions.AbstractActionSequenceAction
 import com.lyeeedar.ActionSequence.Actions.ActionState
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.pos
 import com.lyeeedar.Direction
+import com.lyeeedar.Systems.EventData
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Point
@@ -33,10 +35,49 @@ class ActionSequenceState
 
 	var data = ObjectMap<String, Any?>()
 
-	init
+	fun set(source: Entity, world: World)
 	{
+		targets.clear()
 		targets.add(source.pos()!!.position)
 	}
+
+	fun reset()
+	{
+		targets.clear()
+		enteredActions.clear()
+		lockedEntityTargets.clear()
+		facing = Direction.NORTH
+
+		seed = 0
+		blocked = false
+		currentTime = 0f
+		index = 0
+
+		data.clear()
+	}
+
+	var obtained: Boolean = false
+	companion object
+	{
+		private val pool: Pool<ActionSequenceState> = object : Pool<ActionSequenceState>() {
+			override fun newObject(): ActionSequenceState
+			{
+				return ActionSequenceState()
+			}
+		}
+
+		{
+			val obj = pool.obtain()
+
+			if (obj.obtained) throw RuntimeException()
+			obj.obtained = true
+
+			obj.reset()
+
+			return obj
+		}
+	}
+	fun free() { if (obtained) { pool.free(this); obtained = false } }
 }
 
 @DataFile(colour="228,78,255", icon="Sprites/EffectSprites/Explosion/Explosion_2.png")

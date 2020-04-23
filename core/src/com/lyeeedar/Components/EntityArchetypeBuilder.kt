@@ -69,7 +69,7 @@ class EntityArchetypeBuilder
 }
 
 fun Entity.archetypeBuilder(): ArchetypeBuilderComponent? = this.components[ComponentType.ArchetypeBuilder] as ArchetypeBuilderComponent?
-class ArchetypeBuilderComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
+class ArchetypeBuilderComponent : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.ArchetypeBuilder
 
