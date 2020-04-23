@@ -2,7 +2,7 @@ package com.lyeeedar.build.SourceRewriter
 
 import com.lyeeedar.SourceRewriter.colourFromStringHash
 
-class XmlDataClassDescription(val name: String, val defLine: String, val classIndentation: Int, val classDefinition: ClassDefinition, val classRegister: ClassRegister, val annotations: ArrayList<AnnotationDescription>)
+class XmlDataClassDescription(val name: String, val defLine: String, val classIndentation: Int, val classDefinition: ClassDefinition, val classRegister: ClassRegister, val annotationsRaw: ArrayList<AnnotationDescription>)
 {
     val variables = ArrayList<VariableDescription>()
 
@@ -17,7 +17,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
     {
         classDefinition.classDef = this
 
-		val dataClassAnnotation = annotations.firstOrNull { it.name == "DataClass" }
+		val dataClassAnnotation = annotationsRaw.firstOrNull { it.name == "DataClass" }
 		if (dataClassAnnotation != null)
 		{
 			dataClassName = dataClassAnnotation.paramMap["name"] ?: name.capitalize()
@@ -37,6 +37,27 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		    colour = colourFromStringHash(name, 0.8f)
 	    }
     }
+
+	fun getAnnotations(): List<AnnotationDescription>
+	{
+		val dict = HashMap<String, AnnotationDescription>()
+
+		val parentAnnotations = classDefinition.superClass?.classDef?.getAnnotations()
+		if (parentAnnotations != null)
+		{
+			for (annotation in parentAnnotations)
+			{
+				dict[annotation.name] = annotation
+			}
+		}
+
+		for (annotation in annotationsRaw)
+		{
+			dict[annotation.name] = annotation
+		}
+
+		return dict.values.toList()
+	}
 
 	fun getGraphNodeType(): Pair<String, ClassDefinition>?
 	{
@@ -63,6 +84,11 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
         }
 	    imports.add("import com.lyeeedar.Util.XmlData")
 
+	    if (classDefinition.isAbstract)
+	    {
+		    imports.add("import com.lyeeedar.Util.XmlDataClassLoader")
+	    }
+
 	    val graphNodeType = getGraphNodeType()
 	    if (graphNodeType != null)
 	    {
@@ -75,7 +101,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
     fun write(builder: IndentedStringBuilder, loaderBuilder: IndentedStringBuilder)
     {
-        for (annotation in annotations)
+        for (annotation in annotationsRaw)
         {
             builder.appendln(classIndentation, annotation.annotationString)
         }
@@ -201,6 +227,8 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
     fun createDefFile(builder: IndentedStringBuilder, needsGlobalScope: Boolean)
     {
 	    println("Writing contents for: " + name)
+
+	    val annotations = getAnnotations()
 
 		val extends = if (classDefinition.superClass?.classDef?.name?.endsWith("XmlDataClass") == false) "Extends=\"${classDefinition.superClass!!.classDef!!.dataClassName}\"" else ""
 

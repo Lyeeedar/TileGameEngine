@@ -9,6 +9,7 @@ import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
+import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.copy
 import java.util.*
 

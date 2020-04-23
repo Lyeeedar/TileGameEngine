@@ -9,8 +9,8 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 
 @DataClass(colour = "209,209,143")
-@DataGraphNode
 @DataClassCollection
+@DataGraphNode
 class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 {
 	val actions: Array<AbstractMapGenerationAction> = Array<AbstractMapGenerationAction>()

@@ -2,6 +2,7 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
+import com.lyeeedar.Util.XmlDataClassLoader
 abstract class AbstractComponentData : XmlDataClass()
 {
 

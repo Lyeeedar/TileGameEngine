@@ -242,7 +242,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			}
 		}
 
-		val rootClasses = xmlDataClasses.filter { it.classDef!!.annotations.any { it.name == "DataFile" } }.toHashSet()
+		val rootClasses = xmlDataClasses.filter { it.classDef!!.annotationsRaw.any { it.name == "DataFile" } }.toHashSet()
 		rootClasses.addAll(xmlDataClasses.filter { it.classDef!!.forceGlobal })
 
 		val refCountMap = HashMap<ClassDefinition, Int>()
@@ -300,7 +300,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				}
 			}
 
-			val dataClassAnnotation = root.classDef!!.annotations.firstOrNull { it.name == "DataFile" } ?: AnnotationDescription("@DataFile()")
+			val dataClassAnnotation = root.classDef!!.annotationsRaw.firstOrNull { it.name == "DataFile" } ?: AnnotationDescription("@DataFile()")
 			val name = root.classDef!!.dataClassName
 			val colour =  dataClassAnnotation.paramMap["colour"]
 			val icon = dataClassAnnotation.paramMap["icon"]

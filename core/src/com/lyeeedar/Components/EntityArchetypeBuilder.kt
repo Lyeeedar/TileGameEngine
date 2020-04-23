@@ -1,8 +1,14 @@
 package com.lyeeedar.Components
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
+import com.lyeeedar.Renderables.Renderable
+import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.EnumBitflag
+import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.min
 
 class EntityArchetypeBuilder
 {
@@ -88,3 +94,19 @@ val nonTransientParticleArchetype =
 	EntityArchetypeBuilder()
 		.add(ComponentType.Position)
 		.add(ComponentType.Renderable)
+
+fun Renderable.addToWorld(world: World, point: Point, offset: Vector2 = Vector2()): Entity
+{
+	val pe = transientParticleArchetype.build()
+	pe.renderable()!!.renderable = this
+
+	val ppos = pe.pos()!!
+	ppos.data.slot = SpaceSlot.EFFECT
+
+	ppos.data.size = min(this.size[0], this.size[1])
+	ppos.position = point
+	ppos.offset = offset
+
+	world.addEntity(pe)
+	return pe
+}
