@@ -25,7 +25,7 @@ class SpriteWrapper
 		chosenSprite = sprite
 		if (spriteVariants.size > 0)
 		{
-			val rand = Random.random()
+			val rand = Random.random(Random.sharedRandom)
 			var total = 0f
 			for (variant in spriteVariants)
 			{
@@ -41,7 +41,7 @@ class SpriteWrapper
 		chosenTilingSprite = tilingSprite
 		if (tilingSpriteVariants.size > 0)
 		{
-			val rand = Random.random()
+			val rand = Random.random(Random.sharedRandom)
 			var total = 0f
 			for (variant in tilingSpriteVariants)
 			{

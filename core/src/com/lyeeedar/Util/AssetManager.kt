@@ -354,8 +354,8 @@ class AssetManager
 
 			if (xml.getBoolean("RandomStart", false))
 			{
-				sprite.texIndex = Random.random(sprite.textures.size)
-				sprite.animationAccumulator = Random.random(sprite.animationDelay)
+				sprite.texIndex = Random.random(Random.sharedRandom, sprite.textures.size)
+				sprite.animationAccumulator = Random.random(Random.sharedRandom, sprite.animationDelay)
 			}
 
 			val animationElement = xml.getChildByName("Animation")

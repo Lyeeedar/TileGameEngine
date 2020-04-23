@@ -66,6 +66,7 @@ class ActionSequenceState
 			}
 		}
 
+		fun obtain(): ActionSequenceState
 		{
 			val obj = pool.obtain()
 

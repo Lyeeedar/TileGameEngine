@@ -83,7 +83,7 @@ class CompiledExpression(private val eqnStr: String, variableMap: ObjectFloatMap
 		}
 		else if (expression != null)
 		{
-			val seed = seed ?: Random.random.nextLong()
+			val seed = seed ?: Random.sharedRandom.nextLong()
 			for (func in seededFunctions)
 			{
 				func.set(seed)

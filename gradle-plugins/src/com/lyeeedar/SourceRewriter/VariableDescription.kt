@@ -881,7 +881,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 					throw RuntimeException("Not supported")
 				}
 			}
-			else if (classDef != null)
+			else if (classDef?.classDef != null)
 			{
 				if (classDef.classDef == null) throw RuntimeException("Class had no loaded classdef ${classDef.name}")
 

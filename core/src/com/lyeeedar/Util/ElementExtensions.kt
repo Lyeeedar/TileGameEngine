@@ -60,9 +60,9 @@ fun getRawXml(filehandle: FileHandle): XmlReader.Element
 	}
 }
 
-fun XmlData.ranChild() = this.getChild(Random.random(this.childCount-1))
+fun XmlData.ranChild() = this.getChild(Random.random(Random.sharedRandom, this.childCount-1))
 
-fun XmlReader.Element.ranChild() = this.getChild(Random.random(this.childCount-1))!!
+fun XmlReader.Element.ranChild() = this.getChild(Random.random(Random.sharedRandom, this.childCount-1))!!
 
 fun XmlReader.Element.children(): Sequence<XmlReader.Element>
 {

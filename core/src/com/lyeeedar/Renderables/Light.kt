@@ -135,11 +135,11 @@ class PulseLightAnimation : LightAnimation()
 	{
 		if (currentPeriod < 0f)
 		{
-			currentPeriod = periodRange.getValue(Random.random)
-			startBrightness = minBrightnessRange.getValue(Random.random)
-			targetBrightness = maxBrightnessRange.getValue(Random.random)
-			startRange = minRangeRange.getValue(Random.random)
-			targetRange = maxRangeRange.getValue(Random.random)
+			currentPeriod = periodRange.getValue(Random.sharedRandom)
+			startBrightness = minBrightnessRange.getValue(Random.sharedRandom)
+			targetBrightness = maxBrightnessRange.getValue(Random.sharedRandom)
+			startRange = minRangeRange.getValue(Random.sharedRandom)
+			targetRange = maxRangeRange.getValue(Random.sharedRandom)
 			time = 0f
 		}
 
@@ -151,12 +151,12 @@ class PulseLightAnimation : LightAnimation()
 
 			toMax = !toMax
 
-			currentPeriod = periodRange.getValue(Random.random)
+			currentPeriod = periodRange.getValue(Random.sharedRandom)
 			startBrightness = targetBrightness
 			startRange = targetRange
 
-			targetBrightness = if (toMax) maxBrightnessRange.getValue(Random.random) else minBrightnessRange.getValue(Random.random)
-			targetRange = if (toMax) maxRangeRange.getValue(Random.random) else minRangeRange.getValue(Random.random)
+			targetBrightness = if (toMax) maxBrightnessRange.getValue(Random.sharedRandom) else minBrightnessRange.getValue(Random.sharedRandom)
+			targetRange = if (toMax) maxRangeRange.getValue(Random.sharedRandom) else minRangeRange.getValue(Random.sharedRandom)
 		}
 
 		val alpha = time / currentPeriod

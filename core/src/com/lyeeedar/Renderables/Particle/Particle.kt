@@ -401,15 +401,15 @@ class Particle(val emitter: Emitter)
 	{
 		val particle = ParticleData.obtain().set(
 				position, velocity,
-				rotation, (lifetime.v2 - lifetime.v1) * Random.random(),
+				rotation, (lifetime.v2 - lifetime.v1) * Random.random(Random.sharedRandom),
 				0, keyframes[0], keyframes[0], 0f,
-				Random.random(keyframes[0].texture.size-1),
-				Random.random(keyframes[0].colour.size-1),
-				Random.random(keyframes[0].alpha.size-1),
-				Random.random(keyframes[0].alphaRef.size-1),
-				Random.random(keyframes[0].rotationSpeed.size-1),
-				Random.random(keyframes[0].size.size-1),
-				Random.random())
+				Random.random(Random.sharedRandom, keyframes[0].texture.size-1),
+				Random.random(Random.sharedRandom, keyframes[0].colour.size-1),
+				Random.random(Random.sharedRandom, keyframes[0].alpha.size-1),
+				Random.random(Random.sharedRandom, keyframes[0].alphaRef.size-1),
+				Random.random(Random.sharedRandom, keyframes[0].rotationSpeed.size-1),
+				Random.random(Random.sharedRandom, keyframes[0].size.size-1),
+				Random.random(Random.sharedRandom))
 
 		particles.add(particle)
 	}
@@ -554,7 +554,7 @@ class Particle(val emitter: Emitter)
 		{
 			for (i in 0 until numBrownianVectors)
 			{
-				val azimuth = Random.random() * MathUtils.PI2
+				val azimuth = Random.random(Random.sharedRandom) * MathUtils.PI2
 				brownianVectors[i].set(cos(azimuth), sin(azimuth))
 			}
 		}

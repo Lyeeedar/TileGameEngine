@@ -80,8 +80,8 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 
 	fun randomiseAnimation()
 	{
-		texIndex = Random.random(textures.size)
-		animationAccumulator = Random.random(animationDelay)
+		texIndex = Random.random(Random.sharedRandom, textures.size)
+		animationAccumulator = Random.random(Random.sharedRandom, animationDelay)
 	}
 
 	override fun doUpdate(delta: Float): Boolean

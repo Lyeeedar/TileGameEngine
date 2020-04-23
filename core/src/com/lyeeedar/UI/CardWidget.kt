@@ -923,7 +923,7 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 						// crack 1
 						delay(delay) then
 							parallel(
-								bump(Vector2(Random.random(-1f, 1f), Random.random(-1f, 1f)).nor(), bumpDist, bumpDur),
+								bump(Vector2(Random.random(Random.sharedRandom, -1f, 1f), Random.random(Random.sharedRandom, -1f, 1f)).nor(), bumpDist, bumpDur),
 								lambda {
 									crack1.alpha = 0f
 									crack1.addAction(fadeIn(bumpDur * 0.5f))
@@ -933,7 +933,7 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 							// crack 2
 							delay(delay) then
 							parallel(
-								bump(Vector2(Random.random(-1f, 1f), Random.random(-1f, 1f)).nor(), bumpDist, bumpDur),
+								bump(Vector2(Random.random(Random.sharedRandom, -1f, 1f), Random.random(Random.sharedRandom, -1f, 1f)).nor(), bumpDist, bumpDur),
 								lambda {
 									crack2.alpha = 0f
 									crack2.addAction(fadeIn(bumpDur * 0.5f))
@@ -943,7 +943,7 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 							// crack 3
 							delay(delay) then
 							parallel(
-								bump(Vector2(Random.random(-1f, 1f), Random.random(-1f, 1f)).nor(), bumpDist, bumpDur),
+								bump(Vector2(Random.random(Random.sharedRandom, -1f, 1f), Random.random(Random.sharedRandom, -1f, 1f)).nor(), bumpDist, bumpDur),
 								lambda {
 									crack3.alpha = 0f
 									crack3.addAction(fadeIn(bumpDur * 0.5f))

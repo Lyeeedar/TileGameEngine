@@ -6,17 +6,17 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import squidpony.squidmath.LightRNG
 
-fun <T> kotlin.Array<T>.random(ran: LightRNG = Random.random): T = this[ran.nextInt(this.size)]
-fun <T> List<T>.Array(ran: LightRNG = Random.random): T? = if (this.isEmpty()) null else this[ran.nextInt(this.size)]
+fun <T> kotlin.Array<T>.random(ran: LightRNG = Random.sharedRandom): T = this[ran.nextInt(this.size)]
+fun <T> List<T>.Array(ran: LightRNG = Random.sharedRandom): T? = if (this.isEmpty()) null else this[ran.nextInt(this.size)]
 
-fun <T> List<T>.random(ran: LightRNG = Random.random): T = this[ran.nextInt(this.size)]
-fun <T> List<T>.randomOrNull(ran: LightRNG = Random.random): T? = if (this.isEmpty()) null else this[ran.nextInt(this.size)]
+fun <T> List<T>.random(ran: LightRNG = Random.sharedRandom): T = this[ran.nextInt(this.size)]
+fun <T> List<T>.randomOrNull(ran: LightRNG = Random.sharedRandom): T? = if (this.isEmpty()) null else this[ran.nextInt(this.size)]
 
 fun <T> com.badlogic.gdx.utils.Array<T>.tryGet(i: Int): T = this[MathUtils.clamp(i, 0, this.size-1)]
-fun <T> com.badlogic.gdx.utils.Array<T>.random(ran: LightRNG = Random.random): T = this[ran.nextInt(this.size)]
-fun <T> com.badlogic.gdx.utils.Array<T>.randomOrNull(ran: LightRNG = Random.random): T? = if (this.size == 0) null else this[ran.nextInt(this.size)]
+fun <T> com.badlogic.gdx.utils.Array<T>.random(ran: LightRNG = Random.sharedRandom): T = this[ran.nextInt(this.size)]
+fun <T> com.badlogic.gdx.utils.Array<T>.randomOrNull(ran: LightRNG = Random.sharedRandom): T? = if (this.size == 0) null else this[ran.nextInt(this.size)]
 
-fun <T> com.badlogic.gdx.utils.Array<T>.removeRandom(ran: LightRNG = Random.random): T
+fun <T> com.badlogic.gdx.utils.Array<T>.removeRandom(ran: LightRNG = Random.sharedRandom): T
 {
 	val index = ran.nextInt(this.size)
 	val item = this[index]
@@ -43,7 +43,7 @@ fun <T> com.badlogic.gdx.utils.Array<T>.randomize(): Sequence<T>
 	return sequence {
 		while (sequence.size > 0)
 		{
-			yield(sequence.removeRandom(Random.random))
+			yield(sequence.removeRandom(Random.sharedRandom))
 		}
 	}
 }
@@ -54,7 +54,7 @@ fun <T> Sequence<T>.randomize(): Sequence<T>
 	return sequence {
 		while (sequence.size > 0)
 		{
-			yield(sequence.removeRandom(Random.random))
+			yield(sequence.removeRandom(Random.sharedRandom))
 		}
 	}
 }
@@ -65,7 +65,7 @@ fun <T> Sequence<T>.random(): T?
 	val count = sequence.size
 	if (count > 0)
 	{
-		return sequence[Random.random(count)]
+		return sequence[Random.random(Random.sharedRandom, count)]
 	}
 	else
 	{
@@ -82,7 +82,7 @@ inline fun <reified T> Sequence<T>.random(num: Int): Sequence<T>
 	for (i in 0 until num)
 	{
 		if (array.size == 0) break
-		outArray.add(array.removeRandom(Random.random))
+		outArray.add(array.removeRandom(Random.sharedRandom))
 	}
 
 	return outArray.asSequence()
@@ -101,7 +101,7 @@ inline fun <reified T> Sequence<T>.random(num: Int, ran: LightRNG): Sequence<T>
 
 	return outArray.asSequence()
 }
-inline fun <reified T> Sequence<T>.weightedRandom(weightFun: (T) -> Int, ran: LightRNG = Random.random): T?
+inline fun <reified T> Sequence<T>.weightedRandom(weightFun: (T) -> Int, ran: LightRNG = Random.sharedRandom): T?
 {
 	if (this.count() == 0) return null
 

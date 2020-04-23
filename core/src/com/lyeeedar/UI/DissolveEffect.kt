@@ -30,7 +30,7 @@ class DissolveEffect(val drawable: Table, val duration: Float, val gradient: Tex
 	{
 		if (dissolvePoint == null)
 		{
-			dissolvePoint = Vector2(x + Random.random() * width, y + Random.random() * height)
+			dissolvePoint = Vector2(x + Random.random(Random.sharedRandom) * width, y + Random.random(Random.sharedRandom) * height)
 
 			maxDissolveDist = max(maxDissolveDist, Vector2.dst(dissolvePoint!!.x, dissolvePoint!!.y, x, y))
 			maxDissolveDist = max(maxDissolveDist, Vector2.dst(dissolvePoint!!.x, dissolvePoint!!.y, x + width, y))

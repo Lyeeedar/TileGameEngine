@@ -47,13 +47,13 @@ class Tesselator
 			val pointMin = 0.05f
 			val pointMax = 0.95f
 
-			val lY = Random.random(pointMin, pointMax)
-			val rY = Random.random(pointMin, pointMax)
+			val lY = Random.random(Random.sharedRandom, pointMin, pointMax)
+			val rY = Random.random(Random.sharedRandom, pointMin, pointMax)
 
-			val bX = Random.random(pointMin, pointMax)
-			val tX = Random.random(pointMin, pointMax)
-			val bY = Random.random(pointMin, 0.7f)
-			val tY = Random.random(bY, pointMax)
+			val bX = Random.random(Random.sharedRandom, pointMin, pointMax)
+			val tX = Random.random(Random.sharedRandom, pointMin, pointMax)
+			val bY = Random.random(Random.sharedRandom, pointMin, 0.7f)
+			val tY = Random.random(Random.sharedRandom, bY, pointMax)
 
 			val bl = Vector2(0f, 0f)
 			val br = Vector2(0f, 0f)

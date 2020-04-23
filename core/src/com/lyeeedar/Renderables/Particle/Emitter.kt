@@ -288,8 +288,8 @@ class Emitter(val particleEffect: ParticleEffect)
 			else -> throw RuntimeException("Invalid emitter direction type! $dir")
 		}
 
-		val speed = particleSpeed.lerp(Random.random())
-		var localRot = particleRotation.lerp(Random.random()) + rotation
+		val speed = particleSpeed.lerp(Random.random(Random.sharedRandom))
+		var localRot = particleRotation.lerp(Random.random(Random.sharedRandom)) + rotation
 		val offset = tempOffset.set(currentOffset)
 
 		if (particleEffect.flipX)
@@ -347,11 +347,11 @@ class Emitter(val particleEffect: ParticleEffect)
 		val width = width * currentSize * size.x
 		val height = height * currentSize * size.y
 
-		val ranVal = Random.random() - 0.5f
+		val ranVal = Random.random(Random.sharedRandom) - 0.5f
 		val chosenAngle = ranVal * angle
 		val h = when (area)
 		{
-			EmissionArea.INTERIOR -> Random.random() * height
+			EmissionArea.INTERIOR -> Random.random(Random.sharedRandom) * height
 			EmissionArea.BORDER -> height
 			EmissionArea.CENTER -> 0f
 		}
@@ -371,7 +371,7 @@ class Emitter(val particleEffect: ParticleEffect)
 		}
 		else if (dir == EmissionDirection.RANDOM)
 		{
-			spawnInfo.dir.rotate((Random.random() - 0.5f) * angle).nor()
+			spawnInfo.dir.rotate((Random.random(Random.sharedRandom) - 0.5f) * angle).nor()
 		}
 
 		return spawnInfo
@@ -384,9 +384,9 @@ class Emitter(val particleEffect: ParticleEffect)
 
 		if (area == EmissionArea.INTERIOR)
 		{
-			val ranVal = Random.random()
+			val ranVal = Random.random(Random.sharedRandom)
 			val sqrtRanVal = Math.sqrt(ranVal.toDouble()).toFloat()
-			val phi = Random.random() * (2f * MathUtils.PI)
+			val phi = Random.random(Random.sharedRandom) * (2f * MathUtils.PI)
 			val x = sqrtRanVal * MathUtils.cos(phi) * (width / 2f)
 			val y = sqrtRanVal * MathUtils.sin(phi) * (height / 2f)
 
@@ -394,7 +394,7 @@ class Emitter(val particleEffect: ParticleEffect)
 		}
 		else if (area == EmissionArea.BORDER)
 		{
-			val phi = Random.random() * (2f * MathUtils.PI)
+			val phi = Random.random(Random.sharedRandom) * (2f * MathUtils.PI)
 			val x = MathUtils.cos(phi) * (width / 2f)
 			val y = MathUtils.sin(phi) * (height / 2f)
 
@@ -438,7 +438,7 @@ class Emitter(val particleEffect: ParticleEffect)
 			for (i in 1 until dists.size) dists[i] += dists[i - 1]
 
 			val totalDist = dists.last()
-			val chosenDst = Random.random() * totalDist
+			val chosenDst = Random.random(Random.sharedRandom) * totalDist
 
 			var i = 0
 			while (i < dists.size)
@@ -461,8 +461,8 @@ class Emitter(val particleEffect: ParticleEffect)
 		}
 		else if (area == EmissionArea.INTERIOR)
 		{
-			val x = Random.random() * width - (width / 2f)
-			val y = Random.random() * height - (height / 2f)
+			val x = Random.random(Random.sharedRandom) * width - (width / 2f)
+			val y = Random.random(Random.sharedRandom) * height - (height / 2f)
 
 			temp.set(x, y)
 		}

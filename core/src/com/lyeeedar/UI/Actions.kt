@@ -50,7 +50,7 @@ class ShakeAction(val amount: Float, val speed: Float, val duration: Float) : Ac
 		while ( shakeAccumulator >= speed )
 		{
 			shakeAccumulator -= speed
-			shakeAngle += (150 + Random.random() * 60)
+			shakeAngle += (150 + Random.random(Random.sharedRandom) * 60)
 		}
 
 		target.moveBy(-offsetx, -offsety)

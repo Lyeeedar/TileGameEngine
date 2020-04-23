@@ -6,7 +6,7 @@ class Range(val min: Float, val max: Float)
 {
 	constructor(point: Point) : this(point.x.toFloat(), point.y.toFloat())
 
-	fun getValue(ran: LightRNG = Random.random): Float
+	fun getValue(ran: LightRNG = Random.sharedRandom): Float
 	{
 		return min + ran.nextFloat() * (max - min)
 	}
@@ -33,7 +33,7 @@ class IntRange(val min: Int, val max: Int)
 {
 	constructor(point: Point) : this(point.x, point.y)
 
-	fun getValue(ran: LightRNG = Random.random): Int
+	fun getValue(ran: LightRNG = Random.sharedRandom): Int
 	{
 		return (min + (ran.nextFloat() * (max - min).toFloat())).toInt()
 	}

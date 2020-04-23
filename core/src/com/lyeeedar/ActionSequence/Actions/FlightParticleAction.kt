@@ -84,7 +84,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 			}
 			else if (spawnBehaviour == SpawnOneShotParticleAction.SpawnBehaviour.RANDOM)
 			{
-				val alpha = Random.random()
+				val alpha = Random.random(Random.sharedRandom)
 				val delay = spawnDuration * alpha
 
 				renderDelay = delay

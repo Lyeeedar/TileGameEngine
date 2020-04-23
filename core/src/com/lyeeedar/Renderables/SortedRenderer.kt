@@ -715,7 +715,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			while ( screenShakeAccumulator >= screenShakeSpeed )
 			{
 				screenShakeAccumulator -= screenShakeSpeed
-				screenShakeAngle += (150 + Random.random() * 60)
+				screenShakeAngle += (150 + Random.random(Random.sharedRandom) * 60)
 
 				if (!screenShakeLocked)
 				{

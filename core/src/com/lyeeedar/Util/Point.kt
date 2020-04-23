@@ -49,7 +49,7 @@ open class Point : Pool.Poolable, Comparable<Point>
 
 	fun lerp(ran: LightRNG? = null) : Int
 	{
-		val r = ran ?: Random.random
+		val r = ran ?: Random.sharedRandom
 		return r.nextInt(min, max + 1)
 	}
 
