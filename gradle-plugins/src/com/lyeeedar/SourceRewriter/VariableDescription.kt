@@ -87,7 +87,23 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				imports.add("import com.lyeeedar.Util.toHitPointArray")
 			}
+			else
+			{
+				val classDef = classRegister.getClass(arrayType, classDefinition)
+				if (classDef?.classDef != null && classDef.isAbstract)
+				{
+					imports.add("import com.lyeeedar.Util.XmlDataClassLoader")
+				}
+			}
 		}
+	    else
+        {
+	        val classDef = classRegister.getClass(type, classDefinition)
+	        if (classDef?.classDef != null && classDef.isAbstract)
+	        {
+		        imports.add("import com.lyeeedar.Util.XmlDataClassLoader")
+	        }
+        }
     }
 
     fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>)
@@ -669,16 +685,16 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 
 
-    fun createDefEntry(builder: IndentedStringBuilder, classDefinition: ClassDefinition, classRegister: ClassRegister)
+    fun createDefEntry(indentation: Int, builder: IndentedStringBuilder, classDefinition: ClassDefinition, classRegister: ClassRegister)
     {
 	    if (variableType == VariableType.VAL && name == "classID")
 	    {
 		    val defaultValue = defaultValue.replace("\"", "")
-		    builder.appendln(2, """<Const Name="classID">$defaultValue</Const>""")
+		    builder.appendln(indentation, """<Const Name="classID">$defaultValue</Const>""")
 		    return
 	    }
 
-	    createDefEntry(builder, 2, classDefinition, classRegister, type, variableType, dataName)
+	    createDefEntry(builder, indentation, classDefinition, classRegister, type, variableType, dataName)
     }
 
 	fun createDefEntry(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, type: String, variableType: VariableType, dataName: String)

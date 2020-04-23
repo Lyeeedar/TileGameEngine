@@ -167,6 +167,11 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		    builder.appendln(classIndentation+2, "resolve(${nodeMapVariable.name})")
 	    }
 
+	    if (classContents.any{ it.contains("fun afterLoad()") })
+	    {
+		    builder.appendln(classIndentation+2, "afterLoad()")
+	    }
+
         builder.appendln(classIndentation+1, "}")
 
 	    for (line in extraVariables)
@@ -237,41 +242,58 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
 
-	    val colour = """TextColour="$colour" """
+	    var colour = """TextColour="$colour" """
 	    val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
 
 	    val collectionAnnotation = annotations.firstOrNull { it.name == "DataClassCollection" }
 	    if (collectionAnnotation != null)
 	    {
+		    if (classDefinition.isAbstract) return
+
 		    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
 		    val type = if (dataGraphNode != null) "GraphCollectionDef" else "CollectionDef"
 
-		    val collectionVariable = variables.firstOrNull { it.type.startsWith("Array<") }
+		    if (dataGraphNode != null)
+		    {
+			    colour = """Background="${this.colour}" """
+		    }
+
+		    val collectionVariable = variables.firstOrNull { it.type.startsWith("Array<") } ?: throw RuntimeException("Unable to find collection container!")
 		    val nonCollectionVariables = variables.filter { it != collectionVariable }.toList()
+
+		    var hasAttributes = ""
+		    if (nonCollectionVariables.size > 0)
+		    {
+			    hasAttributes = """HasAttributes="True" """
+		    }
+
+		    val annotations = collectionVariable.annotations
+
+		    val arrayType = collectionVariable.type.replace("Array<", "").dropLast(1)
+
+		    val dataArrayAnnotation = annotations.firstOrNull { it.name == "DataArray" }
+		    val minCount = dataArrayAnnotation?.paramMap?.get("minCount")
+		    val maxCount = dataArrayAnnotation?.paramMap?.get("maxCount")
+		    val minCountStr = if (minCount != null) "MinCount=\"$minCount\"" else ""
+		    val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
+
+		    val classDef = classRegister.getClass(arrayType, classDefinition)
+		                   ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
+
+		    val def = if (classDef.isAbstract) """DefKey="${classDef.classDef!!.dataClassName}Defs" """ else """Keys="${classDef.classDef!!.dataClassName}" """
+
+		    builder.appendlnFix(1, """<Definition Name="$dataClassName" $minCountStr $maxCountStr $def $colour $hasAttributes $global meta:RefKey="$type">""")
 
 		    if (nonCollectionVariables.size > 0)
 		    {
+			    builder.appendln(2, "<Attributes meta:RefKey=\"Attributes\">")
 
-		    }
-
-		    if (collectionVariable != null)
-		    {
-			    val annotations = collectionVariable.annotations
-
-			    val arrayType = collectionVariable.type.replace("Array<", "").dropLast(1)
-
-			    val dataArrayAnnotation = annotations.firstOrNull { it.name == "DataArray" }
-			    val minCount = dataArrayAnnotation?.paramMap?.get("minCount")
-			    val maxCount = dataArrayAnnotation?.paramMap?.get("maxCount")
-			    val minCountStr = if (minCount != null) "MinCount=\"$minCount\"" else ""
-			    val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
-
-			    val classDef = classRegister.getClass(arrayType, classDefinition)
-			                   ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
-
-			    val def = if (classDef.isAbstract) """DefKey="${classDef.classDef!!.dataClassName}Defs" """ else """Keys="${classDef.classDef!!.dataClassName}" """
-
-			    builder.appendlnFix(1, """<Definition Name="$dataClassName" $minCountStr $maxCountStr $def $colour $global meta:RefKey="$type">""")
+			    for (variable in nonCollectionVariables)
+			    {
+				    if (variable.raw.startsWith("abstract")) continue
+				    variable.createDefEntry(3, builder, classDefinition, classRegister)
+			    }
+			    builder.appendln(2, "</Attributes>")
 		    }
 	    }
 	    else
@@ -302,7 +324,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		    for (variable in variables)
 		    {
 			    if (variable.raw.startsWith("abstract")) continue
-			    variable.createDefEntry(builder, classDefinition, classRegister)
+			    variable.createDefEntry(2, builder, classDefinition, classRegister)
 		    }
 	    }
 

@@ -15,6 +15,7 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
+import com.lyeeedar.Util.XmlDataClassLoader
 import ktx.collections.set
 
 class ActionSequenceState
