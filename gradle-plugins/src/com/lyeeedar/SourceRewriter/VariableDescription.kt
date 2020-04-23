@@ -123,15 +123,17 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             nullable = true
         }
 
+		val get = if (classDefinition.classDef!!.getAnnotations().any { it.name == "DataClassCollection" }) "getAttribute" else "get"
+
         if (type == "String")
         {
             if (variableType == VariableType.LATEINIT)
             {
-                builder.appendln(indentation, "$name = xmlData.get(\"$dataName\")")
+                builder.appendln(indentation, "$name = xmlData.$get(\"$dataName\")")
             }
             else if (variableType == VariableType.VAR)
             {
-                var loadLine = "$name = xmlData.get(\"$dataName\", $defaultValue)"
+                var loadLine = "$name = xmlData.$get(\"$dataName\", $defaultValue)"
                 if (!nullable)
                 {
                     loadLine += "!!"
@@ -143,18 +145,18 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
 	        if (variableType == VariableType.LATEINIT)
 	        {
-		        builder.appendln(indentation, "$name = xmlData.get(\"$dataName\")[0]")
+		        builder.appendln(indentation, "$name = xmlData.$get(\"$dataName\")[0]")
 	        }
 	        else if (variableType == VariableType.VAR)
 	        {
 		        if (nullable)
 		        {
-			        builder.appendln(indentation, "${name}Raw = xmlData.get(\"$dataName\", ${defaultValue.replace("'", "\"")})")
+			        builder.appendln(indentation, "${name}Raw = xmlData.$get(\"$dataName\", ${defaultValue.replace("'", "\"")})")
 			        builder.appendln(indentation, "if (${name}Raw != null) $name = ${name}Raw[0]")
 		        }
 		        else
 		        {
-			        builder.appendln(indentation, "$name = xmlData.get(\"$dataName\", ${defaultValue.replace("'", "\"")})!![0]")
+			        builder.appendln(indentation, "$name = xmlData.$get(\"$dataName\", ${defaultValue.replace("'", "\"")})!![0]")
 		        }
 	        }
         }
@@ -162,21 +164,21 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
             if (variableType == VariableType.VAR)
             {
-                builder.appendln(indentation, "$name = xmlData.getInt(\"$dataName\", $defaultValue)")
+                builder.appendln(indentation, "$name = xmlData.${get}Int(\"$dataName\", $defaultValue)")
             }
         }
         else if (type == "Float")
         {
             if (variableType == VariableType.VAR)
             {
-                builder.appendln(indentation, "$name = xmlData.getFloat(\"$dataName\", $defaultValue)")
+                builder.appendln(indentation, "$name = xmlData.${get}Float(\"$dataName\", $defaultValue)")
             }
         }
 		else if (type == "Boolean")
 		{
 			if (variableType == VariableType.VAR)
 			{
-				builder.appendln(indentation, "$name = xmlData.getBoolean(\"$dataName\", $defaultValue)")
+				builder.appendln(indentation, "$name = xmlData.${get}Boolean(\"$dataName\", $defaultValue)")
 			}
 		}
 		else if (type == "Point" || type == "Vector2" || type == "Vector3" || type == "Vector4")
@@ -185,7 +187,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				if (variableType == VariableType.LATEINIT)
 				{
-					builder.appendln(indentation, """val ${name}Raw = xmlData.get("$dataName").split(',')""")
+					builder.appendln(indentation, """val ${name}Raw = xmlData.${get}("$dataName").split(',')""")
 				}
 				else
 				{
@@ -205,7 +207,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 							defaultValue = "0,0"
 						}
 					}
-					builder.appendln(indentation, """val ${name}Raw = xmlData.get("$dataName", "$defaultValue")!!.split(',')""")
+					builder.appendln(indentation, """val ${name}Raw = xmlData.${get}("$dataName", "$defaultValue")!!.split(',')""")
 				}
 
 				if (type == "Point")
@@ -284,11 +286,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        {
 			        if (variableType == VariableType.LATEINIT || !nullable)
 			        {
-				        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\"))")
+				        builder.appendln(indentation, "$name = $createMethod(xmlData.${get}(\"$dataName\"))")
 			        }
 			        else
 			        {
-				        builder.appendln(indentation, "$name = $createMethod(xmlData.get(\"$dataName\", null))")
+				        builder.appendln(indentation, "$name = $createMethod(xmlData.${get}(\"$dataName\", null))")
 			        }
 		        }
 		        else
@@ -296,11 +298,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			        val knownVariables = annotation.paramMap["knownVariables"] ?: ""
 			        if (variableType == VariableType.LATEINIT || !nullable)
 			        {
-				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.get(\"$dataName\"), \"$knownVariables\")")
+				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"), \"$knownVariables\")")
 			        }
 			        else
 			        {
-				        builder.appendln(indentation, "val ${name}String = xmlData.get(\"$dataName\", null)")
+				        builder.appendln(indentation, "val ${name}String = xmlData.${get}(\"$dataName\", null)")
 				        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String, \"$knownVariables\") else null")
 			        }
 		        }
@@ -309,11 +311,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        {
 		        if (variableType == VariableType.LATEINIT || !nullable)
 		        {
-			        builder.appendln(indentation, "$name = CompiledExpression(xmlData.get(\"$dataName\"))")
+			        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"))")
 		        }
 		        else
 		        {
-			        builder.appendln(indentation, "val ${name}String = xmlData.get(\"$dataName\", null)")
+			        builder.appendln(indentation, "val ${name}String = xmlData.${get}(\"$dataName\", null)")
 			        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String) else null")
 		        }
 	        }
@@ -340,11 +342,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			if (variableType == VariableType.LATEINIT)
 			{
-				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.get(\"$dataName\").toUpperCase(Locale.ENGLISH))")
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\").toUpperCase(Locale.ENGLISH))")
 			}
 			else if (variableType == VariableType.VAR)
 			{
-				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.get(\"$dataName\", ${defaultValue}.toString())!!.toUpperCase(Locale.ENGLISH))")
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\", ${defaultValue}.toString())!!.toUpperCase(Locale.ENGLISH))")
 			}
 		}
 		else if (type.startsWith("Array<"))
@@ -682,8 +684,6 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			}
 		}
 	}
-
-
 
     fun createDefEntry(indentation: Int, builder: IndentedStringBuilder, classDefinition: ClassDefinition, classRegister: ClassRegister)
     {

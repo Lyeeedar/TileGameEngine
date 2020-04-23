@@ -177,32 +177,32 @@ class XmlData
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.text() ?: fallback
 	}
 
-	fun getIntAttribute(name: String): Int
+	fun getAttributeInt(name: String): Int
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.int() ?: throw GdxRuntimeException("Element ${this.name} has no attribute called $name!")
 	}
 
-	fun getIntAttribute(name: String, fallback: Int): Int
+	fun getAttributeInt(name: String, fallback: Int): Int
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.int() ?: fallback
 	}
 
-	fun getFloatAttribute(name: String): Float
+	fun getAttributeFloat(name: String): Float
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.float() ?: throw GdxRuntimeException("Element ${this.name} has no attribute called $name!")
 	}
 
-	fun getFloatAttribute(name: String, fallback: Float): Float
+	fun getAttributeFloat(name: String, fallback: Float): Float
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.float() ?: fallback
 	}
 
-	fun getBooleanAttribute(name: String): Boolean
+	fun getAttributeBoolean(name: String): Boolean
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.boolean() ?: throw GdxRuntimeException("Element ${this.name} has no attribute called $name!")
 	}
 
-	fun getBooleanAttribute(name: String, fallback: Boolean): Boolean
+	fun getAttributeBoolean(name: String, fallback: Boolean): Boolean
 	{
 		return attributeMap[name.toUpperCase(Locale.ENGLISH).hashCode()]?.boolean() ?: fallback
 	}

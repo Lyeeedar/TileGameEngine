@@ -305,7 +305,7 @@ class Symbol
 		fun load(xml: XmlData) : Symbol
 		{
 			val symbol = Symbol()
-			symbol.isWall = xml.getBooleanAttribute("IsWall", false)
+			symbol.isWall = xml.getAttributeBoolean("IsWall", false)
 
 			for (i in 0..xml.childCount-1)
 			{

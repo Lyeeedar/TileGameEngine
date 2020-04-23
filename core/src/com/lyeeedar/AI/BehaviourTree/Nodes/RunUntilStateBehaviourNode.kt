@@ -33,7 +33,7 @@ class RunUntilStateBehaviourNode : AbstractBehaviourNode()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		targetState = EvaluationState.valueOf(xmlData.get("TargetState").toUpperCase(Locale.ENGLISH))
+		targetState = EvaluationState.valueOf(xmlData.getAttribute("TargetState").toUpperCase(Locale.ENGLISH))
 		val actionsEl = xmlData
 		if (actionsEl != null)
 		{
