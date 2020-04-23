@@ -11,19 +11,22 @@ import com.lyeeedar.Util.set
 
 enum class EventType
 {
+	// Actions
 	ATTACK,
 	MOVE,
-	USEABILITY,
-	DEALDAMAGE,
-	TAKEDAMAGE,
-	KILL,
-	ALLYDEATH,
-	ENEMYDEATH,
-	ANYDEATH,
+	USE_ABILITY,
+
+	// Self events
+	DEAL_DAMAGE,
+	TAKE_DAMAGE,
 	HEALED,
 	CRIT,
 	BLOCK,
-	ONTURN;
+	KILL,
+
+	// General events
+	DEATH,
+	ON_TURN;
 }
 
 class EventSystem(world: World) : AbstractEntitySystem(world, EntitySignature().all(ComponentType.EventHandler))
@@ -36,12 +39,11 @@ class EventSystem(world: World) : AbstractEntitySystem(world, EntitySignature().
 
 	}
 
-
 	override fun onTurnEntity(entity: Entity)
 	{
-		if (isEventRegistered(EventType.ONTURN, entity))
+		if (isEventRegistered(EventType.ON_TURN, entity))
 		{
-			addEvent(EventData.obtain().set(EventType.ONTURN, entity, entity))
+			addEvent(EventData.obtain().set(EventType.ON_TURN, entity, entity))
 		}
 	}
 

@@ -721,7 +721,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         if (type == "String")
         {
 			val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
-			val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
+			val defaultValue = if (type != this.type || this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
 
 			val fileReferenceAnnotation = annotations.firstOrNull { it.name == "DataFileReference" }
 			if (fileReferenceAnnotation != null)
@@ -750,7 +750,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	    else if (type == "Char")
 	    {
 		    val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
-		    val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
+		    val defaultValue = if (type != this.type || this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
 
 		    builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="$canSkip" MaxLength="1" Default=$defaultValue $visibleIfStr  meta:RefKey="String" />""")
 	    }
@@ -761,7 +761,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
             val minStr = if (min != null) """Min="$min"""" else ""
             val maxStr = if (max != null) """Max="$max"""" else ""
-			val defaultValue = this.defaultValue.replace("f", "")
+			val defaultValue = if (type != this.type) "0" else this.defaultValue.replace("f", "")
 
             builder.appendlnFix(indentation, """<Data Name="$dataName" $minStr $maxStr Type="$type" Default="$defaultValue" SkipIfDefault="True" $visibleIfStr meta:RefKey="Number" />""")
         }
@@ -772,7 +772,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
 			val minStr = if (min != null) """Min="$min"""" else ""
 			val maxStr = if (max != null) """Max="$max"""" else ""
-			val defaultValue = this.defaultValue.split('(')[1].dropLast(1).replace("f", "")
+			val defaultValue = if (type != this.type) "0" else this.defaultValue.split('(')[1].dropLast(1).replace("f", "")
 			val numericType = if (type == "Point") "Type=\"Int\"" else ""
 
 			val vectorAnnotation = annotations.firstOrNull { it.name == "DataVector" }
@@ -790,10 +790,13 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
 		else if (type == "Boolean")
 		{
+			val defaultValue = if (type != this.type) "False" else this.defaultValue
+
 			builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Boolean" />""")
 		}
         else if (type == "Colour")
         {
+	        val defaultValue = if (type != this.type) "" else this.defaultValue
 	        var defaultColour = ""
 	        if (defaultValue.contains("Colour."))
 	        {
@@ -849,6 +852,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val enumDef = classRegister.getEnum(type, classDefinition)!!
             val enumVals = enumDef.getAsString()
 
+			val defaultValue = if (type != this.type) "" else this.defaultValue
             var defaultStr = ""
             if (defaultValue.isNotBlank())
             {
@@ -919,11 +923,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 					if (classDef.isAbstract)
 					{
-						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+						builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
 					}
 					else
 					{
-						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+						builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
 					}
 				}
 			}
