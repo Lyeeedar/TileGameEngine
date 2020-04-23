@@ -1,5 +1,6 @@
 package com.lyeeedar.AI.BehaviourTree
 
+import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
@@ -22,6 +23,19 @@ class BehaviourTreeState
 	var lastEvaluationID = 0
 	var evaluationID = 0
 
+	fun set(entity: Entity, world: World, seed: Long)
+	{
+		this.entity = entity
+		this.world = world
+		this.rng = LightRNG(seed)
+
+		dataScope = 0
+		lastEvaluationID = 0
+		evaluationID = 0
+
+		data.clear()
+	}
+
 	private val data = ObjectMap<String, Any>()
 	fun <T> getData(key: String, guid: Int, fallback: T? = null): T?
 	{
@@ -35,6 +49,14 @@ class BehaviourTreeState
 	{
 		data.remove(key+guid+dataScope)
 	}
+
+	val map = ObjectFloatMap<String>()
+	fun getVariables(): ObjectFloatMap<String>
+	{
+		map.clear()
+
+		return map
+	}
 }
 
 @DataFile(colour="121,252,218", icon="Sprites/Icons/CardIcon.png")
@@ -46,6 +68,14 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 	@DataGraphReference
 	lateinit var root: AbstractBehaviourNode
 
+	fun evaluate(state: BehaviourTreeState)
+	{
+		state.lastEvaluationID = state.evaluationID
+		state.evaluationID++
+
+		root.evaluate(state)
+	}
+
 	fun afterLoad()
 	{
 		var i = 0
@@ -56,6 +86,25 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 			{
 				action.dataGuid = i++
 			}
+		}
+	}
+
+	companion object
+	{
+		private val loaded = ObjectMap<String, BehaviourTree>()
+
+		fun load(path: String): BehaviourTree
+		{
+			val existing = loaded[path]
+			if (existing != null) return existing
+
+			val xml = getXml(path)
+
+			val tree = BehaviourTree()
+			tree.load(xml)
+
+			loaded[path] = tree
+			return tree
 		}
 	}
 
