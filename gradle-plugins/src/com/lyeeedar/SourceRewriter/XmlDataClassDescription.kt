@@ -17,17 +17,20 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
     {
         classDefinition.classDef = this
 
+	    classDefinition.generateClassID()
+	    val classIDName = (classDefinition.classID ?: classDefinition.generatedClassID)?.replace("\"", "")
+
 		val dataClassAnnotation = annotationsRaw.firstOrNull { it.name == "DataClass" }
 		if (dataClassAnnotation != null)
 		{
-			dataClassName = dataClassAnnotation.paramMap["name"] ?: name.capitalize()
+			dataClassName = dataClassAnnotation.paramMap["name"] ?: classIDName ?: name.capitalize()
 			dataClassCategory = dataClassAnnotation.paramMap["category"] ?: ""
 			forceGlobal = dataClassAnnotation.paramMap["global"] == "true"
 			colour = dataClassAnnotation.paramMap["colour"]
 		}
 		else
 		{
-			dataClassName = name.capitalize()
+			dataClassName = classIDName ?: name.capitalize()
 			dataClassCategory = ""
 			forceGlobal = false
 		}
@@ -240,27 +243,36 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    val collectionAnnotation = annotations.firstOrNull { it.name == "DataClassCollection" }
 	    if (collectionAnnotation != null)
 	    {
-		    if (variables.size > 1) throw RuntimeException("DataClassAnnotation only works with a single child")
-
 		    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
 		    val type = if (dataGraphNode != null) "GraphCollectionDef" else "CollectionDef"
 
-		    val variable = variables[0]
-		    val annotations = variable.annotations
+		    val collectionVariable = variables.firstOrNull { it.type.startsWith("Array<") }
+		    val nonCollectionVariables = variables.filter { it != collectionVariable }.toList()
 
-		    val arrayType = variable.type.replace("Array<", "").dropLast(1)
+		    if (nonCollectionVariables.size > 0)
+		    {
 
-		    val dataArrayAnnotation = annotations.firstOrNull { it.name == "DataArray" }
-		    val minCount = dataArrayAnnotation?.paramMap?.get("minCount")
-		    val maxCount = dataArrayAnnotation?.paramMap?.get("maxCount")
-		    val minCountStr = if (minCount != null) "MinCount=\"$minCount\"" else ""
-		    val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
+		    }
 
-		    val classDef = classRegister.getClass(arrayType, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
+		    if (collectionVariable != null)
+		    {
+			    val annotations = collectionVariable.annotations
 
-		    val def = if (classDef.isAbstract) """DefKey="${classDef.classDef!!.dataClassName}Defs" """  else """Keys="${classDef.classDef!!.dataClassName}" """
+			    val arrayType = collectionVariable.type.replace("Array<", "").dropLast(1)
 
-		    builder.appendlnFix(1, """<Definition Name="$dataClassName" $minCountStr $maxCountStr $def $colour $global meta:RefKey="$type">""")
+			    val dataArrayAnnotation = annotations.firstOrNull { it.name == "DataArray" }
+			    val minCount = dataArrayAnnotation?.paramMap?.get("minCount")
+			    val maxCount = dataArrayAnnotation?.paramMap?.get("maxCount")
+			    val minCountStr = if (minCount != null) "MinCount=\"$minCount\"" else ""
+			    val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
+
+			    val classDef = classRegister.getClass(arrayType, classDefinition)
+			                   ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
+
+			    val def = if (classDef.isAbstract) """DefKey="${classDef.classDef!!.dataClassName}Defs" """ else """Keys="${classDef.classDef!!.dataClassName}" """
+
+			    builder.appendlnFix(1, """<Definition Name="$dataClassName" $minCountStr $maxCountStr $def $colour $global meta:RefKey="$type">""")
+		    }
 	    }
 	    else
 	    {

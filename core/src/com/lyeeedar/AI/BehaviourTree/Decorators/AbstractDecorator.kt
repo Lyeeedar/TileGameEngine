@@ -4,11 +4,11 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.AbstractNodeContainer
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Systems.World
-import com.lyeeedar.Util.DataGraphNode
-import com.lyeeedar.Util.DataGraphReference
+import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
+@DataClass(category = "Decorators")
 @DataGraphNode
 abstract class AbstractDecorator(): AbstractNodeContainer()
 {
@@ -48,7 +48,6 @@ abstract class AbstractDecorator(): AbstractNodeContainer()
 		super.load(xmlData)
 		nodeGUID = xmlData.get("Node", null)
 	}
-	override val classID: String = "Abstract"
 	var nodeGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, AbstractNodeContainer>)
 	{

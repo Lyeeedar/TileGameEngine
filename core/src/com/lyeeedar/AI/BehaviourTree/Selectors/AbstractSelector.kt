@@ -4,11 +4,13 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.AbstractNodeContainer
 import com.lyeeedar.AI.BehaviourTree.AbstractTreeNode
-import com.lyeeedar.Util.DataGraphNode
+import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
+@DataClass(category = "Selectors")
 @DataGraphNode
+@DataClassCollection
 abstract class AbstractSelector : AbstractNodeContainer()
 {
 	val children: Array<AbstractTreeNode> = Array(1)
@@ -49,7 +51,7 @@ abstract class AbstractSelector : AbstractNodeContainer()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		val childrenEl = xmlData.getChildByName("Children")
+		val childrenEl = xmlData
 		if (childrenEl != null)
 		{
 			for (el in childrenEl.children)
@@ -62,7 +64,6 @@ abstract class AbstractSelector : AbstractNodeContainer()
 			}
 		}
 	}
-	override val classID: String = "Abstract"
 	override fun resolve(nodes: ObjectMap<String, AbstractNodeContainer>)
 	{
 		super.resolve(nodes)

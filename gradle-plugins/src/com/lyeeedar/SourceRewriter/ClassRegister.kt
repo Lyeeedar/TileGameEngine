@@ -262,7 +262,9 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				}
 			}
 
-			for (referencedClass in dataClass.getAllReferencedClasses(HashSet()))
+			val startSet = HashSet(rootClasses)
+			startSet.remove(dataClass)
+			for (referencedClass in dataClass.getAllReferencedClasses(startSet))
 			{
 				writeRef(referencedClass)
 			}
@@ -288,8 +290,11 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 		{
 			System.out.println("Writing def file for " + root.fullName)
 
+			val startSet = HashSet(rootClasses)
+			startSet.remove(root)
+
 			val otherClasses = HashSet<ClassDefinition>()
-			for (referencedClass in root.getAllReferencedClasses(HashSet()))
+			for (referencedClass in root.getAllReferencedClasses(startSet))
 			{
 				if (rootClasses.contains(referencedClass)) continue
 
@@ -416,7 +421,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				}
 			}
 
-			for (abstractClass in sharedClassesToWrite.filter { it.isAbstract && it.superClass!!.superClass == null }.toList())
+			for (abstractClass in sharedClassesToWrite.filter { it.isAbstract && it.superClass!!.name.endsWith("XmlDataClass") }.toList())
 			{
 				val builder = IndentedStringBuilder()
 				builder.appendln(0, "<Definitions xmlns:meta=\"Editor\">")
@@ -507,6 +512,7 @@ class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name,
 	fun generateClassID()
 	{
 		if (generatedClassID != null) return
+		if (name.startsWith("Abstract")) return
 
 		// find if any parent is abstract
 		var current: ClassDefinition? = superClass

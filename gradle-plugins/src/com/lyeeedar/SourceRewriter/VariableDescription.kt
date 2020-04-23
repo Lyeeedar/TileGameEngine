@@ -337,7 +337,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			val elName = name+"El"
 
-			if (classDefinition.classDef!!.annotationsRaw.any { it.name == "DataClassCollection" })
+			if (classDefinition.classDef!!.getAnnotations().any { it.name == "DataClassCollection" })
 			{
 				builder.appendln(indentation, "val $elName = xmlData")
 			}

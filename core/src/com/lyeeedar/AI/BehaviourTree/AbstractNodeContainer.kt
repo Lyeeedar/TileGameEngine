@@ -12,7 +12,6 @@ abstract class AbstractNodeContainer : AbstractTreeNode()
 	{
 		super.load(xmlData)
 	}
-	override val classID: String = "AbstractNode"
 	override fun resolve(nodes: ObjectMap<String, AbstractNodeContainer>)
 	{
 		super.resolve(nodes)

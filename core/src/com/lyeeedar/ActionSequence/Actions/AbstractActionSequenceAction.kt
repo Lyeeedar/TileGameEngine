@@ -55,7 +55,6 @@ abstract class AbstractOneShotActionSequenceAction : AbstractActionSequenceActio
 	{
 		super.load(xmlData)
 	}
-	override val classID: String = "AbstractOneShot"
 	//endregion
 }
 
@@ -74,6 +73,5 @@ abstract class AbstractDurationActionSequenceAction : AbstractActionSequenceActi
 		super.load(xmlData)
 		duration = xmlData.getFloat("Duration", 0f)
 	}
-	override val classID: String = "AbstractDuration"
 	//endregion
 }
