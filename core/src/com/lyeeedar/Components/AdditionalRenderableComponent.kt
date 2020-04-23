@@ -56,8 +56,9 @@ class AdditionalRenderableComponentData : AbstractComponentData()
 		{
 			for (el in belowEl.children)
 			{
-				val obj = AssetManager.loadRenderable(el)
-				below.add(obj)
+				val objbelow: Renderable
+				objbelow = AssetManager.tryLoadRenderable(xmlData.getChildByName("Below"))!!
+				below.add(objbelow)
 			}
 		}
 		val aboveEl = xmlData.getChildByName("Above")
@@ -65,8 +66,9 @@ class AdditionalRenderableComponentData : AbstractComponentData()
 		{
 			for (el in aboveEl.children)
 			{
-				val obj = AssetManager.loadRenderable(el)
-				above.add(obj)
+				val objabove: Renderable
+				objabove = AssetManager.tryLoadRenderable(xmlData.getChildByName("Above"))!!
+				above.add(objabove)
 			}
 		}
 	}

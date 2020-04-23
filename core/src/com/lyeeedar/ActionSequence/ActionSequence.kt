@@ -218,9 +218,9 @@ class ActionSequence : XmlDataClass()
 			{
 				for (keyframeEl in el.children)
 				{
-					val obj = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID"))
-					obj.load(keyframeEl)
-					actions.add(obj)
+					val objactions = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID"))
+					objactions.load(keyframeEl)
+					actions.add(objactions)
 				}
 			}
 		}

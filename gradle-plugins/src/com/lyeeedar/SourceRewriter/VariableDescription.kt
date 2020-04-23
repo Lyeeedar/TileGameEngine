@@ -68,6 +68,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		{
 			imports.add("import java.util.*")
 		}
+		else if (type.startsWith("FastEnumMap<"))
+        {
+	        imports.add("import java.util.*")
+        }
 		else if (type.startsWith("Array<"))
 		{
 			val arrayType = type.replace("Array<", "").dropLast(1)
@@ -88,6 +92,13 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
     fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>)
     {
+	    writeLoad(builder, indentation, classDefinition, classRegister, extraVariables, type, variableType, name)
+    }
+
+	fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>, type: String, variableType: VariableType, targetName: String)
+	{
+		val name = targetName
+
         var type = type
         var nullable = false
         if (type.endsWith('?'))
@@ -373,74 +384,32 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				{
 					builder.appendln(indentation + 2, "$name.add(el.boolean())")
 				}
-				else if (assetManagerLoadedTypes.contains(arrayType))
-				{
-					val loadName: String
-					if (arrayType == "ParticleEffectDescription" || arrayType == "ParticleEffect")
-					{
-						loadName = "ParticleEffect"
-					}
-					else
-					{
-						loadName = arrayType
-					}
-
-					val loadExtension: String
-					if (arrayType == "ParticleEffect")
-					{
-						loadExtension = ".getParticleEffect()"
-					}
-					else
-					{
-						loadExtension = ""
-					}
-
-					builder.appendln(indentation + 2, "val obj = AssetManager.load$loadName(el)$loadExtension")
-					builder.appendln(indentation + 2, "$name.add(obj)")
-				}
-				else if (classRegister.getEnum(arrayType, classDefinition) != null)
-				{
-					val enumDef = classRegister.getEnum(arrayType, classDefinition)!!
-					builder.appendln(indentation + 2, "val obj = ${enumDef.name}.valueOf(el.text.toUpperCase(Locale.ENGLISH))")
-					builder.appendln(indentation + 2, "$name.add(obj)")
-				}
-				else
+				else if (isTimelineGroup)
 				{
 					val classDef = classRegister.getClass(arrayType, classDefinition)
 					               ?: throw RuntimeException("writeLoad: Unknown type '$arrayType' in '$type'!")
 					classDefinition.referencedClasses.add(classDef)
 
-					if (isTimelineGroup)
+					builder.appendln(indentation + 2, "for (keyframeEl in el.children)")
+					builder.appendln(indentation + 2, "{")
+					if (classDef.isAbstract)
 					{
-						builder.appendln(indentation + 2, "for (keyframeEl in el.children)")
-						builder.appendln(indentation + 2, "{")
-						if (classDef.isAbstract)
-						{
-							builder.appendln(indentation + 3, "val obj = XmlDataClassLoader.load$arrayType(keyframeEl.get(\"classID\"))")
-						}
-						else
-						{
-							builder.appendln(indentation + 3, "val obj = $arrayType()")
-						}
-
-						builder.appendln(indentation + 3, "obj.load(keyframeEl)")
-						builder.appendln(indentation + 3, "$name.add(obj)")
-						builder.appendln(indentation + 2, "}")
+						builder.appendln(indentation + 3, "val obj$name = XmlDataClassLoader.load$arrayType(keyframeEl.get(\"classID\"))")
 					}
 					else
 					{
-						if (classDef.isAbstract)
-						{
-							builder.appendln(indentation + 2, "val obj = XmlDataClassLoader.load$arrayType(el.get(\"classID\"))")
-						}
-						else
-						{
-							builder.appendln(indentation + 2, "val obj = $arrayType()")
-						}
-
-						builder.appendln(indentation + 2, "obj.load(el)")
-						builder.appendln(indentation + 2, "$name.add(obj)")
+						builder.appendln(indentation + 3, "val obj$name = $arrayType()")
 					}
+
+					builder.appendln(indentation + 3, "obj$name.load(keyframeEl)")
+					builder.appendln(indentation + 3, "$name.add(obj$name)")
+					builder.appendln(indentation + 2, "}")
+				}
+				else
+				{
+					builder.appendln(indentation+2, "val obj$name: $arrayType")
+					writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, arrayType, VariableType.VAR, "obj$name")
+					builder.appendln(indentation+2, "$name.add(obj$name)")
 				}
 
 				builder.appendln(indentation + 1, "}")
@@ -491,9 +460,55 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        throw RuntimeException("ObjectMap that isnt a @DataGraphNodes not currently supported")
 	        }
         }
-		else if (type == "FastEnumMap<Statistic, Float>")
+		else if (type.startsWith("FastEnumMap<"))
 		{
-			builder.appendln(indentation, "Statistic.parse(xmlData.getChildByName(\"$dataName\")!!, $name)")
+			val rawTypeParams = type.replace("FastEnumMap<", "").dropLast(1).split(",")
+			val enumType = rawTypeParams[0].trim()
+			val valueType = rawTypeParams[1].trim()
+
+			val enumDef = classRegister.getEnum(enumType, classDefinition) ?: throw RuntimeException("Unable to find definition for enum for $type")
+
+			val elName = name+"El"
+			builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
+
+			builder.appendln(indentation, "if ($elName != null)")
+			builder.appendln(indentation, "{")
+			builder.appendln(indentation + 1, "for (el in ${elName}.children)")
+			builder.appendln(indentation + 1, "{")
+
+			builder.appendln(indentation + 2, "val enumVal = $enumType.valueOf(el.name.toUpperCase(Locale.ENGLISH))")
+
+			if (valueType == "String")
+			{
+				builder.appendln(indentation + 2, "$name[enumVal] = el.text")
+			}
+			else if (valueType == "Int")
+			{
+				builder.appendln(indentation + 2, "$name[enumVal] = el.int()")
+			}
+			else if (valueType == "Float")
+			{
+				builder.appendln(indentation + 2, "$name[enumVal] = el.float()")
+			}
+			else if (valueType == "Boolean")
+			{
+				builder.appendln(indentation + 2, "$name[enumVal] = el.boolean()")
+			}
+			else
+			{
+				var creation = ""
+				if (valueType.startsWith("Array<"))
+				{
+					creation = " = Array()"
+				}
+
+				builder.appendln(indentation+2, "val obj$name: $valueType$creation")
+				writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, valueType, VariableType.VAR, "obj$name")
+				builder.appendln(indentation+2, "$name[enumVal] = obj$name")
+			}
+
+			builder.appendln(indentation + 1, "}")
+			builder.appendln(indentation, "}")
 		}
         else
         {
@@ -524,7 +539,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation, "$name =  XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
+				        builder.appendln(indentation, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
 			        }
 			        else
 			        {
@@ -541,7 +556,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation + 1, "$name =  XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
+				        builder.appendln(indentation + 1, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
 			        }
 			        else
 			        {
@@ -652,15 +667,22 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
 	}
 
+
+
     fun createDefEntry(builder: IndentedStringBuilder, classDefinition: ClassDefinition, classRegister: ClassRegister)
     {
-        if (variableType == VariableType.VAL && name == "classID")
-        {
-			val defaultValue = defaultValue.replace("\"", "")
-            builder.appendln(2, """<Const Name="classID">$defaultValue</Const>""")
-            return
-        }
+	    if (variableType == VariableType.VAL && name == "classID")
+	    {
+		    val defaultValue = defaultValue.replace("\"", "")
+		    builder.appendln(2, """<Const Name="classID">$defaultValue</Const>""")
+		    return
+	    }
 
+	    createDefEntry(builder, 2, classDefinition, classRegister, type, variableType, dataName)
+    }
+
+	fun createDefEntry(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, type: String, variableType: VariableType, dataName: String)
+	{
         var type = type
         var isNullable = false
         if (type.endsWith('?'))
@@ -714,7 +736,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				val resourceTypeStr = if (resourceType != null) "ResourceType=\"$resourceType\"" else ""
 				val allowedFileTypesStr = if (allowedFileTypes != null) "AllowedFileTypes=\"$allowedFileTypes\"" else ""
 
-				builder.appendlnFix(2, """<Data Name="$dataName" $basePathStr $stripExtensionStr $resourceTypeStr $allowedFileTypesStr SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="File" />""")
+				builder.appendlnFix(indentation, """<Data Name="$dataName" $basePathStr $stripExtensionStr $resourceTypeStr $allowedFileTypesStr SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="File" />""")
 			}
 			else
 			{
@@ -722,7 +744,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				val needsLocalisation = if (localisationAnnotation != null) "NeedsLocalisation=\"True\"" else ""
 				val localisationFile = if (localisationAnnotation != null) "LocalisationFile=\"${localisationAnnotation.paramMap["file"]!!}\"" else ""
 
-				builder.appendlnFix(2, """<Data Name="$dataName" $needsLocalisation $localisationFile SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
+				builder.appendlnFix(indentation, """<Data Name="$dataName" $needsLocalisation $localisationFile SkipIfDefault="$canSkip" Default=$defaultValue $visibleIfStr meta:RefKey="String" />""")
 			}
         }
 	    else if (type == "Char")
@@ -730,7 +752,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		    val canSkip = if (variableType != VariableType.LATEINIT) "True" else "False"
 		    val defaultValue = if (this.defaultValue.isBlank() || this.defaultValue == "null") "\"\"" else this.defaultValue
 
-		    builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="$canSkip" MaxLength="1" Default=$defaultValue $visibleIfStr  meta:RefKey="String" />""")
+		    builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="$canSkip" MaxLength="1" Default=$defaultValue $visibleIfStr  meta:RefKey="String" />""")
 	    }
         else if (type == "Int" || type == "Float")
         {
@@ -741,7 +763,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             val maxStr = if (max != null) """Max="$max"""" else ""
 			val defaultValue = this.defaultValue.replace("f", "")
 
-            builder.appendlnFix(2, """<Data Name="$dataName" $minStr $maxStr Type="$type" Default="$defaultValue" SkipIfDefault="True" $visibleIfStr meta:RefKey="Number" />""")
+            builder.appendlnFix(indentation, """<Data Name="$dataName" $minStr $maxStr Type="$type" Default="$defaultValue" SkipIfDefault="True" $visibleIfStr meta:RefKey="Number" />""")
         }
 		else if (type == "Point" || type == "Vector2" || type == "Vector3" || type == "Vector4")
 		{
@@ -764,11 +786,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val name4Str = if (name4 != null) "Name4=\"$name4\"" else ""
 			val numComponents = if (type == "Point") "NumComponents=\"2\"" else "NumComponents=\"${type.last()}\""
 
-			builder.appendlnFix(2, """<Data Name="$dataName" $minStr $maxStr $numericType $name1Str $name2Str $name3Str $name4Str $numComponents SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Vector" />""")
+			builder.appendlnFix(indentation, """<Data Name="$dataName" $minStr $maxStr $numericType $name1Str $name2Str $name3Str $name4Str $numComponents SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Vector" />""")
 		}
 		else if (type == "Boolean")
 		{
-			builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Boolean" />""")
+			builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="True" Default="$defaultValue" $visibleIfStr meta:RefKey="Boolean" />""")
 		}
         else if (type == "Colour")
         {
@@ -781,12 +803,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        defaultColour = "Default=\"${c.red},${c.green},${c.blue}\""
 	        }
 
-	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="false" $defaultColour $visibleIfStr meta:RefKey="Colour" />""")
+	        builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="false" $defaultColour $visibleIfStr meta:RefKey="Colour" />""")
         }
         else if (assetManagerLoadedTypes.contains(type))
         {
 			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect" else type
-            builder.appendlnFix(2, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+            builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
         }
 		else if (type == "CompiledExpression")
         {
@@ -805,7 +827,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			        tooltip = "Tooltip=\"Known variables: ${annotation.paramMap["knownVariables"]}\""
 		        }
 	        }
-	        builder.appendlnFix(2, """<Data Name="$dataName" SkipIfDefault="False" Default="$default" $tooltip $visibleIfStr meta:RefKey="String" />""")
+	        builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="False" Default="$default" $tooltip $visibleIfStr meta:RefKey="String" />""")
         }
 		else if (type == "XmlData")
 	    {
@@ -815,11 +837,11 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		    val classDef = classRegister.getClass(actualClass, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$actualClass'!")
 		    if (classDef.isAbstract)
 		    {
-			    builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+			    builder.appendlnFix(indentation, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
 		    }
 		    else
 		    {
-			    builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+			    builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
 		    }
 	    }
 		else if (classRegister.getEnum(type, classDefinition) != null)
@@ -833,7 +855,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
                 defaultStr = "Default=\"${defaultValue.split('.').last()}\""
             }
 
-            builder.appendlnFix(2, """<Data Name="$dataName" EnumValues="$enumVals" $defaultStr $skipIfDefault $visibleIfStr meta:RefKey="Enum" />""")
+            builder.appendlnFix(indentation, """<Data Name="$dataName" EnumValues="$enumVals" $defaultStr $skipIfDefault $visibleIfStr meta:RefKey="Enum" />""")
 		}
 		else if (type.startsWith("Array<"))
 		{
@@ -846,110 +868,48 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val maxCountStr = if (maxCount != null) "MaxCount=\"$maxCount\"" else ""
 
 			val childName = if (dataName.endsWith('s')) dataName.dropLast(1) else arrayType
-			if (arrayType == "String")
-			{
-				val fileReferenceAnnotation = annotations.firstOrNull { it.name == "DataFileReference" }
-				if (fileReferenceAnnotation != null)
-				{
-					val basePath = fileReferenceAnnotation.paramMap["basePath"]
-					val stripExtension = fileReferenceAnnotation.paramMap["stripExtension"]
-					val resourceType = fileReferenceAnnotation.paramMap["resourceType"]
-					val allowedFileTypes = fileReferenceAnnotation.paramMap["allowedFileTypes"]
+			val classDef = classRegister.getClass(arrayType, classDefinition)
 
-					val basePathStr = if (basePath != null) "BasePath=\"$basePath\"" else ""
-					val stripExtensionStr = if (stripExtension != null) "StripExtension=\"$stripExtension\"" else "StripExtension=\"True\""
-					val resourceTypeStr = if (resourceType != null) "ResourceType=\"$resourceType\"" else ""
-					val allowedFileTypesStr = if (allowedFileTypes != null) "AllowedFileTypes=\"$allowedFileTypes\"" else ""
-
-					builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-					builder.appendlnFix(3, """<Data Name="$childName" $basePathStr $stripExtensionStr $resourceTypeStr $allowedFileTypesStr meta:RefKey="File"/>""")
-					builder.appendlnFix(2, """</Data>""")
-				}
-				else
-				{
-					val localisationAnnotation = annotations.firstOrNull { it.name == "DataNeedsLocalisation" }
-					val needsLocalisation = if (localisationAnnotation != null) "NeedsLocalisation=\"True\"" else ""
-					val localisationFile = if (localisationAnnotation != null) "LocalisationFile=\"${localisationAnnotation.paramMap["localisationFile"]!!}\"" else ""
-
-					builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-					builder.appendlnFix(3, """<Data Name="$childName" $needsLocalisation $localisationFile meta:RefKey="String"/>""")
-					builder.appendlnFix(2, """</Data>""")
-				}
-			}
-			else if (arrayType == "Int" || arrayType == "Float")
-			{
-				val numericAnnotation = annotations.firstOrNull { it.name == "DataNumericRange" }
-				val min = numericAnnotation?.paramMap?.get("min")?.replace("f", "")
-				val max = numericAnnotation?.paramMap?.get("max")?.replace("f", "")
-				val minStr = if (min != null) """Min="$min"""" else ""
-				val maxStr = if (max != null) """Max="$max"""" else ""
-
-				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-				builder.appendlnFix(3, """<Data Name="$childName" $minStr $maxStr Type="$arrayType" SkipIfDefault="True" meta:RefKey="Number" />""")
-				builder.appendlnFix(2, """</Data>""")
-			}
-			else if (arrayType == "Boolean")
-			{
-				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-				builder.appendlnFix(3, """<Data Name="$childName" meta:RefKey="Boolean">""")
-				builder.appendlnFix(2, """</Data>""")
-			}
-			else if (arrayType == "Point")
+			if (arrayType == "Point")
 			{
 				if (annotations.any { it.name == "DataAsciiGrid" })
 				{
-					builder.appendlnFix(2, """<Data Name="$dataName" Default="#" ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString"/>""")
+					builder.appendlnFix(indentation, """<Data Name="$dataName" Default="#" ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString"/>""")
 				}
 				else
 				{
 					throw RuntimeException("Not supported")
 				}
 			}
-			else if (assetManagerLoadedTypes.contains(arrayType))
+			else if (classDef != null)
 			{
-				val dataType = if (arrayType == "ParticleEffectDescription") "ParticleEffect" else arrayType
-				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-				builder.appendlnFix(3, """<Data Name="$childName" Keys="$dataType" Nullable="False" meta:RefKey="Reference" />""")
-				builder.appendlnFix(2, """</Data>""")
-			}
-			else if (classRegister.getEnum(arrayType, classDefinition) != null)
-			{
-				val enumDef = classRegister.getEnum(arrayType, classDefinition)!!
-				val enumVals = enumDef.getAsString()
-
-				builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
-				builder.appendlnFix(3, """<Data Name="$childName" EnumValues="$enumVals" meta:RefKey="Enum" />""")
-				builder.appendlnFix(2, """</Data>""")
-			}
-			else
-			{
-				val classDef = classRegister.getClass(arrayType, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$arrayType' for '$type'!")
+				if (classDef.classDef == null) throw RuntimeException("Class had no loaded classdef ${classDef.name}")
 
 				val timelineAnnotation = annotations.firstOrNull { it.name == "DataTimeline" }
 				if (timelineAnnotation != null)
 				{
 					if (timelineAnnotation.paramMap["timelineGroup"] == "true")
 					{
-						builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
+						builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
 						if (classDef.isAbstract)
 						{
-							builder.appendlnFix(3, """<Data Name="Timeline" DefKey="${classDef.classDef!!.dataClassName}Defs" meta:RefKey="Timeline" />""")
+							builder.appendlnFix(indentation+1, """<Data Name="Timeline" DefKey="${classDef.classDef!!.dataClassName}Defs" meta:RefKey="Timeline" />""")
 						}
 						else
 						{
-							builder.appendlnFix(3, """<Data Name="Timeline" Keys="${classDef.classDef!!.dataClassName}" meta:RefKey="Timeline" />""")
+							builder.appendlnFix(indentation+1, """<Data Name="Timeline" Keys="${classDef.classDef!!.dataClassName}" meta:RefKey="Timeline" />""")
 						}
-						builder.appendlnFix(2, """</Data>""")
+						builder.appendlnFix(indentation, """</Data>""")
 					}
 					else
 					{
 						if (classDef.isAbstract)
 						{
-							builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Timeline" />""")
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Timeline" />""")
 						}
 						else
 						{
-							builder.appendlnFix(2, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Timeline" />""")
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Timeline" />""")
 						}
 					}
 				}
@@ -967,28 +927,41 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 					}
 				}
 			}
+			else
+			{
+				builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
+				createDefEntry(builder, indentation+1, classDefinition, classRegister, arrayType, VariableType.VAR, childName)
+				builder.appendlnFix(indentation, """</Data>""")
+			}
 		}
 		else if (type.startsWith("ObjectMap<"))
         {
 
         }
-		else if (type == "FastEnumMap<Statistic, Float>")
+		else if (type.startsWith("FastEnumMap<"))
 		{
-			val statsEnum = classRegister.getEnum("Statistic", classDefinition)!!
-			builder.appendlnFix(2, """<Data Name="$dataName" $nullable $skipIfDefault $visibleIfStr  meta:RefKey="Struct">""")
+			val rawTypeParams = type.replace("FastEnumMap<", "").dropLast(1).split(",")
+			val enumType = rawTypeParams[0].trim()
+			val valueType = rawTypeParams[1].trim()
 
-			for (category in statsEnum.values)
+			val enumDef = classRegister.getEnum(enumType, classDefinition) ?: throw RuntimeException("Unable to find definition for enum for $type")
+
+			builder.appendlnFix(indentation, """<Data Name="$dataName" $nullable $skipIfDefault $visibleIfStr  meta:RefKey="Struct">""")
+
+			for (category in enumDef.values)
 			{
-				builder.appendlnFix(3, """<!--${category.category}-->""")
+				if (enumDef.values.size > 1)
+				{
+					builder.appendlnFix(indentation+1, """<!--${category.category}-->""")
+				}
 
 				for (value in category.values)
 				{
-					val colour = colourFromStringHash(value, 0.4f)
-					builder.appendlnFix(3, """<Data Name="${value.toLowerCase().capitalize()}" TextColour="$colour" meta:RefKey="Number"/>""")
+					createDefEntry(builder, indentation+1, classDefinition, classRegister, valueType, VariableType.VAR, value.toLowerCase().capitalize())
 				}
 			}
 
-			builder.appendlnFix(2, """</Data>""")
+			builder.appendlnFix(indentation, """</Data>""")
 		}
         else
         {
@@ -1001,22 +974,22 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 		        if (classDef.isAbstract)
 		        {
-			        builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
+			        builder.appendlnFix(indentation, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
 		        }
 		        else
 		        {
-			        builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
+			        builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $useParentDesc $nullable $skipIfDefault $visibleIfStr meta:RefKey="GraphReference" />""")
 		        }
 	        }
 	        else
 	        {
 		        if (classDef.isAbstract)
 		        {
-			        builder.appendlnFix(2, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+			        builder.appendlnFix(indentation, """<Data Name="$dataName" DefKey="${classDef.classDef!!.dataClassName}Defs" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
 		        }
 		        else
 		        {
-			        builder.appendlnFix(2, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
+			        builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="${classDef.classDef!!.dataClassName}" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
 		        }
 	        }
         }

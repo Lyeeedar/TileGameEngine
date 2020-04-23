@@ -71,9 +71,11 @@ class EntityData : XmlDataClass()
 		{
 			for (el in componentsEl.children)
 			{
-				val obj = XmlDataClassLoader.loadAbstractComponentData(el.get("classID"))
-				obj.load(el)
-				components.add(obj)
+				val objcomponents: AbstractComponentData
+				val objcomponentsEl = xmlData.getChildByName("Components")!!
+				objcomponents = XmlDataClassLoader.loadAbstractComponentData(objcomponentsEl.get("classID"))
+				objcomponents.load(objcomponentsEl)
+				components.add(objcomponents)
 			}
 		}
 	}

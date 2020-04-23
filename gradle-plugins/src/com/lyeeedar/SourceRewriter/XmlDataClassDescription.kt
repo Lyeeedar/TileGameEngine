@@ -200,6 +200,8 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 
     fun createDefFile(builder: IndentedStringBuilder, needsGlobalScope: Boolean)
     {
+	    println("Writing contents for: " + name)
+
 		val extends = if (classDefinition.superClass?.classDef?.name?.endsWith("XmlDataClass") == false) "Extends=\"${classDefinition.superClass!!.classDef!!.dataClassName}\"" else ""
 
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }

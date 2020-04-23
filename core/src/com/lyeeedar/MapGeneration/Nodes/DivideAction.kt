@@ -64,9 +64,11 @@ class DivideAction : AbstractMapGenerationAction()
 		{
 			for (el in divisionsEl.children)
 			{
-				val obj = Division()
-				obj.load(el)
-				divisions.add(obj)
+				val objdivisions: Division
+				val objdivisionsEl = xmlData.getChildByName("Divisions")!!
+				objdivisions = Division()
+				objdivisions.load(objdivisionsEl)
+				divisions.add(objdivisions)
 			}
 		}
 		onX = xmlData.getBoolean("OnX", true)

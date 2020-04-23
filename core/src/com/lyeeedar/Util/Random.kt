@@ -7,7 +7,7 @@ class Random
 {
 	companion object
 	{
-		val random = LightRNG()
+		val sharedRandom = LightRNG()
 
 		private val pool = object : Pool<LightRNG>() {
 			override fun newObject(): LightRNG
@@ -35,40 +35,40 @@ class Random
 			}
 		}
 
-		fun sign(): Float
+		fun sign(rng: LightRNG): Float
 		{
-			return if (random.nextBoolean()) 1.0f else -1.0f
+			return if (rng.nextBoolean()) 1.0f else -1.0f
 		}
 
-		fun randomWeighted(): Float
+		fun randomWeighted(rng: LightRNG): Float
 		{
-			val ran = random()
+			val ran = random(rng)
 			return ran * ran
 		}
 
-		fun random(): Float
+		fun random(rng: LightRNG): Float
 		{
-			return random.nextFloat()
+			return rng.nextFloat()
 		}
 
-		fun random(max: Float): Float
+		fun random(rng: LightRNG, max: Float): Float
 		{
-			return random.nextFloat() * max
+			return rng.nextFloat() * max
 		}
 
-		fun random(min: Float, max: Float): Float
+		fun random(rng: LightRNG, min: Float, max: Float): Float
 		{
-			return random.nextFloat() * (max - min) + min
+			return rng.nextFloat() * (max - min) + min
 		}
 
-		fun random(min: Int, max: Int): Int
+		fun random(rng: LightRNG, min: Int, max: Int): Int
 		{
-			return random.nextInt(min, max)
+			return rng.nextInt(min, max)
 		}
 
-		fun random(max: Int): Int
+		fun random(rng: LightRNG, max: Int): Int
 		{
-			val ranVal = random.nextInt(max)
+			val ranVal = rng.nextInt(max)
 			if (ranVal > max) throw Exception("Random broke!")
 			return ranVal
 		}
@@ -81,3 +81,5 @@ fun LightRNG.freeTS()
 }
 
 fun LightRNG.nextFloat(value: Float) = this.nextFloat() * value
+fun LightRNG.sign() = Random.sign(this)
+fun LightRNG.randomWeighted() = Random.randomWeighted(this)
