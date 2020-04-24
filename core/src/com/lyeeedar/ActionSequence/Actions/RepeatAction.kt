@@ -48,11 +48,16 @@ class RepeatAction : AbstractDurationActionSequenceAction()
 			state.currentTime = time
 			state.index = state.data["i"] as Int
 
-			for (action in state.enteredActions)
+			val itr = state.enteredActions.iterator()
+			while (itr.hasNext())
 			{
-				action.exit(state)
+				val action = itr.next()
+				if (action.time < time)
+				{
+					action.exit(state)
+					itr.remove()
+				}
 			}
-			state.enteredActions.clear()
 
 			return ActionState.Blocked
 		}

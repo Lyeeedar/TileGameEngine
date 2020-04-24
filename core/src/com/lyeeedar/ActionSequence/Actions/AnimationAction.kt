@@ -26,22 +26,22 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 
 	lateinit var anim: Animation
 
-	@DataValue(visibleIf = "anim == EXPAND")
+	@DataValue(visibleIf = "anim == Expand")
 	var startSize: Float = 1f
-	@DataValue(visibleIf = "anim == EXPAND")
+	@DataValue(visibleIf = "anim == Expand")
 	var endSize: Float = 1f
-	@DataValue(visibleIf = "anim == EXPAND")
+	@DataValue(visibleIf = "anim == Expand")
 	var oneWay: Boolean = true
 
-	@DataValue(visibleIf = "anim == FADE")
+	@DataValue(visibleIf = "anim == Fade")
 	var startFade: Float = 1f
-	@DataValue(visibleIf = "anim == FADE")
+	@DataValue(visibleIf = "anim == Fade")
 	var endFade: Float = 1f
 
-	@DataValue(visibleIf = "anim == SPIN")
+	@DataValue(visibleIf = "anim == Spin")
 	var spinAngle: Float = 0f
 
-	@DataValue(visibleIf = "anim == FLASH")
+	@DataValue(visibleIf = "anim == Flash")
 	var targetColour: Colour = Colour.RED
 
 	override fun onTurn(state: ActionSequenceState): ActionState

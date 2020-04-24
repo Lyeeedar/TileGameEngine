@@ -17,8 +17,8 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 	enum class SpawnBehaviour
 	{
 		IMMEDIATE,
-		FROMSOURCE,
-		FROMCENTER,
+		FROM_SOURCE,
+		FROM_CENTER,
 		RANDOM
 	}
 
@@ -50,7 +50,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 			{
 				renderDelay = 0f
 			}
-			else if (spawnBehaviour == SpawnBehaviour.FROMSOURCE)
+			else if (spawnBehaviour == SpawnBehaviour.FROM_SOURCE)
 			{
 				val maxDist = furthest.euclideanDist(sourceTile)
 				val dist = tile.euclideanDist(sourceTile)
@@ -59,7 +59,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 				renderDelay = delay
 			}
-			else if (spawnBehaviour == SpawnBehaviour.FROMCENTER)
+			else if (spawnBehaviour == SpawnBehaviour.FROM_CENTER)
 			{
 				val center = min.lerp(max, 0.5f)
 				val maxDist = center.euclideanDist(max)

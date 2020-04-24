@@ -16,6 +16,7 @@ import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.UnsmoothedPath
 import com.lyeeedar.Util.XmlData
+import java.util.*
 
 @DataClass(category = "Renderable")
 class FlightParticleAction : AbstractDurationActionSequenceAction()
@@ -23,8 +24,8 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 	enum class SpawnBehaviour
 	{
 		IMMEDIATE,
-		FROMSOURCE,
-		FROMCENTER,
+		FROM_SOURCE,
+		FROM_CENTER,
 		RANDOM
 	}
 
@@ -32,7 +33,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 	var useLeap: Boolean = false
 
 	var alignToVector: Boolean = true
-	var spawnBehaviour: SpawnOneShotParticleAction.SpawnBehaviour = SpawnOneShotParticleAction.SpawnBehaviour.IMMEDIATE
+	var spawnBehaviour: SpawnBehaviour = SpawnBehaviour.IMMEDIATE
 	var spawnDuration: Float = 0f
 
 	override fun onTurn(state: ActionSequenceState): ActionState
@@ -59,11 +60,11 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 			entity.renderable()!!.data.renderable = r
 
 			val renderDelay: Float
-			if (spawnBehaviour == SpawnOneShotParticleAction.SpawnBehaviour.IMMEDIATE)
+			if (spawnBehaviour == SpawnBehaviour.IMMEDIATE)
 			{
 				renderDelay = 0f
 			}
-			else if (spawnBehaviour == SpawnOneShotParticleAction.SpawnBehaviour.FROMSOURCE)
+			else if (spawnBehaviour == SpawnBehaviour.FROM_SOURCE)
 			{
 				val maxDist = furthest.euclideanDist(sourceTile)
 				val dist = tile.euclideanDist(sourceTile)
@@ -72,7 +73,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 				renderDelay = delay
 			}
-			else if (spawnBehaviour == SpawnOneShotParticleAction.SpawnBehaviour.FROMCENTER)
+			else if (spawnBehaviour == SpawnBehaviour.FROM_CENTER)
 			{
 				val center = min.lerp(max, 0.5f)
 				val maxDist = center.euclideanDist(max)
@@ -82,7 +83,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 				renderDelay = delay
 			}
-			else if (spawnBehaviour == SpawnOneShotParticleAction.SpawnBehaviour.RANDOM)
+			else if (spawnBehaviour == SpawnBehaviour.RANDOM)
 			{
 				val alpha = Random.random(Random.sharedRandom)
 				val delay = spawnDuration * alpha
@@ -133,6 +134,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 		particle = AssetManager.loadParticleEffect(xmlData.getChildByName("Particle")!!)
 		useLeap = xmlData.getBoolean("UseLeap", false)
 		alignToVector = xmlData.getBoolean("AlignToVector", true)
+		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
 	}
 	override val classID: String = "FlightParticle"

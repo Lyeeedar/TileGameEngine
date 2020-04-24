@@ -826,7 +826,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
         else if (assetManagerLoadedTypes.contains(type))
         {
-			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect" else type
+			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect,ParticleEffectTemplate" else type
             builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
         }
 		else if (type == "CompiledExpression")
@@ -843,7 +843,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        }
 		        if (annotation.paramMap["knownVariables"] != null)
 		        {
-			        tooltip = "Tooltip=\"Known variables: ${annotation.paramMap["knownVariables"]}\""
+			        tooltip = "ToolTip=\"Known variables: ${annotation.paramMap["knownVariables"]}\""
 		        }
 	        }
 	        builder.appendlnFix(indentation, """<Data Name="$dataName" SkipIfDefault="False" Default="$default" $tooltip $visibleIfStr meta:RefKey="String" />""")
@@ -872,7 +872,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             var defaultStr = ""
             if (defaultValue.isNotBlank())
             {
-                defaultStr = "Default=\"${defaultValue.split('.').last()}\""
+                defaultStr = "Default=\"${defaultValue.split('.').last().toLowerCase().capitalize()}\""
             }
 
             builder.appendlnFix(indentation, """<Data Name="$dataName" EnumValues="$enumVals" $defaultStr $skipIfDefault $visibleIfStr meta:RefKey="Enum" />""")

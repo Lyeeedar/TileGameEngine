@@ -14,6 +14,7 @@ enum class ActionState
 
 abstract class AbstractActionSequenceAction : XmlDataClass()
 {
+	@DataNumericRange(min = 0f)
 	var time: Float = 0f
 
 	//region non-data
@@ -60,6 +61,7 @@ abstract class AbstractOneShotActionSequenceAction : AbstractActionSequenceActio
 
 abstract class AbstractDurationActionSequenceAction : AbstractActionSequenceAction()
 {
+	@DataNumericRange(min = 0f)
 	var duration: Float = 0f
 
 	//region non-data

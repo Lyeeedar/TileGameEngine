@@ -134,6 +134,8 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
         if (classDefinition.superClass != null && !classDefinition.superClass!!.name.endsWith("XmlDataClass"))
         {
             builder.appendln(classIndentation+2, "super.load(xmlData)")
+
+	        classDefinition.referencedClasses.add(classDefinition.superClass!!)
         }
 
 	    val extraVariables = ArrayList<String>()

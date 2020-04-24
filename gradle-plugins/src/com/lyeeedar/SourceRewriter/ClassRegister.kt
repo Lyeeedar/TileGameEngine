@@ -186,7 +186,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 						enumDef.addValue(enumValue, category)
 					}
 
-					if (line.trim().endsWith(';') || line.trim().endsWith('}'))
+					if (line.contains(';') || line.trim().endsWith('}'))
 					{
 						break
 					}
@@ -611,7 +611,7 @@ class EnumDefinition(name: String, namespace: String): BaseTypeDefinition(name, 
 		if (values.size == 1)
 		{
 			val list = values[0]
-			return list.values.joinToString(",")
+			return list.values.joinToString(",") { it.toLowerCase().capitalize() }
 		}
 		else
 		{
@@ -620,7 +620,7 @@ class EnumDefinition(name: String, namespace: String): BaseTypeDefinition(name, 
 			{
 				if (output.isNotEmpty()) { output.append(",") }
 				output.append(category).append("(")
-				output.append(category.values.joinToString(","))
+				output.append(category.values.joinToString(",") { it.toLowerCase().capitalize() })
 				output.append(")")
 			}
 
