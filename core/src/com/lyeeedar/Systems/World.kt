@@ -15,6 +15,8 @@ class World
 	val toBeAdded = Array<Entity>(false, 128)
 	val toBeRemoved = ObjectSet<Entity>()
 
+	var player: Entity? = null
+
 	val systems = Array<AbstractSystem>()
 
 	var grid: Array2D<Tile> = Array2D(0, 0) { x, y -> Tile(x, y) }

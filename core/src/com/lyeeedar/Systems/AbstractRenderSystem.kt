@@ -28,10 +28,6 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 
 	protected val outOfSightCutoff = 50f*50f
 
-	protected val hp_dr: Sprite = AssetManager.loadSprite("GUI/health_DR")
-	protected val hp_damaged: Sprite = AssetManager.loadSprite("GUI/health_damaged")
-	protected val hp_empty: Sprite = AssetManager.loadSprite("GUI/health_empty")
-
 	override fun beforeUpdate(deltaTime: Float)
 	{
 		val playerOffset = getPlayerPosition()
@@ -149,51 +145,8 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 
 	abstract fun getPlayerPosition(): Vector2
 
-	fun drawHPBar(space: Float, currentHp: Float, lostHP: Int, maxHp: Int, immune: Boolean, xi: Float, yi: Float, hp_full: Sprite): Float
+	override fun onTurnEntity(entity: Entity)
 	{
-		// do hp bar
-		val solidSpaceRatio = 0.12f // 20% free space
 
-		val maxSingleLineHP = space * 15
-
-		val pips = maxHp
-
-		var lines = 1
-		var pipsPerLine = pips
-		if (pips > maxSingleLineHP)
-		{
-			lines = 2
-			pipsPerLine = pips / 2
-		}
-
-		val spacePerPip = space / pipsPerLine.toFloat()
-		val spacing = spacePerPip * solidSpaceRatio
-		val solid = spacePerPip - spacing
-
-		val hp = currentHp.ciel()
-		for (i in 0 until pips)
-		{
-			val sprite = when {
-				immune -> hp_dr
-				i < hp -> hp_full
-				i < hp + lostHP -> hp_damaged
-				else -> hp_empty
-			}
-
-			val y = if (i < pipsPerLine && lines > 1) yi+0.25f else yi+0.1f
-			val x = if (i >= pipsPerLine && lines > 1) xi+(i-pipsPerLine)*spacePerPip else xi+i*spacePerPip
-
-			val sortY = if (hp == maxHp) null else y.toInt()-2
-			renderer.queueSprite(sprite, x, y, SpaceSlot.EFFECT.ordinal, 2, width = solid, height = 0.15f, sortY = sortY)
-		}
-
-		if (lines > 1)
-		{
-			return yi+0.35f
-		}
-		else
-		{
-			return yi+0.25f
-		}
 	}
 }

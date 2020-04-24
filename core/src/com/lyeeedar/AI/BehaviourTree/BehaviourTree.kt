@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
+import com.lyeeedar.Components.pos
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
@@ -39,21 +40,68 @@ class BehaviourTreeState
 	private val data = ObjectMap<String, Any>()
 	fun <T> getData(key: String, guid: Int, fallback: T? = null): T?
 	{
-		return data[key+guid+dataScope] as? T ?: fallback
+		val dataKey = "$guid$dataScope$key"
+		return data[dataKey] as? T ?: fallback
 	}
 	fun setData(key: String, guid: Int, value: Any)
 	{
-		data[key+guid+dataScope] = value
+		val dataKey = "$guid$dataScope$key"
+		data[dataKey] = value
+
+		if (value is Entity || value is Point)
+		{
+			updateResolvedVariables()
+		}
 	}
 	fun removeData(key: String, guid: Int)
 	{
-		data.remove(key+guid+dataScope)
+		val dataKey = "$guid$dataScope$key"
+		data.remove(dataKey)
+	}
+
+	private val resolvedVariables = ObjectFloatMap<String>()
+	fun updateResolvedVariables()
+	{
+		val srcPos = entity.pos()!!
+
+		resolvedVariables.clear()
+		for (entry in data)
+		{
+			val value = entry.value
+			if (value is Entity)
+			{
+				val epos = value.pos()
+				if (epos != null)
+				{
+					val dist = srcPos.position.taxiDist(epos.position)
+					resolvedVariables[entry.key+".dist"] = dist.toFloat()
+				}
+			}
+			else if (value is Point)
+			{
+				val dist = srcPos.position.taxiDist(value)
+				resolvedVariables[entry.key+".dist"] = dist.toFloat()
+			}
+		}
 	}
 
 	val map = ObjectFloatMap<String>()
 	fun getVariables(): ObjectFloatMap<String>
 	{
 		map.clear()
+		map.putAll(resolvedVariables)
+
+		for (entry in data)
+		{
+			val value = entry.value
+			map[entry.key] = when(value)
+			{
+				is Float -> value
+				is Int -> value.toFloat()
+				is Boolean -> if (value) 1.0f else 0.0f
+				else -> 1.0f
+			}
+		}
 
 		return map
 	}
@@ -72,6 +120,7 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 	{
 		state.lastEvaluationID = state.evaluationID
 		state.evaluationID++
+		state.updateResolvedVariables()
 
 		root.evaluate(state)
 	}
