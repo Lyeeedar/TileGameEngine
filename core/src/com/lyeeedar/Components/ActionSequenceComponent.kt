@@ -11,6 +11,14 @@ class ActionSequenceComponent : NonDataComponent()
 	var actionSequence: ActionSequence? = null
 	var actionSequenceState: ActionSequenceState? = null
 
+	fun set(sequence: ActionSequence, state: ActionSequenceState): ActionSequenceComponent
+	{
+		this.actionSequence = sequence
+		this.actionSequenceState = state
+
+		return this
+	}
+
 	override fun reset()
 	{
 		actionSequence = null

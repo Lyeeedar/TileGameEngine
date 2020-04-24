@@ -1,12 +1,15 @@
 package com.lyeeedar.Components
 
 import com.badlogic.gdx.utils.Array
+import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
 class Entity
 {
+	var world: World? = null
+
 	val signature = EnumBitflag<ComponentType>()
 	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent<*>>(ComponentType::class.java)
 

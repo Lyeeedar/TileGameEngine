@@ -90,6 +90,11 @@ val transientParticleArchetype =
 		.add(ComponentType.Renderable)
 		.add(ComponentType.Transient)
 
+val transientActionSequenceArchetype =
+	EntityArchetypeBuilder()
+		.add(ComponentType.ActionSequence)
+		.add(ComponentType.Transient)
+
 val nonTransientParticleArchetype =
 	EntityArchetypeBuilder()
 		.add(ComponentType.Position)

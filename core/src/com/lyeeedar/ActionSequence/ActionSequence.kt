@@ -36,10 +36,15 @@ class ActionSequenceState
 
 	var data = ObjectMap<String, Any?>()
 
-	fun set(source: Entity, world: World)
+	fun set(source: Entity, world: World): ActionSequenceState
 	{
+		this.source = source
+		this.world = world
+
 		targets.clear()
 		targets.add(source.pos()!!.position)
+
+		return this
 	}
 
 	fun reset()
@@ -195,6 +200,12 @@ class ActionSequence : XmlDataClass()
 	companion object
 	{
 		val loadedSequences = IntMap<ActionSequence>()
+		fun load(path: String): ActionSequence
+		{
+			val xml = getXml(path)
+			return load(xml)
+		}
+
 		fun load(xmlData: XmlData): ActionSequence
 		{
 			val hash = xmlData.hashCode()

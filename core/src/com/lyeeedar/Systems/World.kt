@@ -32,6 +32,8 @@ class World
 
 	fun addEntity(entity: Entity)
 	{
+		if (entity.world != null) throw RuntimeException("Tried to add entity to world more than once!")
+
 		toBeAdded.add(entity)
 	}
 
@@ -47,6 +49,7 @@ class World
 		{
 			if (toBeRemoved.contains(entities[i]))
 			{
+				entities[i].world = null
 				entities.removeIndex(i)
 				i--
 			}
