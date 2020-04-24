@@ -9,7 +9,7 @@ import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
 
-abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, EntitySignature().all(ComponentType.Position, ComponentType.Renderable))
+abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
 {
 	val tileSize: Float
 		get() = world.tileSize
@@ -25,8 +25,6 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 
 	private var renderedStaticOffsetX: Float = -10000f
 	private var renderedStaticOffsetY: Float = -10000f
-
-	protected val outOfSightCutoff = 50f*50f
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
@@ -85,7 +83,7 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 		val px = pos.position.x.toFloat()
 		val py = pos.position.y.toFloat()
 
-		if (Vector2.dst2(px, py, playerOffsetX, playerOffsetY) > outOfSightCutoff)
+		if (pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 50)
 		{
 			renderable.animation = null
 			if (entity.components.containsKey(ComponentType.Transient))

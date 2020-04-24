@@ -4,7 +4,7 @@ import com.lyeeedar.Components.*
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Sprite.DirectionalSprite
 
-class DirectionalSpriteSystem(world: World): AbstractEntitySystem(world, EntitySignature().all(ComponentType.Position, ComponentType.DirectionalSprite))
+class DirectionalSpriteSystem(world: World): AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.DirectionalSprite).get())
 {
 	override fun updateEntity(entity: Entity, deltaTime: Float)
 	{

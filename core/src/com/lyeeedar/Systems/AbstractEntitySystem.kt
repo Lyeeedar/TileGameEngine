@@ -7,13 +7,10 @@ abstract class AbstractEntitySystem(world: World, val entitySignature: EntitySig
 	override fun doUpdate(deltaTime: Float)
 	{
 		beforeUpdate(deltaTime)
-		for (i in 0 until world.entities.size)
+		for (i in 0 until entitySignature.entities.size)
 		{
-			val entity = world.entities[i]
-			if (entitySignature.matches(entity))
-			{
-				updateEntity(entity, deltaTime)
-			}
+			val entity = entitySignature.entities[i]
+			updateEntity(entity, deltaTime)
 		}
 		afterUpdate(deltaTime)
 	}
@@ -24,13 +21,10 @@ abstract class AbstractEntitySystem(world: World, val entitySignature: EntitySig
 	override fun onTurn()
 	{
 		beforeOnTurn()
-		for (i in 0 until world.entities.size)
+		for (i in 0 until entitySignature.entities.size)
 		{
-			val entity = world.entities[i]
-			if (entitySignature.matches(entity))
-			{
-				onTurnEntity(entity)
-			}
+			val entity = entitySignature.entities[i]
+			onTurnEntity(entity)
 		}
 		afterOnTurn()
 	}

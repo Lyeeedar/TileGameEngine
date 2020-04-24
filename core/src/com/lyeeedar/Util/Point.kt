@@ -240,6 +240,7 @@ open class Point : Pool.Poolable, Comparable<Point>
 	internal inline fun lineTo(other: Point) = Bresenham.line2D_(x, y, other.x, other.y).map { Point.obtain().set(it.x, it.y) }
 
 	internal inline fun taxiDist(other: Point) = Math.max( Math.abs(other.x - x), Math.abs(other.y - y) )
+	internal inline fun taxiDist(ox: Int, oy: Int) = Math.max( Math.abs(ox - x), Math.abs(oy - y) )
 	internal inline fun dist(other: Point) = Math.abs(other.x - x) + Math.abs(other.y - y)
 	internal inline fun dist(ox: Int, oy: Int) = Math.abs(ox - x) + Math.abs(oy - y)
 	internal inline fun euclideanDist(other: Point) = Vector2.dst(x.toFloat(), y.toFloat(), other.x.toFloat(), other.y.toFloat())

@@ -10,7 +10,7 @@ import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Statics
 
-class DialogueSystem(world: World) : AbstractEntitySystem(world, EntitySignature().all(ComponentType.Position, ComponentType.Dialogue))
+class DialogueSystem(world: World) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Dialogue).get())
 {
 	val layout = GlyphLayout()
 	val font = Statics.skin.getFont("default")
