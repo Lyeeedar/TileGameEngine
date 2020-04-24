@@ -31,6 +31,12 @@ fun min(v1: Float, v2: Float): Float = if (v1 < v2) v1 else v2
 fun max(v1: Int, v2: Int): Int = if (v1 > v2) v1 else v2
 fun min(v1: Int, v2: Int): Int = if (v1 < v2) v1 else v2
 
+fun maxAll(vararg v: Float) = v.max()!!
+fun minAll(vararg v: Float) = v.min()!!
+
+fun maxAll(vararg v: Int) = v.max()!!
+fun minAll(vararg v: Int) = v.min()!!
+
 class Smoothstep() : Interpolation()
 {
 	override fun apply(a: Float): Float = a * a * ( 3f - 2f * a )

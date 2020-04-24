@@ -20,7 +20,7 @@ abstract class AbstractTaskSystem(world: World) : AbstractSystem(world)
 			val entity = renderableEntities.entities[i]
 			val renderable = entity.renderable()!!
 
-			if (entity.isTransient() || renderable.renderable.animation?.isBlocking == true)
+			if (entity.isTransient() || renderable.renderable.animation?.isBlocking == true || renderable.renderable.isBlocking)
 			{
 				canUpdate = false
 				break

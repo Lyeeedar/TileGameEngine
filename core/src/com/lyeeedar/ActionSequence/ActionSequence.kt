@@ -1,9 +1,7 @@
 package com.lyeeedar.ActionSequence
 
+import com.badlogic.gdx.utils.*
 import com.badlogic.gdx.utils.Array
-import com.badlogic.gdx.utils.IntMap
-import com.badlogic.gdx.utils.ObjectMap
-import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.ActionSequence.Actions.AbstractActionSequenceAction
 import com.lyeeedar.ActionSequence.Actions.ActionState
 import com.lyeeedar.Components.Entity
@@ -60,6 +58,20 @@ class ActionSequenceState
 		index = 0
 
 		data.clear()
+	}
+
+	fun writeVariables(map: ObjectFloatMap<String>)
+	{
+		for (entry in data)
+		{
+			val value = entry.value
+			map[entry.key] = when (value)
+			{
+				is Float -> value
+				is Int -> value.toFloat()
+				else -> 1f
+			}
+		}
 	}
 
 	var obtained: Boolean = false

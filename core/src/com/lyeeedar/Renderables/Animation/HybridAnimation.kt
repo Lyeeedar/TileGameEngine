@@ -19,13 +19,13 @@ class HybridAnimation(): AbstractAnimation()
 	val colourData = Colour()
 	var rotationData = 0f
 
-	override fun duration(): Float = max(
+	override fun duration(): Float = maxAll(
 			offsets.maxBy { it.duration() }?.duration() ?: 0f,
 			scales.maxBy { it.duration() }?.duration() ?: 0f,
 			colours.maxBy { it.duration() }?.duration() ?: 0f,
 			rotations.maxBy { it.duration() }?.duration() ?: 0f)
 
-	override fun time(): Float = min(
+	override fun time(): Float = minAll(
 			offsets.minBy { it.time() }?.time() ?: duration(),
 			scales.minBy { it.time() }?.time() ?: duration(),
 			colours.minBy { it.time() }?.time() ?: duration(),

@@ -30,6 +30,8 @@ abstract class Renderable
 
 	open var light: Light? = null
 
+	open val isBlocking: Boolean = false
+
 	protected var hasAnim = false
 	var animation: AbstractAnimation? = null
 		set(value)
