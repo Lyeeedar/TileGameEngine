@@ -28,12 +28,10 @@ class RunOneRandomlyBehaviourNode : AbstractBehaviourNode()
 		}
 
 		// cancel state if not entered last evaluation
-		val lastID = state.getData("id", dataGuid, -1)!!
-		if (lastID != state.lastEvaluationID)
+		if (!wasEvaluatedLastTime(state))
 		{
 			i = -1
 		}
-		state.setData("id", dataGuid, state.evaluationID)
 
 		// do update
 		if (i == -1)

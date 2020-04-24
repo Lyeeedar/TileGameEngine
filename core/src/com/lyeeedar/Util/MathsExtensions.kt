@@ -25,11 +25,11 @@ fun Path<Vector2>.valueAt(time: Float): Vector2
 	return vec2
 }
 
-fun max(vararg vals: Float): Float = vals.max()!!
-fun min(vararg vals: Float): Float = vals.min()!!
+fun max(v1: Float, v2: Float): Float = if (v1 > v2) v1 else v2
+fun min(v1: Float, v2: Float): Float = if (v1 < v2) v1 else v2
 
-fun max(vararg vals: Int): Int = vals.max()!!
-fun min(vararg vals: Int): Int = vals.min()!!
+fun max(v1: Int, v2: Int): Int = if (v1 > v2) v1 else v2
+fun min(v1: Int, v2: Int): Int = if (v1 < v2) v1 else v2
 
 class Smoothstep() : Interpolation()
 {
