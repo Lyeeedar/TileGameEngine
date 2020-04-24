@@ -1,5 +1,8 @@
 package com.lyeeedar.headless
 
+import com.lyeeedar.AI.BehaviourTree.BehaviourTree
+import com.lyeeedar.ActionSequence.ActionSequence
+import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Util.XmlData
@@ -33,6 +36,9 @@ class XmlLoadTester
 					when (xml.name.toUpperCase(Locale.ENGLISH))
 					{
 						"EFFECT" -> ParticleEffect.load(path.split("Particles/")[1], ParticleEffectDescription(""))
+						"BEHAVIOURTREE" -> BehaviourTree.load(path)
+						"ACTIONSEQUENCE" -> ActionSequence.load(path)
+						"MAPGENERATOR" -> MapGenerator.load(path)
 						else -> GameXmlLoadTester.testLoad(xml, path)
 					}
 

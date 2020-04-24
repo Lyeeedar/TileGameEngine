@@ -68,7 +68,7 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	{
 		fun load(path: String): MapGenerator
 		{
-			val xml = getXml("Maps/$path")
+			val xml = getXml(path)
 
 			val generator = MapGenerator()
 			generator.load(xml)
