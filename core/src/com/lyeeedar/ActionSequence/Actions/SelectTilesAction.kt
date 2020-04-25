@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.pos
-import com.lyeeedar.Game.Tile
+import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 
@@ -19,7 +19,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 	var emptyOnly: Boolean = false
 
 	//region non-data
-	val tiles = Array<Tile>(false, 4)
+	val tiles = Array<AbstractTile>(false, 4)
 	val variables = ObjectFloatMap<String>()
 	//endregion
 

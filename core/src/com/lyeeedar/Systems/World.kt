@@ -4,11 +4,10 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityPool
-import com.lyeeedar.Game.Tile
 import com.lyeeedar.Util.Array2D
 import squidpony.squidmath.LightRNG
 
-class World
+class World(var grid: Array2D<AbstractTile>)
 {
 	lateinit var rng: LightRNG
 
@@ -22,8 +21,6 @@ class World
 
 	val systems = Array<AbstractSystem>()
 	val registeredSignatures = Array<EntitySignature>()
-
-	var grid: Array2D<Tile> = Array2D(0, 0) { x, y -> Tile(x, y) }
 
 	fun getEntitiesFor(): EntitySignatureBuilder
 	{
