@@ -2,10 +2,12 @@ package com.lyeeedar.Systems
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectSet
+import com.lyeeedar.Components.ComponentType
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityPool
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
+import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Statics.Companion.collisionGrid
 import squidpony.squidmath.LightRNG
 
@@ -16,13 +18,13 @@ class World(var grid: Array2D<AbstractTile>)
 	var tileSize: Float = 40f
 
 	val entities = Array<Entity>(false, 128)
-	val toBeAdded = Array<Entity>(false, 128)
-	val toBeRemoved = ObjectSet<Entity>()
+	private val toBeAdded = Array<Entity>(false, 128)
+	private val toBeRemoved = ObjectSet<Entity>()
 
 	var player: Entity? = null
 
 	val systems = Array<AbstractSystem>()
-	val registeredSignatures = Array<EntitySignature>()
+	private val registeredSignatures = Array<EntitySignature>()
 
 	fun getEntitiesFor(): EntitySignatureBuilder
 	{
@@ -123,6 +125,48 @@ class World(var grid: Array2D<AbstractTile>)
 					collisionGrid[x, y] = grid[x, y].getPassable(SpaceSlot.LIGHT, null)
 				}
 			}
+		}
+	}
+
+	class EntitySignatureBuilder(val world: World)
+	{
+		private val all = EnumBitflag<ComponentType>()
+		private val any = EnumBitflag<ComponentType>()
+
+		fun all(vararg types: ComponentType): EntitySignatureBuilder
+		{
+			for (type in types)
+			{
+				this.all.setBit(type)
+			}
+
+			return this
+		}
+
+		fun any(vararg types: ComponentType): EntitySignatureBuilder
+		{
+			for (type in types)
+			{
+				this.any.setBit(type)
+			}
+
+			return this
+		}
+
+		fun get(): EntitySignature
+		{
+			val signature = EntitySignature(all, any)
+
+			for (existing in world.registeredSignatures)
+			{
+				if (existing.isEqual(signature))
+				{
+					return existing
+				}
+			}
+
+			world.registeredSignatures.add(signature)
+			return signature
 		}
 	}
 }
