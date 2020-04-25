@@ -40,8 +40,21 @@ class BehaviourTreeState
 	private val data = ObjectMap<String, Any>()
 	fun <T> getData(key: String, guid: Int, fallback: T? = null): T?
 	{
-		val dataKey = "$guid$dataScope$key"
-		return data[dataKey] as? T ?: fallback
+		var currentScope = dataScope
+		while (currentScope >= 0)
+		{
+			val dataKey = "$guid$currentScope$key"
+			val value = data[dataKey] as? T
+
+			if (value != null)
+			{
+				return value
+			}
+
+			currentScope--
+		}
+
+		return fallback
 	}
 	fun setData(key: String, guid: Int, value: Any)
 	{

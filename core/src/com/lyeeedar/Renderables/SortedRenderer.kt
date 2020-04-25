@@ -381,7 +381,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			lightColourBrightness = FloatArray(shaderLightNum * 4)
 		}
 
-		val sortedShadowLights = shadowLights.filter { it.cache.anyClear() }.sortedBy { if (shadowMode == ShadowMode.TILE) it.cache.currentCastRegions.size else it.cache.opaqueRegions.size }.toGdxArray()
+		val sortedShadowLights = shadowLights.filter { it.cache.anyClear() }.sortedBy { if (shadowMode == ShadowMode.TILE) it.cache.numCastRegions else it.cache.numOpaqueRegions }.toGdxArray()
 
 		if (sortedShadowLights.size != shaderShadowLightNum)
 		{
@@ -413,11 +413,11 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 				val numCount: Int
 				if (shadowMode == ShadowMode.TILE)
 				{
-					numCount = light.cache.currentCastRegions.size
+					numCount = light.cache.numCastRegions
 				}
 				else
 				{
-					numCount = light.cache.opaqueRegions.size
+					numCount = light.cache.numOpaqueRegions
 				}
 
 				if (i < shaderRegionsPerLight.size)

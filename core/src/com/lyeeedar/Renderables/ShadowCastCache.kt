@@ -33,25 +33,30 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 
 	private val fov: FOV = FOV(fovType)
 
-	var lastrange: Int = -1
+	private var lastrange: Int = -1
 		private set
-	var lastx: Int = -Int.MAX_VALUE
+	private var lastx: Int = -Int.MAX_VALUE
 		private set
-	var lasty: Int = -Int.MAX_VALUE
+	private var lasty: Int = -Int.MAX_VALUE
 		private set
-	val opaqueTiles = com.badlogic.gdx.utils.Array<Point>()
-	val clearTiles = com.badlogic.gdx.utils.Array<Point>()
-	val currentShadowCast = com.badlogic.gdx.utils.Array<Point>()
-	val invCurrentShadowCast = com.badlogic.gdx.utils.Array<Point>()
-	val opaqueRegions = com.badlogic.gdx.utils.Array<PointRect>()
+	private val opaqueTiles = com.badlogic.gdx.utils.Array<Point>()
+	private val clearTiles = com.badlogic.gdx.utils.Array<Point>()
+	private val currentShadowCast = com.badlogic.gdx.utils.Array<Point>()
+	private val invCurrentShadowCast = com.badlogic.gdx.utils.Array<Point>()
 
+	val opaqueRegions = com.badlogic.gdx.utils.Array<PointRect>()
 	var regionsVisible = false
 	val currentCastRegions = com.badlogic.gdx.utils.Array<PointRect>()
 
 	fun anyOpaque() = opaqueTiles.size > 0
 	fun anyClear() = clearTiles.size > 0
 
-	fun updateCurrentCastRegions(rawOutput: Array<DoubleArray>)
+	val numCastRegions: Int
+		get() = currentCastRegions.size
+	val numOpaqueRegions: Int
+		get() = opaqueRegions.size
+
+	private fun updateCurrentCastRegions(rawOutput: Array<DoubleArray>)
 	{
 		val collisionGrid = collisionGrid!!
 
@@ -187,7 +192,7 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 		Point.freeAllTS(invisibleOOB)
 	}
 
-	fun updateOpaqueRegions()
+	private fun updateOpaqueRegions()
 	{
 		opaqueRegions.clear()
 

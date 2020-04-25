@@ -4,7 +4,9 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityPool
+import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
+import com.lyeeedar.Util.Statics.Companion.collisionGrid
 import squidpony.squidmath.LightRNG
 
 class World(var grid: Array2D<AbstractTile>)
@@ -97,9 +99,30 @@ class World(var grid: Array2D<AbstractTile>)
 
 	fun onTurn()
 	{
+		updateCollisionGrid()
+
 		for (i in 0 until systems.size)
 		{
 			systems[i].onTurn()
+		}
+	}
+
+	fun updateCollisionGrid()
+	{
+		var collisionGrid = collisionGrid
+		if (collisionGrid == null || collisionGrid.width != grid.width || collisionGrid.height != grid.height)
+		{
+			collisionGrid = Array2D(grid.width, grid.height) { x,y -> grid[x, y].getPassable(SpaceSlot.LIGHT, null) }
+		}
+		else
+		{
+			for (x in 0 until grid.width)
+			{
+				for (y in 0 until grid.height)
+				{
+					collisionGrid[x, y] = grid[x, y].getPassable(SpaceSlot.LIGHT, null)
+				}
+			}
 		}
 	}
 }
