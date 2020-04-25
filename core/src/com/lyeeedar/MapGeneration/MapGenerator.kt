@@ -29,11 +29,11 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	private val executingArray = Array<DeferredNode>()
 	//endregion
 
-	fun execute(seed: Long)
+	fun execute(seed: Long, createSymbolFunc: (Int,Int)->IMapGeneratorSymbol)
 	{
 		ran = LightRNG(seed)
 
-		val grid = Array2D<Symbol>(baseSize.x, baseSize.y) { x,y -> Symbol() }
+		val grid = Array2D<IMapGeneratorSymbol>(baseSize.x, baseSize.y) { x,y -> createSymbolFunc(x,y) }
 		val area = Area(baseSize.x, baseSize.y, grid)
 		val args = NodeArguments(area, ObjectFloatMap(), ObjectMap())
 

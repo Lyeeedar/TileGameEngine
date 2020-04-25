@@ -9,7 +9,7 @@ import com.lyeeedar.Util.Array2D
 
 class Area()
 {
-	constructor(width: Int, height: Int, grid: Array2D<Symbol>) : this()
+	constructor(width: Int, height: Int, grid: Array2D<IMapGeneratorSymbol>) : this()
 	{
 		this.allowedBoundsWidth = width
 		this.allowedBoundsHeight = height
@@ -64,7 +64,7 @@ class Area()
 			}
 		}
 
-	lateinit var grid: Array2D<Symbol>
+	lateinit var grid: Array2D<IMapGeneratorSymbol>
 
 	var isPoints = false
 	val points = Array<Pos>(false, 16)
@@ -210,13 +210,13 @@ class Area()
 		return area
 	}
 
-	operator fun get(x: Int, y: Int): Symbol?
+	operator fun get(x: Int, y: Int): IMapGeneratorSymbol?
 	{
 		val pos = localToWorld(x, y)
 		return grid.tryGet(pos.x, pos.y, null)
 	}
 
-	operator fun get(pos: Pos): Symbol?
+	operator fun get(pos: Pos): IMapGeneratorSymbol?
 	{
 		val pos = localToWorld(pos)
 		return grid.tryGet(pos.x, pos.y, null)

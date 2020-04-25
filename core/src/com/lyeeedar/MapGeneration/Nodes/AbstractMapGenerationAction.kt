@@ -2,10 +2,8 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
-import com.lyeeedar.MapGeneration.Area
-import com.lyeeedar.MapGeneration.MapGenerator
+import com.lyeeedar.MapGeneration.*
 import com.lyeeedar.MapGeneration.MapGeneratorNode
-import com.lyeeedar.MapGeneration.Symbol
 import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
@@ -28,7 +26,7 @@ abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>
 	//endregion
 }
 
-class NodeArguments(val area: Area, val variables: ObjectFloatMap<String>, val symbolTable: ObjectMap<Char, Symbol>)
+class NodeArguments(val area: Area, val variables: ObjectFloatMap<String>, val symbolTable: ObjectMap<Char, IMapGeneratorSymbol>)
 {
 	fun copy(scopeArea: Boolean = false, scopeVariables: Boolean = false, scopeSymbols: Boolean = false): NodeArguments
 	{
