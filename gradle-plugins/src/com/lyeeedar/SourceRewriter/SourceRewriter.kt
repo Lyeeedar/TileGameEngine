@@ -50,7 +50,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 				{
 					val name = trimmed.split(':', '<', '(')[0].split("class ")[1].trim()
 					val namespace = packagePart.packageStr.replace("package ", "")
-					val classDefinition = classRegister.classDefMap["$namespace.$name"]
+					val classDefinition = classRegister.classDefMap["$namespace.$name"]?.get(0)
 					if (classDefinition == null)
 					{
 						System.err.println("Failed to find class def for $namespace.$name")

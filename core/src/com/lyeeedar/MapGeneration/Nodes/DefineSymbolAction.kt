@@ -10,7 +10,7 @@ import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
 @DataClass(category = "Setup", colour = "227,198,16")
-class SymbolAction : AbstractMapGenerationAction()
+class DefineSymbolAction : AbstractMapGenerationAction()
 {
 	@DataXml(actualClass = "Symbol")
 	lateinit var symbolDef: XmlData
@@ -19,6 +19,8 @@ class SymbolAction : AbstractMapGenerationAction()
 	{
 		val symbol = Symbol()
 		symbol.load(symbolDef)
+		symbol.evaluateExtends(args.symbolTable)
+
 		args.symbolTable[symbol.char] = symbol
 	}
 
@@ -28,7 +30,7 @@ class SymbolAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		symbolDef = xmlData.getChildByName("SymbolDef")!!
 	}
-	override val classID: String = "Symbol"
+	override val classID: String = "DefineSymbol"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

@@ -191,13 +191,13 @@ class ConnectRoomsAction : AbstractMapGenerationAction()
 						// Wipe out all features not placed by this path
 						if (t.placerHashCode != -1 && t.placerHashCode != path.hashCode())
 						{
-							t.content = null
+							t.clear()
 						}
 
 						// Wipe out all features in the central square
 						if (x > 0 && x < width - 1 && y > 0 && y < width - 1)
 						{
-							t.content = null
+							t.clear()
 						}
 					}
 				}

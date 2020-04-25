@@ -710,29 +710,32 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         var nullable = ""
         var skipIfDefault = ""
 
-        if (variableType == VariableType.LATEINIT)
-        {
-            nullable = """Nullable="False""""
-            skipIfDefault = """SkipIfDefault="False""""
-        }
-        else if (variableType == VariableType.VAL)
-        {
-            nullable = """Nullable="False""""
-            skipIfDefault = """SkipIfDefault="False""""
-        }
-        else
-        {
-            if (isNullable)
-            {
-                nullable = """Nullable="True""""
-                skipIfDefault = """SkipIfDefault="True""""
-            }
-            else
-            {
-                nullable = """Nullable="False""""
-                skipIfDefault = """SkipIfDefault="False""""
-            }
-        }
+		if (type == this.type)
+		{
+			if (variableType == VariableType.LATEINIT)
+			{
+				nullable = """Nullable="False""""
+				skipIfDefault = """SkipIfDefault="False""""
+			}
+			else if (variableType == VariableType.VAL)
+			{
+				nullable = """Nullable="False""""
+				skipIfDefault = """SkipIfDefault="False""""
+			}
+			else
+			{
+				if (isNullable)
+				{
+					nullable = """Nullable="True""""
+					skipIfDefault = """SkipIfDefault="True""""
+				}
+				else
+				{
+					nullable = """Nullable="False""""
+					skipIfDefault = """SkipIfDefault="False""""
+				}
+			}
+		}
 
         if (type == "String")
         {

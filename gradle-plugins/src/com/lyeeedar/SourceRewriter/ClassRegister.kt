@@ -11,11 +11,11 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 {
 	val classDefRegex = "(?<IsAbstract>abstract )?class (?<ClassName>[^\\(:<]*)(\\<.*?\\>)?(\\(([^\\(\\)](\\(\\))?)*?\\))?([\\s]*:[\\s]*(?<InheritsFrom>.*))?".toRegex()
 
-	val classDefMap = HashMap<String, ClassDefinition>()
-	val interfaceDefMap = HashMap<String, InterfaceDefinition>()
-	val enumDefMap = HashMap<String, EnumDefinition>()
+	val classDefMap = HashMap<String, ArrayList<ClassDefinition>>()
+	val interfaceDefMap = HashMap<String, ArrayList<InterfaceDefinition>>()
+	val enumDefMap = HashMap<String, ArrayList<EnumDefinition>>()
 
-	fun <T: BaseTypeDefinition> getDef(name: String, sourceType: BaseTypeDefinition, sourceMap: HashMap<String, T>): T?
+	fun <T: BaseTypeDefinition> getDefArray(name: String, sourceType: BaseTypeDefinition, sourceMap: HashMap<String, ArrayList<T>>): ArrayList<T>?
 	{
 		for (import in sourceType.imports)
 		{
@@ -54,6 +54,62 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 		return null
 	}
 
+	fun <T: BaseTypeDefinition> getDef(name: String, sourceType: BaseTypeDefinition, sourceMap: HashMap<String, ArrayList<T>>): T?
+	{
+		val array = getDefArray(name, sourceType, sourceMap)
+
+		if (array == null || array.size == 0)
+		{
+			return null
+		}
+		else if (array.size > 1)
+		{
+			for (item in array)
+			{
+				if (item.sourceFile == sourceType.sourceFile)
+				{
+					return item
+				}
+			}
+		}
+
+		return array[0]
+	}
+
+	fun addInterface(item: InterfaceDefinition)
+	{
+		var array = interfaceDefMap[item.fullName]
+		if (array == null)
+		{
+			array = ArrayList()
+			interfaceDefMap[item.fullName] = array
+		}
+
+		array.add(item)
+	}
+	fun addClass(item: ClassDefinition)
+	{
+		var array = classDefMap[item.fullName]
+		if (array == null)
+		{
+			array = ArrayList()
+			classDefMap[item.fullName] = array
+		}
+
+		array.add(item)
+	}
+	fun addEnum(item: EnumDefinition)
+	{
+		var array = enumDefMap[item.fullName]
+		if (array == null)
+		{
+			array = ArrayList()
+			enumDefMap[item.fullName] = array
+		}
+
+		array.add(item)
+	}
+
 	fun getClass(name: String, sourceType: BaseTypeDefinition): ClassDefinition?
 	{
 		return getDef(name, sourceType, classDefMap)
@@ -76,20 +132,31 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			parseFile(file)
 		}
 
-		for (classDef in classDefMap.values)
+		for (classDefArray in classDefMap.values)
 		{
-			var didSuperClass = false
-			for (inheritFromRaw in classDef.inheritDeclarations)
+			for (classDef in classDefArray)
 			{
-				val inheritFrom = inheritFromRaw.split("<")[0]
-				if (!didSuperClass)
+				var didSuperClass = false
+				for (inheritFromRaw in classDef.inheritDeclarations)
 				{
-					didSuperClass = true
-
-					val superClass = getClass(inheritFrom, classDef)
-					if (superClass != null)
+					val inheritFrom = inheritFromRaw.split("<")[0]
+					if (!didSuperClass)
 					{
-						classDef.superClass = superClass
+						didSuperClass = true
+
+						val superClass = getClass(inheritFrom, classDef)
+						if (superClass != null)
+						{
+							classDef.superClass = superClass
+						}
+						else
+						{
+							val interfaceDef = getInterface(inheritFrom, classDef)
+							if (interfaceDef != null)
+							{
+								classDef.interfaces.add(interfaceDef)
+							}
+						}
 					}
 					else
 					{
@@ -100,32 +167,27 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 						}
 					}
 				}
-				else
-				{
-					val interfaceDef = getInterface(inheritFrom, classDef)
-					if (interfaceDef != null)
-					{
-						classDef.interfaces.add(interfaceDef)
-					}
-				}
 			}
 		}
 
-		for (classDef in classDefMap.values)
+		for (classDefArray in classDefMap.values)
 		{
-			classDef.updateParents()
+			for (classDef in classDefArray)
+			{
+				classDef.updateParents()
 
-			classDef.inheritingClasses.sortWith(compareBy { it.name })
-			classDef.referencedClasses.sortWith(compareBy { it.name })
+				classDef.inheritingClasses.sortWith(compareBy { it.name })
+				classDef.referencedClasses.sortWith(compareBy { it.name })
+			}
 		}
 
-		val baseDataClassDef = classDefMap["com.lyeeedar.Util.XmlDataClass"]!!
+		val baseDataClassDef = classDefMap["com.lyeeedar.Util.XmlDataClass"]!!.get(0)
 		for (classDef in baseDataClassDef.inheritingClasses)
 		{
 			classDef.isXmlDataClass = true
 		}
 
-		val baseGraphDataClassDef = classDefMap["com.lyeeedar.Util.GraphXmlDataClass"]!!
+		val baseGraphDataClassDef = classDefMap["com.lyeeedar.Util.GraphXmlDataClass"]!!.get(0)
 		for (classDef in baseGraphDataClassDef.inheritingClasses)
 		{
 			classDef.isGraphXmlDataClass = true
@@ -155,17 +217,17 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 			else if (trimmed.startsWith("interface "))
 			{
 				val name = trimmed.replace("interface ", "").trim()
-				val interfaceDef = InterfaceDefinition(name, packageStr)
+				val interfaceDef = InterfaceDefinition(name, packageStr, file.canonicalPath)
 				interfaceDef.packageStr = packageStr
 				interfaceDef.imports.addAll(imports)
 
-				interfaceDefMap.put(interfaceDef.fullName, interfaceDef)
+				addInterface(interfaceDef)
 			}
 			else if (trimmed.startsWith("enum class "))
 			{
 				val name = trimmed.replace("enum class ", "").trim().split(" ")[0].replace("_Mirror", "")
 
-				val enumDef = EnumDefinition(name, packageStr)
+				val enumDef = EnumDefinition(name, packageStr, file.canonicalPath)
 				enumDef.imports.addAll(imports)
 
 				var category = ""
@@ -193,7 +255,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 					ii++
 				}
 
-				enumDefMap.put(enumDef.fullName, enumDef)
+				addEnum(enumDef)
 			}
 			else if (trimmed.startsWith("data class") || trimmed.startsWith("annotation class") || trimmed.startsWith("open class"))
 			{
@@ -206,7 +268,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 				{
 					val namedGroups = matches.groups as MatchNamedGroupCollection
 
-					val classDef = ClassDefinition(namedGroups["ClassName"]!!.value.trim(), packageStr)
+					val classDef = ClassDefinition(namedGroups["ClassName"]!!.value.trim(), packageStr, file.canonicalPath)
 					classDef.isAbstract = namedGroups["IsAbstract"] != null
 					classDef.imports.addAll(imports)
 
@@ -220,7 +282,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 						}
 					}
 
-					classDefMap.put(classDef.fullName, classDef)
+					addClass(classDef)
 				}
 				else
 				{
@@ -232,7 +294,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 
 	fun writeXmlDefFiles()
 	{
-		val xmlDataClasses = classDefMap.values.filter { it.isXmlDataClass }.toList()
+		val xmlDataClasses = classDefMap.values.flatten().filter { it.isXmlDataClass }.toList()
 
 		for (dataClass in xmlDataClasses)
 		{
@@ -484,7 +546,7 @@ class ClassRegister(val files: List<File>, val defFolder: File)
 	}
 }
 
-abstract class BaseTypeDefinition(val name: String, val namespace: String)
+abstract class BaseTypeDefinition(val name: String, val namespace: String, val sourceFile: String)
 {
 	val imports = ArrayList<String>()
 
@@ -492,7 +554,7 @@ abstract class BaseTypeDefinition(val name: String, val namespace: String)
 		get() = "$namespace.$name"
 }
 
-class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name, namespace)
+class ClassDefinition(name: String, namespace: String, sourceFile: String): BaseTypeDefinition(name, namespace, sourceFile)
 {
 	var superClass: ClassDefinition? = null
 	val interfaces = ArrayList<InterfaceDefinition>()
@@ -581,7 +643,7 @@ class ClassDefinition(name: String, namespace: String): BaseTypeDefinition(name,
 	}
 }
 
-class InterfaceDefinition(name: String, namespace: String): BaseTypeDefinition(name, namespace)
+class InterfaceDefinition(name: String, namespace: String, sourceFile: String): BaseTypeDefinition(name, namespace, sourceFile)
 {
 	var packageStr: String = ""
 }
@@ -590,7 +652,7 @@ class CategorisedValues(val category: String)
 {
 	val values = ArrayList<String>()
 }
-class EnumDefinition(name: String, namespace: String): BaseTypeDefinition(name, namespace)
+class EnumDefinition(name: String, namespace: String, sourceFile: String): BaseTypeDefinition(name, namespace, sourceFile)
 {
 	val values = ArrayList<CategorisedValues>()
 	private var currentCategory: CategorisedValues? = null
