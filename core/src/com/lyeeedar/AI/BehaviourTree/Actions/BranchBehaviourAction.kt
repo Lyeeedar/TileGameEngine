@@ -40,7 +40,7 @@ class BranchBehaviourAction : AbstractBehaviourAction()
 			for (el in branchesEl.children)
 			{
 				val objbranches: ConditionAndNode
-				val objbranchesEl = xmlData.getChildByName("Branches")!!
+				val objbranchesEl = el
 				objbranches = ConditionAndNode()
 				objbranches.load(objbranchesEl)
 				branches.add(objbranches)

@@ -66,6 +66,11 @@ class EntityData : XmlDataClass()
 	@DataArray(childrenAreUnique = true)
 	val components: Array<AbstractComponentData> = Array<AbstractComponentData>()
 
+	fun create(): Entity
+	{
+		return EntityLoader.load(this)
+	}
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
@@ -76,7 +81,7 @@ class EntityData : XmlDataClass()
 			for (el in componentsEl.children)
 			{
 				val objcomponents: AbstractComponentData
-				val objcomponentsEl = xmlData.getChildByName("Components")!!
+				val objcomponentsEl = el
 				objcomponents = XmlDataClassLoader.loadAbstractComponentData(objcomponentsEl.get("classID"))
 				objcomponents.load(objcomponentsEl)
 				components.add(objcomponents)

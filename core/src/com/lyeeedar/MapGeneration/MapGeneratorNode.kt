@@ -33,7 +33,7 @@ class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 			for (el in actionsEl.children)
 			{
 				val objactions: AbstractMapGenerationAction
-				val objactionsEl = xmlData.getChildByName("Actions")!!
+				val objactionsEl = el
 				objactions = XmlDataClassLoader.loadAbstractMapGenerationAction(objactionsEl.get("classID"))
 				objactions.load(objactionsEl)
 				actions.add(objactions)

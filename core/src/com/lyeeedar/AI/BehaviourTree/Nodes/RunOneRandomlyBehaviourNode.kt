@@ -73,7 +73,7 @@ class RunOneRandomlyBehaviourNode : AbstractBehaviourNode()
 			for (el in actionsEl.children)
 			{
 				val objactions: AbstractBehaviourAction
-				val objactionsEl = xmlData.getChildByName("Actions")!!
+				val objactionsEl = el
 				objactions = XmlDataClassLoader.loadAbstractBehaviourAction(objactionsEl.get("classID"))
 				objactions.load(objactionsEl)
 				actions.add(objactions)

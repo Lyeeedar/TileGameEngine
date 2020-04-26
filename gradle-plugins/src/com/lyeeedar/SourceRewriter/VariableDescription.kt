@@ -111,7 +111,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	    writeLoad(builder, indentation, classDefinition, classRegister, extraVariables, type, variableType, name)
     }
 
-	fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>, type: String, variableType: VariableType, targetName: String)
+	fun writeLoad(builder: IndentedStringBuilder, indentation: Int, classDefinition: ClassDefinition, classRegister: ClassRegister, extraVariables: ArrayList<String>, type: String, variableType: VariableType, targetName: String, sourceElName: String? = null)
 	{
 		val name = targetName
 
@@ -426,7 +426,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				else
 				{
 					builder.appendln(indentation+2, "val obj$name: $arrayType")
-					writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, arrayType, VariableType.VAR, "obj$name")
+					writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, arrayType, VariableType.VAR, "obj$name", "el")
 					builder.appendln(indentation+2, "$name.add(obj$name)")
 				}
 
@@ -553,7 +553,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        val el = name + "El"
 		        if (variableType == VariableType.LATEINIT || (variableType == VariableType.VAR && !nullable))
 		        {
-			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+			        if (sourceElName != null)
+			        {
+				        builder.appendln(indentation, "val $el = $sourceElName")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+			        }
 
 			        if (classDef.isAbstract)
 			        {
@@ -568,7 +575,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        }
 		        else if (variableType == VariableType.VAR)
 		        {
-			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")")
+			        if (sourceElName != null)
+			        {
+				        builder.appendln(indentation, "val $el = $sourceElName")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")")
+			        }
 			        builder.appendln(indentation, "if ($el != null)")
 			        builder.appendln(indentation, "{")
 
@@ -586,7 +600,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        }
 		        else
 		        {
-			        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+			        if (sourceElName != null)
+			        {
+				        builder.appendln(indentation, "val $el = $sourceElName")
+			        }
+			        else
+			        {
+				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
+			        }
 			        builder.appendln(indentation, "$name.load($el)")
 		        }
 	        }
@@ -829,7 +850,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         }
         else if (assetManagerLoadedTypes.contains(type))
         {
-			val dataType = if (type == "ParticleEffectDescription") "ParticleEffect,ParticleEffectTemplate" else type
+			val dataType = when (type)
+			{
+				"ParticleEffectDescription" -> "ParticleEffect,ParticleEffectTemplate"
+				"Renderable" -> "Renderables"
+				else -> type
+			}
             builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
         }
 		else if (type == "CompiledExpression")

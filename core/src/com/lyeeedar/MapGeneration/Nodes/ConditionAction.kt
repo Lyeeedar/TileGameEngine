@@ -58,7 +58,7 @@ class ConditionAction : AbstractMapGenerationAction()
 			for (el in conditionsEl.children)
 			{
 				val objconditions: Condition
-				val objconditionsEl = xmlData.getChildByName("Conditions")!!
+				val objconditionsEl = el
 				objconditions = Condition()
 				objconditions.load(objconditionsEl)
 				conditions.add(objconditions)

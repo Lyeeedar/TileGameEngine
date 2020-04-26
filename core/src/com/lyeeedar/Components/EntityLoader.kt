@@ -10,36 +10,26 @@ class EntityLoader()
 {
 	companion object
 	{
-		@JvmStatic fun load(path: String, skipRenderables: Boolean): Entity
+		@JvmStatic fun load(path: String): Entity
 		{
 			val xml = getXml(path)
 			val data = EntityData()
 			data.load(xml)
 
-			val entity = if (data.extends.isNotBlank()) load(data.extends, skipRenderables) else EntityPool.obtain()
+			return load(data)
+		}
+
+		fun load(data: EntityData): Entity
+		{
+			val entity = if (data.extends.isNotBlank()) load(data.extends) else EntityPool.obtain()
 
 			entity.addComponent(ComponentType.LoadData)
-			entity.loadData()!!.set(path, xml, true)
 
 			for (component in data.components)
 			{
 				val componentID = component.classID
-				if (skipRenderables)
-				{
-					if (componentID.contains("Renderable") || componentID.contains("Sprite"))
-					{
-						continue
-					}
-				}
-
 				val componentType = ComponentType.valueOf(componentID)
 				entity.addComponent(componentType).swapData(component)
-			}
-
-			if (!entity.hasComponent(ComponentType.Name))
-			{
-				entity.addComponent(ComponentType.Name)
-				entity.name()!!.data.name = path
 			}
 
 			return entity

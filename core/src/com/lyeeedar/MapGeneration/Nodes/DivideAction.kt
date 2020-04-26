@@ -65,7 +65,7 @@ class DivideAction : AbstractMapGenerationAction()
 			for (el in divisionsEl.children)
 			{
 				val objdivisions: Division
-				val objdivisionsEl = xmlData.getChildByName("Divisions")!!
+				val objdivisionsEl = el
 				objdivisions = Division()
 				objdivisions.load(objdivisionsEl)
 				divisions.add(objdivisions)

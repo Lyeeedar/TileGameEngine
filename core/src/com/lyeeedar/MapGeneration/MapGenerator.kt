@@ -29,7 +29,7 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	private val executingArray = Array<DeferredNode>()
 	//endregion
 
-	fun execute(seed: Long, createSymbolFunc: (Int,Int)->IMapGeneratorSymbol)
+	fun execute(seed: Long, createSymbolFunc: (Int,Int)->IMapGeneratorSymbol): Array2D<IMapGeneratorSymbol>
 	{
 		ran = LightRNG(seed)
 
@@ -62,6 +62,8 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 				print("\n")
 			}
 		}
+
+		return grid
 	}
 
 	companion object

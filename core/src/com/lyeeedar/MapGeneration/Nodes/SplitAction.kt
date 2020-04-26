@@ -196,7 +196,7 @@ class SplitAction : AbstractMapGenerationAction()
 			for (el in splitsEl.children)
 			{
 				val objsplits: Split
-				val objsplitsEl = xmlData.getChildByName("Splits")!!
+				val objsplitsEl = el
 				objsplits = Split()
 				objsplits.load(objsplitsEl)
 				splits.add(objsplits)
