@@ -412,7 +412,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 					builder.appendln(indentation + 2, "{")
 					if (classDef.isAbstract)
 					{
-						builder.appendln(indentation + 3, "val obj$name = XmlDataClassLoader.load$arrayType(keyframeEl.get(\"classID\"))")
+						builder.appendln(indentation + 3, "val obj$name = XmlDataClassLoader.load$arrayType(keyframeEl.get(\"classID\", keyframeEl.name)!!)")
 					}
 					else
 					{
@@ -459,7 +459,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 		        if (classDef.isAbstract)
 		        {
-			        builder.appendln(indentation+2, "val obj =  XmlDataClassLoader.load$nodeType(el.get(\"classID\"))")
+			        builder.appendln(indentation+2, "val obj = XmlDataClassLoader.load$nodeType(el.get(\"classID\", el.name)!!)")
 		        }
 		        else
 		        {
@@ -564,7 +564,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
+				        builder.appendln(indentation, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
 			        }
 			        else
 			        {
@@ -588,7 +588,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			        if (classDef.isAbstract)
 			        {
-				        builder.appendln(indentation + 1, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\"))")
+				        builder.appendln(indentation + 1, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
 			        }
 			        else
 			        {

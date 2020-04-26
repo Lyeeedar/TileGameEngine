@@ -242,7 +242,7 @@ class ActionSequence : XmlDataClass()
 			{
 				for (keyframeEl in el.children)
 				{
-					val objactions = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID"))
+					val objactions = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID", keyframeEl.name)!!)
 					objactions.load(keyframeEl)
 					actions.add(objactions)
 				}

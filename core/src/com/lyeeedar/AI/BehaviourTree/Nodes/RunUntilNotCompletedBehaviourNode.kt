@@ -40,7 +40,7 @@ class RunUntilNotCompletedBehaviourNode : AbstractBehaviourNode()
 			{
 				val objactions: AbstractBehaviourAction
 				val objactionsEl = el
-				objactions = XmlDataClassLoader.loadAbstractBehaviourAction(objactionsEl.get("classID"))
+				objactions = XmlDataClassLoader.loadAbstractBehaviourAction(objactionsEl.get("classID", objactionsEl.name)!!)
 				objactions.load(objactionsEl)
 				actions.add(objactions)
 			}

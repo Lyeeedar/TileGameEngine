@@ -178,7 +178,7 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 		{
 			for (el in nodeMapEl.children)
 			{
-				val obj =  XmlDataClassLoader.loadAbstractBehaviourNode(el.get("classID"))
+				val obj = XmlDataClassLoader.loadAbstractBehaviourNode(el.get("classID", el.name)!!)
 				obj.load(el)
 				val guid = el.getAttribute("GUID")
 				nodeMap[guid] = obj
