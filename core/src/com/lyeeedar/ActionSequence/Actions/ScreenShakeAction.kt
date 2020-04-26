@@ -39,7 +39,6 @@ class ScreenShakeAction : AbstractDurationActionSequenceAction()
 		super.load(xmlData)
 		speed = xmlData.getFloat("Speed", 10f)
 		amount = xmlData.getFloat("Amount", 5f)
-		afterLoad()
 	}
 	override val classID: String = "ScreenShake"
 	//endregion

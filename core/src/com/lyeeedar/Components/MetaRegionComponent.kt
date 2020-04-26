@@ -31,7 +31,6 @@ class MetaRegionComponentData : AbstractComponentData()
 				keys.add(el.text)
 			}
 		}
-		afterLoad()
 	}
 	override val classID: String = "MetaRegion"
 	//endregion

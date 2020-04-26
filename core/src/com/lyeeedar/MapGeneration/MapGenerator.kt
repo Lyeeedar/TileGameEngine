@@ -97,7 +97,6 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 		}
 		rootGUID = xmlData.get("Root")
 		resolve(nodeMap)
-		afterLoad()
 	}
 	private lateinit var rootGUID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

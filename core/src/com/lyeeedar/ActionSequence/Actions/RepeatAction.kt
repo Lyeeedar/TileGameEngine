@@ -68,7 +68,6 @@ class RepeatAction : AbstractDurationActionSequenceAction()
 	{
 		super.load(xmlData)
 		count = xmlData.getInt("Count", 1)
-		afterLoad()
 	}
 	override val classID: String = "Repeat"
 	//endregion

@@ -7,6 +7,7 @@ import com.exp4j.Helpers.evaluate
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Util.AssetManager
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.round
 import ktx.collections.set
@@ -31,6 +32,7 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 	}
 }
 
+@DataClass(name = "RenderableComponent")
 class RenderableComponentData : AbstractComponentData()
 {
 	lateinit var renderable: Renderable
@@ -40,7 +42,6 @@ class RenderableComponentData : AbstractComponentData()
 	{
 		super.load(xmlData)
 		renderable = AssetManager.loadRenderable(xmlData.getChildByName("Renderable")!!)
-		afterLoad()
 	}
 	override val classID: String = "Renderable"
 	//endregion

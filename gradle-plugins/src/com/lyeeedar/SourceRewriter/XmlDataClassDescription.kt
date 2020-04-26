@@ -169,7 +169,10 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		    builder.appendln(classIndentation+2, "resolve(${nodeMapVariable.name})")
 	    }
 
-	    builder.appendln(classIndentation+2, "afterLoad()")
+	    if (classContents.any { it.contains("override fun afterLoad()") })
+	    {
+		    builder.appendln(classIndentation + 2, "afterLoad()")
+	    }
 
         builder.appendln(classIndentation+1, "}")
 

@@ -22,7 +22,7 @@ class LwjglApplicationChanger : AbstractApplicationChanger(LwjglPreferences("gam
 
 		val cfg = LwjglApplicationConfiguration()
 
-		cfg.title = Localisation.getText("title", "UI", "en")
+		cfg.title = "Game"
 		cfg.width = 800
 		cfg.height = 600
 		cfg.fullscreen = pref.getBoolean("fullscreen")

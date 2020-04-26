@@ -249,7 +249,6 @@ class ActionSequence : XmlDataClass()
 			}
 		}
 		actions.sort(compareBy{ it.time })
-		afterLoad()
 	}
 	//endregion
 }

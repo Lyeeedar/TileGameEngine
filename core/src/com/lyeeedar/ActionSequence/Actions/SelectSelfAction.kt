@@ -20,7 +20,6 @@ class SelectSelfAction : AbstractOneShotActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		afterLoad()
 	}
 	override val classID: String = "SelectSelf"
 	//endregion

@@ -26,7 +26,6 @@ abstract class AbstractBehaviourTreeItem : GraphXmlDataClass<AbstractBehaviourNo
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		afterLoad()
 	}
 	abstract val classID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

@@ -70,7 +70,6 @@ class AdditionalRenderableComponentData : AbstractComponentData()
 				above.add(objabove)
 			}
 		}
-		afterLoad()
 	}
 	override val classID: String = "AdditionalRenderable"
 	//endregion

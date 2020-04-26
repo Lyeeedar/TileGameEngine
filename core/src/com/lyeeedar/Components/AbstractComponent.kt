@@ -9,7 +9,6 @@ abstract class AbstractComponentData : XmlDataClass()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		afterLoad()
 	}
 	abstract val classID: String
 	//endregion
@@ -21,7 +20,6 @@ class EmptyComponentData : AbstractComponentData()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		afterLoad()
 	}
 	override val classID: String = "Empty"
 	//endregion

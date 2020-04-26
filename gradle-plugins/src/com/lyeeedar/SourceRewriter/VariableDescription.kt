@@ -853,7 +853,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val dataType = when (type)
 			{
 				"ParticleEffectDescription" -> "ParticleEffect,ParticleEffectTemplate"
-				"Renderable" -> "Renderables"
+				"Renderable" -> "Sprite,TilingSprite,ParticleEffect"
 				else -> type
 			}
             builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")

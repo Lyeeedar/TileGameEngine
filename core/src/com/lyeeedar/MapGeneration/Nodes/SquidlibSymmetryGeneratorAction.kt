@@ -42,7 +42,6 @@ class SquidlibSymmetryGeneratorAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibSymmetryGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

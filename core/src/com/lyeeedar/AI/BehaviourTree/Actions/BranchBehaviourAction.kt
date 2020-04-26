@@ -46,7 +46,6 @@ class BranchBehaviourAction : AbstractBehaviourAction()
 				branches.add(objbranches)
 			}
 		}
-		afterLoad()
 	}
 	override val classID: String = "Branch"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
@@ -72,7 +71,6 @@ class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 	{
 		condition = CompiledExpression(xmlData.get("Condition"))
 		nodeGUID = xmlData.get("Node")
-		afterLoad()
 	}
 	private lateinit var nodeGUID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

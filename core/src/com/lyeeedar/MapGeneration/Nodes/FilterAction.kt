@@ -146,7 +146,6 @@ class FilterAction : AbstractMapGenerationAction()
 		centerDist = xmlData.getInt("CenterDist", 2)
 		nodeGUID = xmlData.get("Node", null)
 		remainderGUID = xmlData.get("Remainder", null)
-		afterLoad()
 	}
 	override val classID: String = "Filter"
 	private var nodeGUID: String? = null

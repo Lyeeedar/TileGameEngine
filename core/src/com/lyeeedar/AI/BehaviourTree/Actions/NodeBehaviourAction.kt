@@ -23,7 +23,6 @@ class NodeBehaviourAction : AbstractBehaviourAction()
 	{
 		super.load(xmlData)
 		nodeGUID = xmlData.get("Node")
-		afterLoad()
 	}
 	override val classID: String = "Node"
 	private lateinit var nodeGUID: String

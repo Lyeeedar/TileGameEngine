@@ -25,7 +25,6 @@ class StoreTargetsAction : AbstractOneShotActionSequenceAction()
 	{
 		super.load(xmlData)
 		key = xmlData.get("Key")
-		afterLoad()
 	}
 	override val classID: String = "StoreTargets"
 	//endregion
@@ -51,7 +50,6 @@ class RestoreTargetsAction : AbstractOneShotActionSequenceAction()
 	{
 		super.load(xmlData)
 		key = xmlData.get("Key")
-		afterLoad()
 	}
 	override val classID: String = "RestoreTargets"
 	//endregion

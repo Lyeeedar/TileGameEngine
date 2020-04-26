@@ -23,7 +23,6 @@ class NodeAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		childGUID = xmlData.get("Child")
-		afterLoad()
 	}
 	override val classID: String = "Node"
 	private lateinit var childGUID: String

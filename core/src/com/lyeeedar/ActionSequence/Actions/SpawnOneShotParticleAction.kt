@@ -106,7 +106,6 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 		alignToVector = xmlData.getBoolean("AlignToVector", true)
 		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
-		afterLoad()
 	}
 	override val classID: String = "SpawnOneShotParticle"
 	//endregion

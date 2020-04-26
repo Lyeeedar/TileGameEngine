@@ -43,7 +43,6 @@ class DialogueComponentData : AbstractComponentData()
 		super.load(xmlData)
 		text = xmlData.get("Text", "")!!
 		turnsToShow = xmlData.getInt("TurnsToShow", -1)
-		afterLoad()
 	}
 	override val classID: String = "Dialogue"
 	//endregion

@@ -51,7 +51,6 @@ class DefineVariableAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		key = xmlData.get("Key")
 		valueExp = createExpression(xmlData.get("ValueExp"))
-		afterLoad()
 	}
 	override val classID: String = "DefineVariable"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

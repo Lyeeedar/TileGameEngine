@@ -31,7 +31,6 @@ class DatascopeAction : AbstractMapGenerationAction()
 		scopeSymbols = xmlData.getBoolean("ScopeSymbols", true)
 		scopeArea = xmlData.getBoolean("ScopeArea", true)
 		childGUID = xmlData.get("Child")
-		afterLoad()
 	}
 	override val classID: String = "Datascope"
 	private lateinit var childGUID: String

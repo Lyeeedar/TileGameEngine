@@ -29,7 +29,6 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	override fun load(xmlData: XmlData)
 	{
 		time = xmlData.getFloat("Time", 0f)
-		afterLoad()
 	}
 	abstract val classID: String
 	//endregion
@@ -56,7 +55,6 @@ abstract class AbstractOneShotActionSequenceAction : AbstractActionSequenceActio
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		afterLoad()
 	}
 	//endregion
 }
@@ -76,7 +74,6 @@ abstract class AbstractDurationActionSequenceAction : AbstractActionSequenceActi
 	{
 		super.load(xmlData)
 		duration = xmlData.getFloat("Duration", 0f)
-		afterLoad()
 	}
 	//endregion
 }

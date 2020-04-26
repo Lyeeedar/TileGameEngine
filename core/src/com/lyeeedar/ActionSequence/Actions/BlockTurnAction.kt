@@ -47,7 +47,6 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 	{
 		super.load(xmlData)
 		turns = xmlData.getInt("Turns", 1)
-		afterLoad()
 	}
 	override val classID: String = "BlockTurn"
 	//endregion

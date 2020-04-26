@@ -87,7 +87,6 @@ class EntityData : XmlDataClass()
 				components.add(objcomponents)
 			}
 		}
-		afterLoad()
 	}
 	//endregion
 }

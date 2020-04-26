@@ -90,7 +90,6 @@ class SquidlibSectionGeneratorAction : AbstractMapGenerationAction()
 		startChar = xmlData.get("StartChar", " ")!![0]
 		endChar = xmlData.get("EndChar", " ")!![0]
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibSectionGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

@@ -42,7 +42,6 @@ class SquidlibDenseRoomGeneratorAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibDenseRoomGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

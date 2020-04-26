@@ -61,7 +61,6 @@ class SquidlibLanesMapGeneratorAction : AbstractMapGenerationAction()
 		numRoundRoomCarvers = xmlData.getInt("NumRoundRoomCarvers", 0)
 		numWalledRoundRoomCarvers = xmlData.getInt("NumWalledRoundRoomCarvers", 0)
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibLanesMapGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

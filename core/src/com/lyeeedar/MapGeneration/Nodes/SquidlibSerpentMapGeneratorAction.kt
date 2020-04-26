@@ -63,7 +63,6 @@ class SquidlibSerpentMapGeneratorAction : AbstractMapGenerationAction()
 		numRoundRoomCarvers = xmlData.getInt("NumRoundRoomCarvers", 0)
 		numWalledRoundRoomCarvers = xmlData.getInt("NumWalledRoundRoomCarvers", 0)
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibSerpentMapGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

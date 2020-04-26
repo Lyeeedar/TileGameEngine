@@ -102,7 +102,6 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 		key = xmlData.get("Key")
 		above = xmlData.getBoolean("Above", true)
 		killOnEnd = xmlData.getBoolean("KillOnEnd", false)
-		afterLoad()
 	}
 	override val classID: String = "AttachParticle"
 	//endregion

@@ -72,7 +72,6 @@ class DivideAction : AbstractMapGenerationAction()
 			}
 		}
 		onX = xmlData.getBoolean("OnX", true)
-		afterLoad()
 	}
 	override val classID: String = "Divide"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
@@ -112,7 +111,6 @@ class Division : GraphXmlDataClass<MapGeneratorNode>()
 	{
 		size = createExpression(xmlData.get("Size", null))
 		childGUID = xmlData.get("Child", null)
-		afterLoad()
 	}
 	private var childGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

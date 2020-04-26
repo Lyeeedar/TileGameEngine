@@ -86,7 +86,6 @@ class SquidlibDungeonGeneratorAction : AbstractMapGenerationAction()
 		startChar = xmlData.get("StartChar", " ")!![0]
 		endChar = xmlData.get("EndChar", " ")!![0]
 		overwrite = xmlData.getBoolean("Overwrite", true)
-		afterLoad()
 	}
 	override val classID: String = "SquidlibDungeonGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

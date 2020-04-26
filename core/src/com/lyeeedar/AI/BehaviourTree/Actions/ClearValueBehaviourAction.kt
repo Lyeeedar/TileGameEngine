@@ -22,7 +22,6 @@ class ClearValueBehaviourAction : AbstractBehaviourAction()
 	{
 		super.load(xmlData)
 		key = xmlData.get("Key")
-		afterLoad()
 	}
 	override val classID: String = "ClearValue"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

@@ -85,7 +85,6 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 		endFade = xmlData.getFloat("EndFade", 1f)
 		spinAngle = xmlData.getFloat("SpinAngle", 0f)
 		targetColour = AssetManager.tryLoadColour(xmlData.getChildByName("TargetColour"))!!
-		afterLoad()
 	}
 	override val classID: String = "Animation"
 	//endregion

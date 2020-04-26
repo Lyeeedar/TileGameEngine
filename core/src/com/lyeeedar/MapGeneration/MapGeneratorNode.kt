@@ -39,7 +39,6 @@ class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 				actions.add(objactions)
 			}
 		}
-		afterLoad()
 	}
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
