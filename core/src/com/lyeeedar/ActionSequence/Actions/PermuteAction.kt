@@ -71,6 +71,7 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 		val hitPointsEl = xmlData.getChildByName("HitPoints")
 		if (hitPointsEl != null) hitPoints.addAll(hitPointsEl.toHitPointArray())
 		else hitPoints.add(Point(0, 0))
+		afterLoad()
 	}
 	override val classID: String = "Permute"
 	//endregion

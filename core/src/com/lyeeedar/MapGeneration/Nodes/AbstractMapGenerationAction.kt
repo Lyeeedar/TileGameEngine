@@ -18,6 +18,7 @@ abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
+		afterLoad()
 	}
 	abstract val classID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

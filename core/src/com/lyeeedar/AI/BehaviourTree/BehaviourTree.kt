@@ -138,7 +138,7 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 		root.evaluate(state)
 	}
 
-	fun afterLoad()
+	override fun afterLoad()
 	{
 		var i = 0
 		for (node in nodeMap.values())

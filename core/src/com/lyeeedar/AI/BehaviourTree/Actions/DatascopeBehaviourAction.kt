@@ -27,6 +27,7 @@ class DatascopeBehaviourAction : AbstractBehaviourAction()
 	{
 		super.load(xmlData)
 		nodeGUID = xmlData.get("Node")
+		afterLoad()
 	}
 	override val classID: String = "Datascope"
 	lateinit var nodeGUID: String

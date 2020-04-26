@@ -44,6 +44,7 @@ class RunAllBehaviourNode : AbstractBehaviourNode()
 				actions.add(objactions)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "RunAll"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

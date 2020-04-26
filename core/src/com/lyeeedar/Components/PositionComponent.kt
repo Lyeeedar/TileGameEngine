@@ -67,6 +67,7 @@ class PositionComponentData : AbstractComponentData()
 		slot = SpaceSlot.valueOf(xmlData.get("Slot", SpaceSlot.ENTITY.toString())!!.toUpperCase(Locale.ENGLISH))
 		moveable = xmlData.getBoolean("Moveable", true)
 		size = xmlData.getInt("Size", 1)
+		afterLoad()
 	}
 	override val classID: String = "Position"
 	//endregion

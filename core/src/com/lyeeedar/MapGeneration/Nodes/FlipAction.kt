@@ -28,6 +28,7 @@ class FlipAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		onX = xmlData.getBoolean("OnX", true)
+		afterLoad()
 	}
 	override val classID: String = "Flip"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

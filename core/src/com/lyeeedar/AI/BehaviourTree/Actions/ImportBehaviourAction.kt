@@ -17,7 +17,7 @@ class ImportBehaviourAction : AbstractBehaviourAction()
 	lateinit var importedTree: BehaviourTree
 	//endregion
 
-	fun afterLoad()
+	override fun afterLoad()
 	{
 		importedTree = BehaviourTree.load(path)
 	}

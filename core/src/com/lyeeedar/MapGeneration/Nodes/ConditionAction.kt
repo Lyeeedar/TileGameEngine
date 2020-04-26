@@ -64,6 +64,7 @@ class ConditionAction : AbstractMapGenerationAction()
 				conditions.add(objconditions)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "Condition"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
@@ -103,6 +104,7 @@ class Condition : GraphXmlDataClass<MapGeneratorNode>()
 	{
 		condition = createExpression(xmlData.get("Condition", null))
 		childGUID = xmlData.get("Child", null)
+		afterLoad()
 	}
 	var childGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

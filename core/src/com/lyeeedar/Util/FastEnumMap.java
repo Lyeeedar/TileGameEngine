@@ -1,7 +1,5 @@
 package com.lyeeedar.Util;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Iterator;
 
 public final class FastEnumMap<T extends Enum<T>, V> implements Iterable<V>
@@ -75,6 +73,14 @@ public final class FastEnumMap<T extends Enum<T>, V> implements Iterable<V>
 	public V get( T key )
 	{
 		return items[key.ordinal()];
+	}
+
+	public V get( T key, V defaultValue )
+	{
+		V value = items[key.ordinal()];
+		if (value == null) return defaultValue;
+
+		return value;
 	}
 
 	public boolean containsKey( T key )

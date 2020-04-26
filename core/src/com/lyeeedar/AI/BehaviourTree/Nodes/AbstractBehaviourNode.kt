@@ -23,6 +23,7 @@ abstract class AbstractBehaviourNode : AbstractBehaviourTreeItem()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
+		afterLoad()
 	}
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{

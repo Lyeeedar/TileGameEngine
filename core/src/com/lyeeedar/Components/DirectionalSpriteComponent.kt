@@ -29,6 +29,7 @@ class DirectionalSpriteComponentData : AbstractComponentData()
 	{
 		super.load(xmlData)
 		directionalSprite = AssetManager.loadDirectionalSprite(xmlData.getChildByName("DirectionalSprite")!!)
+		afterLoad()
 	}
 	override val classID: String = "DirectionalSprite"
 	//endregion

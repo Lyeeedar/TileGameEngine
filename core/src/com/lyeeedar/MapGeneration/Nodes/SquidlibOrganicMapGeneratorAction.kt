@@ -42,6 +42,7 @@ class SquidlibOrganicMapGeneratorAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
+		afterLoad()
 	}
 	override val classID: String = "SquidlibOrganicMapGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

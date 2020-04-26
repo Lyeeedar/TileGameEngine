@@ -202,6 +202,7 @@ class SplitAction : AbstractMapGenerationAction()
 				splits.add(objsplits)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "Split"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
@@ -237,6 +238,7 @@ class Split : GraphXmlDataClass<MapGeneratorNode>()
 		side = SplitSide.valueOf(xmlData.get("Side").toUpperCase(Locale.ENGLISH))
 		size = createExpression(xmlData.get("Size"))
 		childGUID = xmlData.get("Child", null)
+		afterLoad()
 	}
 	var childGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

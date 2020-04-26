@@ -23,6 +23,7 @@ class NameComponentData : AbstractComponentData()
 		super.load(xmlData)
 		name = xmlData.get("Name")
 		title = xmlData.get("Title")
+		afterLoad()
 	}
 	override val classID: String = "Name"
 	//endregion

@@ -40,6 +40,7 @@ class RenderableComponentData : AbstractComponentData()
 	{
 		super.load(xmlData)
 		renderable = AssetManager.loadRenderable(xmlData.getChildByName("Renderable")!!)
+		afterLoad()
 	}
 	override val classID: String = "Renderable"
 	//endregion

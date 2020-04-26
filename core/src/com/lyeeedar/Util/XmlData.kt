@@ -663,6 +663,7 @@ class XmlAttributeData
 abstract class XmlDataClass
 {
 	open fun load(xmlData: XmlData) {}
+	open fun afterLoad() { }
 }
 abstract class GraphXmlDataClass<T> : XmlDataClass()
 {

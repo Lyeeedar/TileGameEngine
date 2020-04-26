@@ -79,6 +79,7 @@ class RunOneRandomlyBehaviourNode : AbstractBehaviourNode()
 				actions.add(objactions)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "RunOneRandomly"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

@@ -95,6 +95,7 @@ class TakeAction : AbstractMapGenerationAction()
 		countExp = createExpression(xmlData.get("CountExp"))
 		nodeGUID = xmlData.get("Node", null)
 		remainderGUID = xmlData.get("Remainder", null)
+		afterLoad()
 	}
 	override val classID: String = "Take"
 	var nodeGUID: String? = null

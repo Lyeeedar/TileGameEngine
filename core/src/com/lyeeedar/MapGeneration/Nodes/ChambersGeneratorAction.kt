@@ -251,6 +251,7 @@ class ChambersGeneratorAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		overwrite = xmlData.getBoolean("Overwrite", true)
+		afterLoad()
 	}
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{

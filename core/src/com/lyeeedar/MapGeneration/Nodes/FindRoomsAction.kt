@@ -58,6 +58,7 @@ class FindRoomsAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		roomName = xmlData.get("RoomName")
 		corridorName = xmlData.get("CorridorName")
+		afterLoad()
 	}
 	override val classID: String = "FindRooms"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

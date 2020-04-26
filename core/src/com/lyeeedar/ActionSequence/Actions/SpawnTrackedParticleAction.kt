@@ -93,6 +93,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 		super.load(xmlData)
 		particle = AssetManager.loadParticleEffect(xmlData.getChildByName("Particle")!!)
 		spawnSingleParticle = xmlData.getBoolean("SpawnSingleParticle", false)
+		afterLoad()
 	}
 	override val classID: String = "SpawnTrackedParticle"
 	//endregion

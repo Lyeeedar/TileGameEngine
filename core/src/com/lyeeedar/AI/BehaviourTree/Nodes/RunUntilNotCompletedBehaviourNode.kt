@@ -45,6 +45,7 @@ class RunUntilNotCompletedBehaviourNode : AbstractBehaviourNode()
 				actions.add(objactions)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "RunUntilNotCompleted"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

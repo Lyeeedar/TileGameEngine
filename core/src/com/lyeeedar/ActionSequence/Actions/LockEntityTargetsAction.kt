@@ -31,6 +31,7 @@ class LockEntityTargetsAction : AbstractOneShotActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
+		afterLoad()
 	}
 	override val classID: String = "LockEntityTargets"
 	//endregion

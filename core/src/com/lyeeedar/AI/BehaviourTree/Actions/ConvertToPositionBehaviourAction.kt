@@ -37,6 +37,7 @@ class ConvertToPositionBehaviourAction : AbstractBehaviourAction()
 		super.load(xmlData)
 		input = xmlData.get("Input")
 		output = xmlData.get("Output")
+		afterLoad()
 	}
 	override val classID: String = "ConvertToPosition"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

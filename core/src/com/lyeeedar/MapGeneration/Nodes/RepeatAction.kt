@@ -159,6 +159,7 @@ class RepeatAction : AbstractMapGenerationAction()
 		size = createExpression(xmlData.get("Size"))
 		childGUID = xmlData.get("Child")
 		remainderGUID = xmlData.get("Remainder", null)
+		afterLoad()
 	}
 	override val classID: String = "Repeat"
 	lateinit var childGUID: String

@@ -23,6 +23,7 @@ class DeferAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		childGUID = xmlData.get("Child")
+		afterLoad()
 	}
 	override val classID: String = "Defer"
 	lateinit var childGUID: String

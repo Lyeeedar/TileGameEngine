@@ -147,6 +147,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 		name = xmlData.get("Name")
 		nodeGUID = xmlData.get("Node", null)
 		remainderGUID = xmlData.get("Remainder", null)
+		afterLoad()
 	}
 	override val classID: String = "SelectNamedArea"
 	var nodeGUID: String? = null

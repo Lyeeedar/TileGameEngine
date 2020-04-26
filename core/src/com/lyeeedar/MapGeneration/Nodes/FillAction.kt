@@ -30,6 +30,7 @@ class FillAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		char = xmlData.get("Char", " ")!![0]
 		overwrite = xmlData.getBoolean("Overwrite", false)
+		afterLoad()
 	}
 	override val classID: String = "Fill"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

@@ -39,6 +39,7 @@ class SetNamedAreaAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		name = xmlData.get("Name")
 		overwrite = xmlData.getBoolean("Overwrite", false)
+		afterLoad()
 	}
 	override val classID: String = "SetNamedArea"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

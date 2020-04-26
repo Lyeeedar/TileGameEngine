@@ -46,6 +46,7 @@ class RunUntilStateBehaviourNode : AbstractBehaviourNode()
 				actions.add(objactions)
 			}
 		}
+		afterLoad()
 	}
 	override val classID: String = "RunUntilState"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)

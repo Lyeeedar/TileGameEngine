@@ -48,6 +48,7 @@ class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
 		roomChance = xmlData.getFloat("RoomChance", 0.0f)
 		overwrite = xmlData.getBoolean("Overwrite", true)
+		afterLoad()
 	}
 	override val classID: String = "SquidlibFlowingCaveGenerator"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

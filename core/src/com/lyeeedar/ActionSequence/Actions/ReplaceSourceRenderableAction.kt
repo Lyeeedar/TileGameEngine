@@ -89,6 +89,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 		renderable = AssetManager.loadRenderable(xmlData.getChildByName("Renderable")!!)
 		blendDuration = xmlData.getFloat("BlendDuration", 0f)
 		restoreOriginal = xmlData.getBoolean("RestoreOriginal", true)
+		afterLoad()
 	}
 	override val classID: String = "ReplaceSourceRenderable"
 	//endregion

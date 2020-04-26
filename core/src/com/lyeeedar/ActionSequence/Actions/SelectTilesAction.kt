@@ -87,6 +87,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 		coverage = CompiledExpression(xmlData.get("Coverage"), "count")
 		radius = xmlData.getInt("Radius", 1)
 		emptyOnly = xmlData.getBoolean("EmptyOnly", false)
+		afterLoad()
 	}
 	override val classID: String = "SelectTiles"
 	//endregion
