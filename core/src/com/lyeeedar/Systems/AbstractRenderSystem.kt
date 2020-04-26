@@ -146,4 +146,17 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 	{
 
 	}
+
+	fun getClickTile(screenX: Int, screenY: Int): AbstractTile?
+	{
+		val playerPos = getPlayerPosition()
+
+		val offsetx = Statics.resolution.x * 0.5f - playerPos.x * tileSize - tileSize * 0.5f
+		val offsety = Statics.resolution.y * 0.5f - playerPos.y * tileSize - tileSize * 0.5f
+
+		val mousex = ((screenX - offsetx) / tileSize).toInt()
+		val mousey = (((Statics.resolution[1] - screenY) - offsety) / tileSize).toInt()
+
+		return world.grid.tryGet(mousex, mousey, null)
+	}
 }

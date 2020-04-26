@@ -26,7 +26,7 @@ class DeferAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "Defer"
-	lateinit var childGUID: String
+	private lateinit var childGUID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

@@ -35,7 +35,7 @@ class PerPointAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "PerPoint"
-	lateinit var nodeGUID: String
+	private lateinit var nodeGUID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

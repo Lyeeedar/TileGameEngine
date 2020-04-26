@@ -26,7 +26,7 @@ class NodeAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "Node"
-	lateinit var childGUID: String
+	private lateinit var childGUID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

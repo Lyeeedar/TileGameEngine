@@ -26,7 +26,7 @@ class NodeBehaviourAction : AbstractBehaviourAction()
 		afterLoad()
 	}
 	override val classID: String = "Node"
-	lateinit var nodeGUID: String
+	private lateinit var nodeGUID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{
 		super.resolve(nodes)

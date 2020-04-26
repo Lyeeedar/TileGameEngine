@@ -34,7 +34,8 @@ class ComponentType
 					enumBuilder.appendln(1, "$enumName({ $className(${className}Data()) }),")
 				}
 
-				val extensionName = enumName.substring(0, 1).toLowerCase() + enumName.substring(1)
+				val extensionName = if (enumName.length < 4) enumName.toLowerCase() else enumName.substring(0, 1).toLowerCase() + enumName.substring(1)
+
 				extensionsBuilder.appendln("inline fun Entity.$extensionName(): $className? = this.components[ComponentType.$enumName] as $className?")
 			}
 

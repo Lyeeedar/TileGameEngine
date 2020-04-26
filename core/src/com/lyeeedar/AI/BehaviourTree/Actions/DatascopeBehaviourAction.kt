@@ -30,7 +30,7 @@ class DatascopeBehaviourAction : AbstractBehaviourAction()
 		afterLoad()
 	}
 	override val classID: String = "Datascope"
-	lateinit var nodeGUID: String
+	private lateinit var nodeGUID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{
 		super.resolve(nodes)

@@ -34,7 +34,7 @@ class DatascopeAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "Datascope"
-	lateinit var childGUID: String
+	private lateinit var childGUID: String
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

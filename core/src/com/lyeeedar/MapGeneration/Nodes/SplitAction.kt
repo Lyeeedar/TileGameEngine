@@ -240,7 +240,7 @@ class Split : GraphXmlDataClass<MapGeneratorNode>()
 		childGUID = xmlData.get("Child", null)
 		afterLoad()
 	}
-	var childGUID: String? = null
+	private var childGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		if (!childGUID.isNullOrBlank()) child = nodes[childGUID]!!

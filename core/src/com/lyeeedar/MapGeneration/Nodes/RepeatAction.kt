@@ -162,8 +162,8 @@ class RepeatAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "Repeat"
-	lateinit var childGUID: String
-	var remainderGUID: String? = null
+	private lateinit var childGUID: String
+	private var remainderGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)

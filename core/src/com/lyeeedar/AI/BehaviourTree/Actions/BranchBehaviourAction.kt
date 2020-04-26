@@ -74,7 +74,7 @@ class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 		nodeGUID = xmlData.get("Node")
 		afterLoad()
 	}
-	lateinit var nodeGUID: String
+	private lateinit var nodeGUID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{
 		node = nodes[nodeGUID]!!

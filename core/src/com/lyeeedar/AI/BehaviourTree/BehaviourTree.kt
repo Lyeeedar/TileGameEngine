@@ -188,7 +188,7 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 		resolve(nodeMap)
 		afterLoad()
 	}
-	lateinit var rootGUID: String
+	private lateinit var rootGUID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{
 		for (item in nodeMap.values())

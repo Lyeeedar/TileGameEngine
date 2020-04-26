@@ -539,12 +539,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        {
 				if (variableType == VariableType.LATEINIT)
 				{
-					extraVariables.add("lateinit var ${name}GUID: String")
+					extraVariables.add("private lateinit var ${name}GUID: String")
 					builder.appendln(indentation, "${name}GUID = xmlData.get(\"$dataName\")")
 				}
 		        else
 				{
-					extraVariables.add("var ${name}GUID: String? = null")
+					extraVariables.add("private var ${name}GUID: String? = null")
 					builder.appendln(indentation, "${name}GUID = xmlData.get(\"$dataName\", null)")
 				}
 	        }

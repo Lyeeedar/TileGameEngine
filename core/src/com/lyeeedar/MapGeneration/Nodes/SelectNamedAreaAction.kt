@@ -150,8 +150,8 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 		afterLoad()
 	}
 	override val classID: String = "SelectNamedArea"
-	var nodeGUID: String? = null
-	var remainderGUID: String? = null
+	private var nodeGUID: String? = null
+	private var remainderGUID: String? = null
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)
 	{
 		super.resolve(nodes)
