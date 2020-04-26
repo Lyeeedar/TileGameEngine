@@ -35,13 +35,13 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 @DataClass(name = "RenderableComponent")
 class RenderableComponentData : AbstractComponentData()
 {
-	lateinit var renderable: Renderable
+	var renderable: Renderable = AssetManager.loadSprite("blank")
 
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		renderable = AssetManager.loadRenderable(xmlData.getChildByName("Renderable")!!)
+		renderable = AssetManager.tryLoadRenderable(xmlData.getChildByName("Renderable"))!!
 	}
 	override val classID: String = "Renderable"
 	//endregion

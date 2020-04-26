@@ -52,7 +52,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			{
 				for (y in ys until ye)
 				{
-					renderer.queueSpriteWrapper(world.grid[x, y].floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal)
+					val floor = world.grid[x, y].floor ?: continue
+					renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal)
 				}
 			}
 

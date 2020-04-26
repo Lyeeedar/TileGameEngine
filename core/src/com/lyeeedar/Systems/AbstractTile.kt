@@ -13,7 +13,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 {
 	lateinit var world: World<*>
 
-	lateinit var floor: SpriteWrapper
+	var floor: SpriteWrapper? = null
 	var wall: SpriteWrapper? = null
 	val contents: FastEnumMap<SpaceSlot, Entity> = FastEnumMap(SpaceSlot::class.java)
 
