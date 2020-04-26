@@ -5,9 +5,8 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.ActionSequence.Actions.AbstractActionSequenceAction
 import com.lyeeedar.ActionSequence.Actions.ActionState
 import com.lyeeedar.Components.Entity
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Direction
-import com.lyeeedar.Systems.EventData
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Point
@@ -40,7 +39,7 @@ class ActionSequenceState
 		this.world = world
 
 		targets.clear()
-		targets.add(source.pos()!!.position)
+		targets.add(source.position()!!.position)
 
 		return this
 	}
@@ -134,7 +133,7 @@ class ActionSequence : XmlDataClass()
 			state.targets.clear()
 			for (target in state.lockedEntityTargets)
 			{
-				val pos = target.pos() ?: continue
+				val pos = target.position() ?: continue
 				state.targets.add(pos.position)
 			}
 		}

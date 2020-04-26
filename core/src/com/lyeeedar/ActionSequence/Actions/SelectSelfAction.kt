@@ -1,7 +1,7 @@
 package com.lyeeedar.ActionSequence.Actions
 
 import com.lyeeedar.ActionSequence.ActionSequenceState
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
@@ -11,7 +11,7 @@ class SelectSelfAction : AbstractOneShotActionSequenceAction()
 	override fun enter(state: ActionSequenceState): ActionState
 	{
 		state.targets.clear()
-		state.targets.add(state.source.pos()!!.position)
+		state.targets.add(state.source.position()!!.position)
 
 		return ActionState.Completed
 	}

@@ -30,7 +30,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val sourceTile = state.source.pos()!!.position
+		val sourceTile = state.source.position()!!.position
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
@@ -82,7 +82,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 			}
 			r.renderDelay = renderDelay
 
-			val pos = entity.pos()!!
+			val pos = entity.position()!!
 
 			pos.position = tile
 			pos.data.slot = SpaceSlot.EFFECT

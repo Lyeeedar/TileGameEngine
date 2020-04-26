@@ -5,7 +5,7 @@ import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Util.XmlData
 import java.lang.RuntimeException
 
@@ -20,7 +20,7 @@ class ConvertToPositionBehaviourAction : AbstractBehaviourAction()
 
 		if (oldValue is Entity)
 		{
-			val pos = oldValue.pos()!!.position
+			val pos = oldValue.position()!!.position
 			state.setData(output, 0, pos)
 		}
 		else

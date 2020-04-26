@@ -2,8 +2,6 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Util.XmlData
 
-inline fun Entity.name(): NameComponent = this.nameOrNull()!!
-inline fun Entity.nameOrNull(): NameComponent? = this.components[ComponentType.Name] as NameComponent?
 class NameComponent(data: NameComponentData) : AbstractComponent<NameComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.Name

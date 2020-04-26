@@ -13,7 +13,6 @@ import ktx.collections.set
 
 inline fun Entity.sprite(): Sprite? = this.renderable()?.renderable as? Sprite
 inline fun Entity.renderOffset() = this.renderable()?.renderable?.animation?.renderOffset(false)
-inline fun Entity.renderable(): RenderableComponent? = this.components[ComponentType.Renderable] as RenderableComponent?
 class RenderableComponent(data: RenderableComponentData) : AbstractComponent<RenderableComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.Renderable

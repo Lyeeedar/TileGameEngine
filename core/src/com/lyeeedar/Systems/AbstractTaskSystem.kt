@@ -101,7 +101,7 @@ abstract class AbstractTaskSystem(world: World) : AbstractSystem(world)
 	protected fun processEntity(entity: Entity): ProcessEntityState
 	{
 		if (entity.isMarkedForDeletion()) return ProcessEntityState.SKIPPED
-		if (world.player != null && entity.pos()!!.position.taxiDist(world.player!!.pos()!!.position) > 100) return ProcessEntityState.SKIPPED
+		if (world.player != null && entity.position()!!.position.taxiDist(world.player!!.position()!!.position) > 100) return ProcessEntityState.SKIPPED
 
 		val task = entity.task()!!
 

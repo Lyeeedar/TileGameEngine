@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.SortedRenderer
-import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
 
@@ -78,7 +77,7 @@ abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, 
 	override fun updateEntity(entity: Entity, deltaTime: Float)
 	{
 		val renderable = entity.renderable()!!.renderable
-		val pos = entity.pos()!!
+		val pos = entity.position()!!
 
 		val px = pos.position.x.toFloat()
 		val py = pos.position.y.toFloat()

@@ -39,7 +39,7 @@ class EntityLoader()
 			if (!entity.hasComponent(ComponentType.Name))
 			{
 				entity.addComponent(ComponentType.Name)
-				entity.name().data.name = path
+				entity.name()!!.data.name = path
 			}
 
 			return entity

@@ -8,7 +8,7 @@ class DirectionalSpriteSystem(world: World): AbstractEntitySystem(world, world.g
 {
 	override fun updateEntity(entity: Entity, deltaTime: Float)
 	{
-		val pos = entity.pos()!!
+		val pos = entity.position()!!
 		val dirSprite = entity.directionalSprite()!!
 
 		if (!dirSprite.data.directionalSprite.hasAnim(dirSprite.currentAnim))

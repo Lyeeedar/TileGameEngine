@@ -99,8 +99,8 @@ class DialogueSystem(world: World) : AbstractEntitySystem(world, world.getEntiti
 
 		tempCol.set(1f, 1f, 1f, dialogue.alpha)
 
-		var x = entity.pos()!!.x * tileSize
-		var y = entity.pos()!!.y * tileSize
+		var x = entity.position()!!.x * tileSize
+		var y = entity.position()!!.y * tileSize
 
 		val renderOffset = entity.renderOffset()
 		if (renderOffset != null)

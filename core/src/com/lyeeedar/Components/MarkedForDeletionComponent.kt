@@ -6,7 +6,6 @@ fun Entity.markForDeletion(delay: Float, reason: String = "")
 	this.markedForDeletion()!!.set(delay, reason)
 }
 
-inline fun Entity.markedForDeletion(): MarkedForDeletionComponent? = this.components[ComponentType.MarkedForDeletion] as MarkedForDeletionComponent?
 inline fun Entity.isMarkedForDeletion() = this.markedForDeletion() != null
 class MarkedForDeletionComponent : NonDataComponent()
 {

@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.ActionSequence.ActionSequenceState
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
@@ -30,7 +30,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 
 		tiles.clear()
 
-		val pos = state.source.pos()!!.position
+		val pos = state.source.position()!!.position
 
 		val xs = max(0, pos.x-radius)
 		val xe = min(state.world.grid.width, pos.x+radius)

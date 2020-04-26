@@ -2,7 +2,7 @@ package com.lyeeedar.ActionSequence.Actions
 
 import com.badlogic.gdx.math.Interpolation
 import com.lyeeedar.ActionSequence.ActionSequenceState
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Components.transientParticleArchetype
 import com.lyeeedar.Renderables.Animation.ExpandAnimation
@@ -43,7 +43,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val sourceTile = state.source.pos()!!.position
+		val sourceTile = state.source.position()!!.position
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
@@ -96,7 +96,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 			}
 			r.renderDelay = renderDelay
 
-			val pos = entity.pos()!!
+			val pos = entity.position()!!
 
 			pos.position = tile
 			pos.data.slot = SpaceSlot.EFFECT

@@ -5,7 +5,6 @@ import com.lyeeedar.Util.XmlData
 import java.util.*
 import ktx.collections.addAll
 
-inline fun Entity.metaRegion(): MetaRegionComponent? = this.components[ComponentType.MetaRegion] as MetaRegionComponent?
 class MetaRegionComponent(data: MetaRegionComponentData) : AbstractComponent<MetaRegionComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.MetaRegion

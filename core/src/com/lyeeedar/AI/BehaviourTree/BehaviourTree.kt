@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
-import com.lyeeedar.Components.pos
+import com.lyeeedar.Components.position
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
@@ -75,7 +75,7 @@ class BehaviourTreeState
 	private val resolvedVariables = ObjectFloatMap<String>()
 	fun updateResolvedVariables()
 	{
-		val srcPos = entity.pos()!!
+		val srcPos = entity.position()!!
 
 		resolvedVariables.clear()
 		for (entry in data)
@@ -83,7 +83,7 @@ class BehaviourTreeState
 			val value = entry.value
 			if (value is Entity)
 			{
-				val epos = value.pos()
+				val epos = value.position()
 				if (epos != null)
 				{
 					val dist = srcPos.position.taxiDist(epos.position)

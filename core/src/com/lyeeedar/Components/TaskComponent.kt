@@ -3,7 +3,6 @@ package com.lyeeedar.Components
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 
-inline fun Entity.task(): TaskComponent? = this.components[ComponentType.Task] as TaskComponent?
 class TaskComponent : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.Task

@@ -79,7 +79,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		return null
 	}
 
-    fun resolveImports(imports: HashSet<String>, loaderImports: HashSet<String>)
+    fun resolveImports(imports: HashSet<String>)
     {
         for (variable in variables)
         {

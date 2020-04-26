@@ -4,7 +4,6 @@ import com.lyeeedar.Renderables.Sprite.DirectionalSprite
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.XmlData
 
-inline fun Entity.directionalSprite(): DirectionalSpriteComponent? = this.components[ComponentType.DirectionalSprite] as DirectionalSpriteComponent?
 class DirectionalSpriteComponent(data: DirectionalSpriteComponentData) : AbstractComponent<DirectionalSpriteComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.DirectionalSprite

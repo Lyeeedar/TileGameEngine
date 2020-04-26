@@ -7,7 +7,6 @@ import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-inline fun Entity.pos(): PositionComponent? = this.components[ComponentType.Position] as PositionComponent?
 class PositionComponent(data: PositionComponentData): AbstractComponent<PositionComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.Position

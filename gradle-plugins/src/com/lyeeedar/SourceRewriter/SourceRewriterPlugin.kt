@@ -1,5 +1,6 @@
 package com.lyeeedar.build
 
+import com.lyeeedar.SourceRewriter.ComponentType
 import com.lyeeedar.build.SourceRewriter.ClassRegister
 import com.lyeeedar.build.SourceRewriter.IndentedStringBuilder
 import com.lyeeedar.build.SourceRewriter.SourceRewriter
@@ -57,36 +58,16 @@ open class SourceRewriterTask : DefaultTask()
 			}
 
 			val loaderBuilder = IndentedStringBuilder()
-			val loaderImports = HashSet<String>()
 
 			println("Writing changes")
 			for (rewriter in dataClassFiles)
 			{
-				rewriter.write(loaderBuilder, loaderImports)
+				rewriter.write(loaderBuilder)
 			}
 
-			println("Writing xml loader")
-			val destPath = File(srcDirs!!.first().absolutePath + "/../../../../../game/core/src/com/lyeeedar/Util/XmlDataClassLoader.kt").canonicalFile
-			val output = IndentedStringBuilder()
-			output.appendln("package com.lyeeedar.Util")
-			output.appendln("")
-			for (import in loaderImports)
-			{
-				output.appendln("import $import")
-			}
-			output.appendln("")
-			output.appendln("class XmlDataClassLoader")
-			output.appendln("{")
-			output.appendln(1, "companion object")
-			output.appendln(1, "{")
+			writeXmlLoader(loaderBuilder)
 
-			output.appendln(loaderBuilder.toString())
-
-			output.appendln(1, "}")
-			output.appendln("}")
-
-			destPath.writeText(output.toString())
-			println("Wrote loader to " + destPath.canonicalPath)
+			ComponentType.write(classRegister, srcDirs!!.first())
 
 			println("Writing def files")
 			classRegister.writeXmlDefFiles()
@@ -102,7 +83,29 @@ open class SourceRewriterTask : DefaultTask()
 		}
 	}
 
-	fun find(roots: Set<File>): List<File>
+	private fun writeXmlLoader(builder: IndentedStringBuilder)
+	{
+		println("Writing xml loader")
+		val destPath = File(srcDirs!!.first().absolutePath + "/../../../../../game/core/src/com/lyeeedar/Util/XmlDataClassLoader.kt").canonicalFile
+		val output = IndentedStringBuilder()
+		output.appendln("package com.lyeeedar.Util")
+		output.appendln("")
+		output.appendln("")
+		output.appendln("class XmlDataClassLoader")
+		output.appendln("{")
+		output.appendln(1, "companion object")
+		output.appendln(1, "{")
+
+		output.appendln(builder.toString())
+
+		output.appendln(1, "}")
+		output.appendln("}")
+
+		destPath.writeText(output.toString())
+		println("Wrote loader to " + destPath.canonicalPath)
+	}
+
+	private fun find(roots: Set<File>): List<File>
 	{
 		val files: MutableList<File> = ArrayList()
 		for (root in roots)

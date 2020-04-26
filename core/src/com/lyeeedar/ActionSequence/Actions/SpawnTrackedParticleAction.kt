@@ -35,7 +35,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 			val entity = nonTransientParticleArchetype.build()
 
-			val pos = entity.pos()!!
+			val pos = entity.position()!!
 
 			pos.min = min
 			pos.max = max
@@ -56,7 +56,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 			{
 				val entity = nonTransientParticleArchetype.build()
 
-				val pos = entity.pos()!!
+				val pos = entity.position()!!
 
 				pos.data.slot = SpaceSlot.EFFECT
 

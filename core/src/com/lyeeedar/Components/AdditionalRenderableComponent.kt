@@ -7,7 +7,6 @@ import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-inline fun Entity.additionalRenderable(): AdditionalRenderableComponent? = this.components[ComponentType.AdditionalRenderable] as AdditionalRenderableComponent?
 class AdditionalRenderableComponent(data: AdditionalRenderableComponentData) : AbstractComponent<AdditionalRenderableComponentData>(data)
 {
 	override val type: ComponentType = ComponentType.AdditionalRenderable

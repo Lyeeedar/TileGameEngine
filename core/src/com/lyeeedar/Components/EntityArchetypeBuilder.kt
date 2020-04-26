@@ -7,7 +7,6 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Point
-import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.min
 
 class EntityArchetypeBuilder
@@ -74,7 +73,6 @@ class EntityArchetypeBuilder
 	}
 }
 
-fun Entity.archetypeBuilder(): ArchetypeBuilderComponent? = this.components[ComponentType.ArchetypeBuilder] as ArchetypeBuilderComponent?
 class ArchetypeBuilderComponent : NonDataComponent()
 {
 	override val type: ComponentType = ComponentType.ArchetypeBuilder
@@ -105,7 +103,7 @@ fun Renderable.addToWorld(world: World, point: Point, offset: Vector2 = Vector2(
 	val pe = transientParticleArchetype.build()
 	pe.renderable()!!.renderable = this
 
-	val ppos = pe.pos()!!
+	val ppos = pe.position()!!
 	ppos.data.slot = SpaceSlot.EFFECT
 
 	ppos.data.size = min(this.size[0], this.size[1])

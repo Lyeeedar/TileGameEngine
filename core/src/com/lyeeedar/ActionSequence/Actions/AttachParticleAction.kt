@@ -3,10 +3,8 @@ package com.lyeeedar.ActionSequence.Actions
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.*
-import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
-import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.DataClass
@@ -85,7 +83,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 			if (!killOnEnd)
 			{
 				val newEntity = transientParticleArchetype.build()
-				newEntity.pos()!!.position = entity.pos()!!.position
+				newEntity.position()!!.position = entity.position()!!.position
 				newEntity.renderable()!!.renderable = r
 
 				state.world.addEntity(entity)
