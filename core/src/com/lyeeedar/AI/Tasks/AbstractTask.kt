@@ -6,6 +6,6 @@ import squidpony.squidmath.LightRNG
 
 abstract class AbstractTask
 {
-	abstract fun execute(e: Entity, world: World, rng: LightRNG)
+	abstract fun execute(e: Entity, world: World<*>, rng: LightRNG)
 	abstract fun free()
 }

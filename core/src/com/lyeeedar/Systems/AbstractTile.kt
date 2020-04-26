@@ -11,7 +11,7 @@ import com.lyeeedar.Util.Point
 
 abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 {
-	lateinit var world: World
+	lateinit var world: World<*>
 
 	lateinit var floor: SpriteWrapper
 	var wall: SpriteWrapper? = null

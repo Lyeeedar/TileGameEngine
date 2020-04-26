@@ -2,7 +2,7 @@ package com.lyeeedar.Systems
 
 import com.lyeeedar.Components.Entity
 
-abstract class AbstractEntitySystem(world: World, val entitySignature: EntitySignature) : AbstractSystem(world)
+abstract class AbstractEntitySystem(world: World<*>, val entitySignature: EntitySignature) : AbstractSystem(world)
 {
 	override fun doUpdate(deltaTime: Float)
 	{

@@ -98,7 +98,7 @@ val nonTransientParticleArchetype =
 		.add(ComponentType.Position)
 		.add(ComponentType.Renderable)
 
-fun Renderable.addToWorld(world: World, point: Point, offset: Vector2 = Vector2()): Entity
+fun Renderable.addToWorld(world: World<*>, point: Point, offset: Vector2 = Vector2()): Entity
 {
 	val pe = transientParticleArchetype.build()
 	pe.renderable()!!.renderable = this

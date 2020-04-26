@@ -2,6 +2,7 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Renderables.Sprite.DirectionalSprite
 import com.lyeeedar.Util.AssetManager
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
 class DirectionalSpriteComponent(data: DirectionalSpriteComponentData) : AbstractComponent<DirectionalSpriteComponentData>(data)
@@ -20,6 +21,7 @@ class DirectionalSpriteComponent(data: DirectionalSpriteComponentData) : Abstrac
 	}
 }
 
+@DataClass(name = "DirectionalSpriteComponent")
 class DirectionalSpriteComponentData : AbstractComponentData()
 {
 	lateinit var directionalSprite: DirectionalSprite

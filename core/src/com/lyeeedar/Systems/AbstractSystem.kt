@@ -2,7 +2,7 @@ package com.lyeeedar.Systems
 
 import com.lyeeedar.UI.DebugConsole
 
-abstract class AbstractSystem(val world: World)
+abstract class AbstractSystem(val world: World<*>)
 {
 	var processDuration: Float = 0f
 	fun update(deltaTime: Float)

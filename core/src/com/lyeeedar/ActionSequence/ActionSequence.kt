@@ -18,7 +18,7 @@ import ktx.collections.set
 class ActionSequenceState
 {
 	lateinit var source: Entity
-	lateinit var world: World
+	lateinit var world: World<*>
 
 	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 4)
 	val targets: Array<Point> = Array(1)
@@ -33,7 +33,7 @@ class ActionSequenceState
 
 	var data = ObjectMap<String, Any?>()
 
-	fun set(source: Entity, world: World): ActionSequenceState
+	fun set(source: Entity, world: World<*>): ActionSequenceState
 	{
 		this.source = source
 		this.world = world

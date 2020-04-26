@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 import com.lyeeedar.Components.*
 
-abstract class AbstractTaskSystem(world: World) : AbstractSystem(world)
+abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 {
 	private val taskEntities = world.getEntitiesFor().all(ComponentType.Task).get()
 	private val renderableEntities = world.getEntitiesFor().all(ComponentType.Renderable).get()

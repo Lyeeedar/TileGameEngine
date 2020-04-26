@@ -8,7 +8,7 @@ import com.lyeeedar.Util.XmlDataClassLoader
 
 class Entity
 {
-	var world: World? = null
+	var world: World<*>? = null
 
 	val signature = EnumBitflag<ComponentType>()
 	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent<*>>(ComponentType::class.java)

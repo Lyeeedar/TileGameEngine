@@ -8,7 +8,7 @@ import com.lyeeedar.Renderables.SortedRenderer
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
 
-abstract class AbstractRenderSystem(world: World) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
+abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
 {
 	val tileSize: Float
 		get() = world.tileSize

@@ -11,7 +11,7 @@ import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Statics.Companion.collisionGrid
 import squidpony.squidmath.LightRNG
 
-class World(var grid: Array2D<AbstractTile>)
+class World<T: AbstractTile>(var grid: Array2D<T>)
 {
 	lateinit var rng: LightRNG
 
@@ -128,7 +128,7 @@ class World(var grid: Array2D<AbstractTile>)
 		}
 	}
 
-	class EntitySignatureBuilder(val world: World)
+	class EntitySignatureBuilder(val world: World<*>)
 	{
 		private val all = EnumBitflag<ComponentType>()
 		private val any = EnumBitflag<ComponentType>()

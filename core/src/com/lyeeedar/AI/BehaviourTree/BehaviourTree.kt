@@ -15,7 +15,7 @@ import squidpony.squidmath.LightRNG
 class BehaviourTreeState
 {
 	lateinit var entity: Entity
-	lateinit var world: World
+	lateinit var world: World<*>
 
 	lateinit var rng: LightRNG
 
@@ -24,7 +24,7 @@ class BehaviourTreeState
 	var lastEvaluationID = 0
 	var evaluationID = 0
 
-	fun set(entity: Entity, world: World, seed: Long)
+	fun set(entity: Entity, world: World<*>, seed: Long)
 	{
 		this.entity = entity
 		this.world = world
