@@ -8,6 +8,7 @@ import com.lyeeedar.Components.EntityPool
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.EnumBitflag
+import com.lyeeedar.Util.Statics
 import com.lyeeedar.Util.Statics.Companion.collisionGrid
 import squidpony.squidmath.LightRNG
 
@@ -25,6 +26,8 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	val systems = Array<AbstractSystem>()
 	private val registeredSignatures = Array<EntitySignature>()
+
+	private var doneFirstUpdate = false
 
 	fun getEntitiesFor(): EntitySignatureBuilder
 	{
@@ -89,13 +92,20 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	fun update(delta: Float)
 	{
+		updateEntityList()
+		updateEntitySignatures()
+
+		if (!doneFirstUpdate)
+		{
+			doneFirstUpdate = true
+			updateCollisionGrid()
+		}
+
 		for (i in 0 until systems.size)
 		{
 			systems[i].update(delta)
 		}
 
-		updateEntityList()
-		updateEntitySignatures()
 		EntityPool.flushFreedEntities()
 	}
 
@@ -111,10 +121,9 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	fun updateCollisionGrid()
 	{
-		var collisionGrid = collisionGrid
-		if (collisionGrid == null || collisionGrid.width != grid.width || collisionGrid.height != grid.height)
+		if (Statics.collisionGrid == null || Statics.collisionGrid!!.width != grid.width || Statics.collisionGrid!!.height != grid.height)
 		{
-			collisionGrid = Array2D(grid.width, grid.height) { x,y -> grid[x, y].getPassable(SpaceSlot.LIGHT, null) }
+			Statics.collisionGrid = Array2D(grid.width, grid.height) { x, y -> grid[x, y].getPassable(SpaceSlot.ENTITY, null) }
 		}
 		else
 		{
@@ -122,7 +131,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 			{
 				for (y in 0 until grid.height)
 				{
-					collisionGrid[x, y] = grid[x, y].getPassable(SpaceSlot.LIGHT, null)
+					Statics.collisionGrid!![x, y] = grid[x, y].getPassable(SpaceSlot.ENTITY, null)
 				}
 			}
 		}

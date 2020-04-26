@@ -37,6 +37,7 @@ class PositionComponent(data: PositionComponentData): AbstractComponent<Position
 	var facing: Direction = Direction.SOUTH
 
 	var turnsOnTile: Int = 0
+	var lastPos = Point.MINUS_ONE
 
 	val x: Int
 		get() = position.x
@@ -51,6 +52,7 @@ class PositionComponent(data: PositionComponentData): AbstractComponent<Position
 		facing = Direction.SOUTH
 		position = Point(-1, -1)
 		max = Point(-1, -1)
+		lastPos = Point.MINUS_ONE
 	}
 }
 

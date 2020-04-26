@@ -22,16 +22,6 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 	{
 		queuedActions.add(DelayedAction.obtain().set(function, delay, this))
 	}
-
-	override fun getPassable(travelType: SpaceSlot, self: Any?): Boolean
-	{
-		return true
-	}
-
-	override fun getInfluence(travelType: SpaceSlot, self: Any?): Int
-	{
-		return 0
-	}
 }
 
 class DelayedAction() : Comparable<DelayedAction>

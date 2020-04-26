@@ -12,8 +12,13 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 	private val entitiesToProcess = Array<Entity>(false, 16)
 
+	val minTurnTime = 0.1f
+	var turnTimeAccumulator = 0f
+
 	private fun getCanStartTurn(): Boolean
 	{
+		if (turnTimeAccumulator < minTurnTime) return false
+
 		var canUpdate = true
 		for (i in 0 until renderableEntities.entities.size)
 		{
@@ -47,6 +52,8 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 	override fun doUpdate(deltaTime: Float)
 	{
+		turnTimeAccumulator += deltaTime
+
 		if (entitiesToProcess.size > 0)
 		{
 			updateProcessList()
@@ -79,6 +86,8 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 			updateProcessList()
 			world.onTurn()
+
+			turnTimeAccumulator = 0f
 		}
 	}
 

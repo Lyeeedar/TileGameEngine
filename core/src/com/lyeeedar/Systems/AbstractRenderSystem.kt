@@ -15,7 +15,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	protected val ambientLight = Colour.WHITE
 	protected val batch: SpriteBatch by lazy { SpriteBatch() }
-	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, Statics.resolution[0] / tileSize, Statics.resolution[1] / tileSize, SpaceSlot.Values.size, false) }
+	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, true) }
 
 	protected var playerOffsetX: Float = 0f
 	protected var playerOffsetY: Float = 0f
@@ -34,10 +34,10 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		offsetx = (Statics.resolution.x * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f)
 		offsety = (Statics.resolution.y * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f)
 
-		val screenTileWidth = (Statics.resolution.x / tileSize).toInt() + 2
+		val screenTileWidth = (Statics.resolution.x / tileSize).toInt() + 12
 		val screenTileHeight = (Statics.resolution.y / tileSize).toInt() + 2
-		val xs = max(0, playerOffsetX.toInt()-screenTileWidth/2)
-		val xe = min(world.grid.width, playerOffsetX.toInt()+screenTileWidth/2)
+		val xs = max(0, playerOffsetX.toInt()-screenTileWidth)
+		val xe = min(world.grid.width, playerOffsetX.toInt()+screenTileWidth)
 		val ys = max(0, playerOffsetY.toInt()-screenTileHeight/2)
 		val ye = min(world.grid.height, playerOffsetY.toInt()+screenTileHeight/2)
 
@@ -69,7 +69,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				val wall = world.grid[x, y].wall
 				if (wall != null)
 				{
-					renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal)
+					renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal)
 				}
 			}
 		}
