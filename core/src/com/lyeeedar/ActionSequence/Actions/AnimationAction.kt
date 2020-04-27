@@ -52,7 +52,7 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 	override fun enter(state: ActionSequenceState): ActionState
 	{
 		val source = state.source
-		val sourceRenderable = source.renderable()?.renderable
+		val sourceRenderable = source.get()?.renderable()?.renderable
 
 		if (sourceRenderable != null)
 		{

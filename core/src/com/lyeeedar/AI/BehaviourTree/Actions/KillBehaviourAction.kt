@@ -11,7 +11,7 @@ class KillBehaviourAction : AbstractBehaviourAction()
 {
 	override fun evaluate(state: BehaviourTreeState): EvaluationState
 	{
-		state.entity.markForDeletion(0f, "Behaviour Killed")
+		state.entity.get()?.markForDeletion(0f, "Behaviour Killed")
 		return EvaluationState.COMPLETED
 	}
 

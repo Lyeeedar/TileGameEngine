@@ -17,6 +17,13 @@ class EntityReference(val entity: Entity)
 
 		return true
 	}
+
+	fun get(): Entity?
+	{
+		if (isValid()) return entity
+
+		return null
+	}
 }
 
 class Entity

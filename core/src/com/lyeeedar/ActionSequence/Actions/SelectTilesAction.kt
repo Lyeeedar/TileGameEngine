@@ -30,7 +30,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 
 		tiles.clear()
 
-		val pos = state.source.position()!!.position
+		val pos = state.source.get()!!.position()!!.position
 
 		val xs = max(0, pos.x-radius)
 		val xe = min(state.world.grid.width, pos.x+radius)

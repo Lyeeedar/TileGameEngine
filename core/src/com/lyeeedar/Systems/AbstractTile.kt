@@ -3,6 +3,7 @@ package com.lyeeedar.Systems
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.Components.Entity
+import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Pathfinding.IPathfindingTile
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.SpaceSlot
@@ -18,7 +19,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 
 	var floor: SpriteWrapper? = null
 	var wall: SpriteWrapper? = null
-	val contents: FastEnumMap<SpaceSlot, Entity> = FastEnumMap(SpaceSlot::class.java)
+	val contents: FastEnumMap<SpaceSlot, EntityReference> = FastEnumMap(SpaceSlot::class.java)
 
 	var tileCol: Colour = Colour.WHITE.copy()
 	var renderCol: Colour = Colour.WHITE.copy()

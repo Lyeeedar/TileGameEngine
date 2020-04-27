@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
+import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
@@ -14,7 +15,7 @@ import squidpony.squidmath.LightRNG
 
 class BehaviourTreeState
 {
-	lateinit var entity: Entity
+	lateinit var entity: EntityReference
 	lateinit var world: World<*>
 
 	lateinit var rng: LightRNG
@@ -24,7 +25,7 @@ class BehaviourTreeState
 	var lastEvaluationID = 0
 	var evaluationID = 0
 
-	fun set(entity: Entity, world: World<*>, seed: Long)
+	fun set(entity: EntityReference, world: World<*>, seed: Long)
 	{
 		this.entity = entity
 		this.world = world
@@ -75,19 +76,22 @@ class BehaviourTreeState
 	private val resolvedVariables = ObjectFloatMap<String>()
 	fun updateResolvedVariables()
 	{
-		val srcPos = entity.position()!!
+		val srcPos = entity.entity.position()!!
 
 		resolvedVariables.clear()
 		for (entry in data)
 		{
 			val value = entry.value
-			if (value is Entity)
+			if (value is EntityReference)
 			{
-				val epos = value.position()
-				if (epos != null)
+				if (value.isValid())
 				{
-					val dist = srcPos.position.taxiDist(epos.position)
-					resolvedVariables[entry.key+".dist"] = dist.toFloat()
+					val epos = value.entity.position()
+					if (epos != null)
+					{
+						val dist = srcPos.position.taxiDist(epos.position)
+						resolvedVariables[entry.key + ".dist"] = dist.toFloat()
+					}
 				}
 			}
 			else if (value is Point)
@@ -131,6 +135,8 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 
 	fun evaluate(state: BehaviourTreeState)
 	{
+		if (!state.entity.isValid()) return
+
 		state.lastEvaluationID = state.evaluationID
 		state.evaluationID++
 		state.updateResolvedVariables()

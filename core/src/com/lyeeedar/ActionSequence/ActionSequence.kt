@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.ActionSequence.Actions.AbstractActionSequenceAction
 import com.lyeeedar.ActionSequence.Actions.ActionState
 import com.lyeeedar.Components.Entity
+import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Direction
 import com.lyeeedar.Systems.World
@@ -18,12 +19,12 @@ import ktx.collections.set
 class ActionSequenceState private constructor()
 {
 
-	lateinit var source: Entity
+	lateinit var source: EntityReference
 	lateinit var world: World<*>
 
 	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 4)
 	val targets: Array<Point> = Array(1)
-	val lockedEntityTargets: Array<Entity> = Array(1)
+	val lockedEntityTargets: Array<EntityReference> = Array(1)
 	var facing: Direction = Direction.NORTH
 
 	var seed: Long = 0
@@ -34,13 +35,13 @@ class ActionSequenceState private constructor()
 
 	var data = ObjectMap<String, Any?>()
 
-	fun set(source: Entity, world: World<*>): ActionSequenceState
+	fun set(source: EntityReference, world: World<*>): ActionSequenceState
 	{
 		this.source = source
 		this.world = world
 
 		targets.clear()
-		targets.add(source.position()!!.position)
+		targets.add(source.entity.position()!!.position)
 
 		return this
 	}
@@ -129,13 +130,28 @@ class ActionSequence : XmlDataClass()
 			return false
 		}
 
+		if (!state.source.isValid())
+		{
+			cancel(state)
+			return true
+		}
+
 		if (state.lockedEntityTargets.size > 0)
 		{
 			state.targets.clear()
-			for (target in state.lockedEntityTargets)
+			val itr = state.lockedEntityTargets.iterator()
+			while (itr.hasNext())
 			{
-				val pos = target.position() ?: continue
-				state.targets.add(pos.position)
+				val entity = itr.next()
+				if (entity.isValid())
+				{
+					val pos = entity.entity.position() ?: continue
+					state.targets.add(pos.position)
+				}
+				else
+				{
+					itr.remove()
+				}
 			}
 		}
 
@@ -207,6 +223,7 @@ class ActionSequence : XmlDataClass()
 		{
 			action.exit(state)
 		}
+		state.enteredActions.clear()
 	}
 
 	companion object

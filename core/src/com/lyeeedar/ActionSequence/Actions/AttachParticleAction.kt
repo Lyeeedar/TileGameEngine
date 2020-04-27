@@ -36,7 +36,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 
 			for (slot in SpaceSlot.EntityValues)
 			{
-				val entity = tile.contents[slot] ?: continue
+				val entity = tile.contents[slot]?.get() ?: continue
 
 				val addRenderable = entity.addOrGet(ComponentType.AdditionalRenderable) as AdditionalRenderableComponent
 

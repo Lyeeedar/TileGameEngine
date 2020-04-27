@@ -11,7 +11,7 @@ class SelectSelfAction : AbstractOneShotActionSequenceAction()
 	override fun enter(state: ActionSequenceState): ActionState
 	{
 		state.targets.clear()
-		state.targets.add(state.source.position()!!.position)
+		state.targets.add(state.source.get()!!.position()!!.position)
 
 		return ActionState.Completed
 	}

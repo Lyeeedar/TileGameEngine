@@ -5,6 +5,7 @@ import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
+import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Util.XmlData
 import java.lang.RuntimeException
@@ -18,9 +19,11 @@ class ConvertToPositionBehaviourAction : AbstractBehaviourAction()
 	{
 		val oldValue = state.getData<Any>(input, 0) ?: return EvaluationState.FAILED
 
-		if (oldValue is Entity)
+		if (oldValue is EntityReference)
 		{
-			val pos = oldValue.position()!!.position
+			if (!oldValue.isValid()) return EvaluationState.FAILED
+
+			val pos = oldValue.entity.position()!!.position
 			state.setData(output, 0, pos)
 		}
 		else

@@ -26,7 +26,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val source = state.source
+		val source = state.source.get()!!
 
 		var srcRenderable = source.renderable()
 		if (srcRenderable == null)
@@ -59,7 +59,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 	{
 		if (restoreOriginal)
 		{
-			val source = state.source
+			val source = state.source.get()!!
 
 			val replacementRenderable = source.renderable()!!.renderable
 			source.renderable()!!.reset()
