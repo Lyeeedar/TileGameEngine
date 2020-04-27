@@ -30,7 +30,9 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val sourceTile = state.source.get()!!.position()!!.position
+		val sourceTile = state.sourcePoint
+
+		if (state.targets.size == 0) return ActionState.Completed
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!

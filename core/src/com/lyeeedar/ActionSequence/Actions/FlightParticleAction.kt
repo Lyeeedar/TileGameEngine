@@ -5,16 +5,15 @@ import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Components.transientParticleArchetype
+import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Animation.ExpandAnimation
 import com.lyeeedar.Renderables.Animation.LeapAnimation
 import com.lyeeedar.Renderables.Animation.MoveAnimation
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.DataClass
-import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Random
-import com.lyeeedar.Util.UnsmoothedPath
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
@@ -43,7 +42,9 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val sourceTile = state.source.get()!!.position()!!.position
+		val sourceTile = state.sourcePoint
+
+		if (state.targets.size == 0) return ActionState.Completed
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
@@ -104,7 +105,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 			if (alignToVector)
 			{
-				pos.facing = state.facing
+				r.rotation = getRotation(sourceTile, tile)
 			}
 
 			if (useLeap)

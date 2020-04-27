@@ -19,6 +19,7 @@ import ktx.collections.set
 class ActionSequenceState
 {
 	lateinit var source: EntityReference
+	lateinit var sourcePoint: Point
 	lateinit var world: World<*>
 
 	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 4)
@@ -37,8 +38,12 @@ class ActionSequenceState
 
 	fun set(source: EntityReference, world: World<*>): ActionSequenceState
 	{
+		uid = Random.sharedRandom.nextInt()
+
 		this.source = source
 		this.world = world
+
+		sourcePoint = source.get()?.position()?.position ?: Point.ONE
 
 		targets.clear()
 		targets.add(source.entity.position()!!.position)
