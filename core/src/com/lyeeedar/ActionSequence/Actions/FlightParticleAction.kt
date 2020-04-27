@@ -58,6 +58,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 			val r = particle.getParticleEffect()
 			entity.renderable()?.set(r)
+			r.killOnAnimComplete = true
 
 			val renderDelay: Float
 			if (spawnBehaviour == SpawnBehaviour.IMMEDIATE)

@@ -16,9 +16,8 @@ import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
 import ktx.collections.set
 
-class ActionSequenceState private constructor()
+class ActionSequenceState
 {
-
 	lateinit var source: EntityReference
 	lateinit var world: World<*>
 
@@ -34,6 +33,7 @@ class ActionSequenceState private constructor()
 	var index = 0
 
 	var data = ObjectMap<String, Any?>()
+	var uid = 0
 
 	fun set(source: EntityReference, world: World<*>): ActionSequenceState
 	{
@@ -59,6 +59,8 @@ class ActionSequenceState private constructor()
 		index = 0
 
 		data.clear()
+
+		uid = Random.sharedRandom.nextInt()
 	}
 
 	fun writeVariables(map: ObjectFloatMap<String>)
@@ -74,30 +76,6 @@ class ActionSequenceState private constructor()
 			}
 		}
 	}
-
-	var obtained: Boolean = false
-	companion object
-	{
-		private val pool: Pool<ActionSequenceState> = object : Pool<ActionSequenceState>() {
-			override fun newObject(): ActionSequenceState
-			{
-				return ActionSequenceState()
-			}
-		}
-
-		fun obtain(): ActionSequenceState
-		{
-			val obj = pool.obtain()
-
-			if (obj.obtained) throw RuntimeException()
-			obj.obtained = true
-
-			obj.reset()
-
-			return obj
-		}
-	}
-	fun free() { if (obtained) { pool.free(this); obtained = false } }
 }
 
 @DataFile(colour="228,78,255", icon="Sprites/EffectSprites/Explosion/Explosion_2.png")

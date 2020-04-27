@@ -29,14 +29,15 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 
 	override fun enter(state: ActionSequenceState): ActionState
 	{
-		val attachedParticles = Array<Entity>()
+		val attachedParticles = Array<EntityReference>()
 		for (target in state.targets)
 		{
 			val tile = state.world.grid.tryGet(target, null) ?: continue
 
 			for (slot in SpaceSlot.EntityValues)
 			{
-				val entity = tile.contents[slot]?.get() ?: continue
+				val entityRef = tile.contents[slot] ?: continue
+				val entity = entityRef.get() ?: continue
 
 				val addRenderable = entity.addOrGet(ComponentType.AdditionalRenderable) as AdditionalRenderableComponent
 
@@ -44,14 +45,14 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 
 				if (above)
 				{
-					addRenderable.above[key] = r
+					addRenderable.above[key+state.uid] = r
 				}
 				else
 				{
-					addRenderable.below[key] = r
+					addRenderable.below[key+state.uid] = r
 				}
 
-				attachedParticles.add(entity)
+				attachedParticles.add(entityRef)
 			}
 		}
 
@@ -62,21 +63,22 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 
 	override fun exit(state: ActionSequenceState): ActionState
 	{
-		val attachedParticles = state.data[dataKey] as Array<Entity>
-		for (entity in attachedParticles)
+		val attachedParticles = state.data[dataKey] as Array<EntityReference>
+		for (entityRef in attachedParticles)
 		{
+			val entity = entityRef.get() ?: continue
 			val addRenderable = entity.additionalRenderable() ?: continue
 
 			val r: ParticleEffect
 			if (above)
 			{
-				r = addRenderable.above[key] as ParticleEffect
-				addRenderable.above.remove(key)
+				r = addRenderable.above[key+state.uid] as ParticleEffect
+				addRenderable.above.remove(key+state.uid)
 			}
 			else
 			{
-				r = addRenderable.below[key] as ParticleEffect
-				addRenderable.below.remove(key)
+				r = addRenderable.below[key+state.uid] as ParticleEffect
+				addRenderable.below.remove(key+state.uid)
 			}
 			r.stop()
 

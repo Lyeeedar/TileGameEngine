@@ -7,20 +7,17 @@ class ActionSequenceComponent : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.ActionSequence
 
-	var actionSequence: ActionSequence? = null
-	var actionSequenceState: ActionSequenceState? = null
+	lateinit var actionSequence: ActionSequence
+	val actionSequenceState: ActionSequenceState = ActionSequenceState()
 
-	fun set(sequence: ActionSequence, state: ActionSequenceState): ActionSequenceComponent
+	fun set(sequence: ActionSequence): ActionSequenceComponent
 	{
 		this.actionSequence = sequence
-		this.actionSequenceState = state
-
 		return this
 	}
 
 	override fun reset()
 	{
-		actionSequence = null
-		actionSequenceState = null
+		actionSequenceState.reset()
 	}
 }
