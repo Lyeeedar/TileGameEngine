@@ -125,10 +125,10 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				entity.markForDeletion(0f, "completed")
 			}
 		}
-		renderable.size[0] = pos.data.size
-		renderable.size[1] = pos.data.size
+		renderable.size[0] = pos.size
+		renderable.size[1] = pos.size
 
-		renderer.queue(renderable, px, py, pos.data.slot.ordinal, 1, colour = tile.renderCol)
+		renderer.queue(renderable, px, py, pos.slot.ordinal, 1, colour = tile.renderCol)
 
 		val offset = renderable.animation?.renderOffset(false)
 
@@ -146,12 +146,12 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		{
 			for (below in additional.below.values())
 			{
-				renderer.queue(below, ax, ay, pos.data.slot.ordinal, 0, colour = tile.renderCol)
+				renderer.queue(below, ax, ay, pos.slot.ordinal, 0, colour = tile.renderCol)
 			}
 
 			for (above in additional.above.values())
 			{
-				renderer.queue(above, ax, ay, pos.data.slot.ordinal, 2, colour = tile.renderCol)
+				renderer.queue(above, ax, ay, pos.slot.ordinal, 2, colour = tile.renderCol)
 			}
 		}
 

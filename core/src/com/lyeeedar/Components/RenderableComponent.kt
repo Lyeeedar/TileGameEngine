@@ -14,11 +14,11 @@ import ktx.collections.set
 
 inline fun Entity.sprite(): Sprite? = this.renderable()?.renderable as? Sprite
 inline fun Entity.renderOffset() = this.renderable()?.renderable?.animation?.renderOffset(false)
-class RenderableComponent(data: RenderableComponentData) : AbstractComponent<RenderableComponentData>(data)
+class RenderableComponent : DataComponent()
 {
 	override val type: ComponentType = ComponentType.Renderable
 
-	var dataRenderable: Renderable = data.renderable.copy()
+	var dataRenderable: Renderable = defaultRenderable
 	var renderable: Renderable
 		get() = overrideRenderable ?: dataRenderable
 		set(value)
@@ -27,8 +27,9 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 		}
 	private var overrideRenderable: Renderable? = null
 
-	override fun onDataSwapped()
+	override fun initialiseFrom(data: AbstractComponentData)
 	{
+		val data = data as RenderableComponentData
 		dataRenderable = data.renderable.copy()
 	}
 
@@ -41,6 +42,11 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 	override fun reset()
 	{
 		overrideRenderable = null
+	}
+
+	companion object
+	{
+		private val defaultRenderable = AssetManager.loadSprite("blank")
 	}
 }
 

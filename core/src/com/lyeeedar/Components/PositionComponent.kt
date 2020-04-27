@@ -7,9 +7,13 @@ import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-class PositionComponent(data: PositionComponentData): AbstractComponent<PositionComponentData>(data)
+class PositionComponent : DataComponent()
 {
 	override val type: ComponentType = ComponentType.Position
+
+	var slot = SpaceSlot.ENTITY
+	var moveable = true
+	var size = 1
 
 	var position: Point = Point(-1, -1) // bottom left pos
 		set(value)
@@ -53,6 +57,14 @@ class PositionComponent(data: PositionComponentData): AbstractComponent<Position
 		position = Point(-1, -1)
 		max = Point(-1, -1)
 		lastPos = Point.MINUS_ONE
+	}
+
+	override fun initialiseFrom(data: AbstractComponentData)
+	{
+		val data = data as PositionComponentData
+		slot = data.slot
+		moveable = data.moveable
+		size = data.size
 	}
 }
 

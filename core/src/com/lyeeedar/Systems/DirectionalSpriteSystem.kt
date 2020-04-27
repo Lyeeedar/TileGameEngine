@@ -11,7 +11,7 @@ class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, worl
 		val pos = entity.position()!!
 		val dirSprite = entity.directionalSprite()!!
 
-		if (!dirSprite.data.directionalSprite.hasAnim(dirSprite.currentAnim))
+		if (!dirSprite.directionalSprite.hasAnim(dirSprite.currentAnim))
 		{
 			dirSprite.currentAnim = "idle"
 		}
@@ -20,7 +20,7 @@ class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, worl
 		if (renderable == null)
 		{
 			renderable = entity.addComponent(ComponentType.Renderable) as RenderableComponent
-			renderable.renderable = dirSprite.data.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
+			renderable.renderable = dirSprite.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
 		}
 
 		if (pos.facing == Direction.SOUTH)
@@ -40,7 +40,7 @@ class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, worl
 			dirSprite.lastH = DirectionalSprite.HDir.LEFT
 		}
 
-		val chosen = dirSprite.data.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
+		val chosen = dirSprite.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
 
 		if (chosen != renderable.renderable)
 		{

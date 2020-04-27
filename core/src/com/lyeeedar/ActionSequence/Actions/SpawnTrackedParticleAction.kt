@@ -39,7 +39,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 			pos.min = min
 			pos.max = max
-			pos.data.slot = SpaceSlot.EFFECT
+			pos.slot = SpaceSlot.EFFECT
 
 			val r = particle.getParticleEffect()
 			r.size[0] = (pos.max.x - pos.min.x) + 1
@@ -58,7 +58,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 				val pos = entity.position()!!
 
-				pos.data.slot = SpaceSlot.EFFECT
+				pos.slot = SpaceSlot.EFFECT
 
 				val r = particle.getParticleEffect()
 				entity.renderable()?.set(r)

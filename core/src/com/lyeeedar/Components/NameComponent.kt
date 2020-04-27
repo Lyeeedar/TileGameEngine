@@ -2,13 +2,23 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Util.XmlData
 
-class NameComponent(data: NameComponentData) : AbstractComponent<NameComponentData>(data)
+class NameComponent : DataComponent()
 {
 	override val type: ComponentType = ComponentType.Name
+
+	lateinit var name: String
+	lateinit var title: String
 
 	override fun reset()
 	{
 
+	}
+
+	override fun initialiseFrom(data: AbstractComponentData)
+	{
+		val data = data as NameComponentData
+		name = data.name
+		title = data.title
 	}
 }
 

@@ -13,27 +13,10 @@ abstract class AbstractComponentData : XmlDataClass()
 	abstract val classID: String
 	//endregion
 }
-class EmptyComponentData : AbstractComponentData()
-{
 
-	//region generated
-	override fun load(xmlData: XmlData)
-	{
-		super.load(xmlData)
-	}
-	override val classID: String = "Empty"
-	//endregion
-}
-abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
+abstract class AbstractComponent()
 {
 	abstract val type: ComponentType
-
-	fun swapData(data: AbstractComponentData)
-	{
-		this.data = data as T
-		onDataSwapped()
-	}
-	open fun onDataSwapped() {}
 
 	open fun onAddedToEntity(entity: Entity) { }
 	open fun onRemovedFromEntity(entity: Entity) { }
@@ -47,4 +30,7 @@ abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
 	abstract fun reset()
 }
 
-abstract class NonDataComponent : AbstractComponent<EmptyComponentData>(EmptyComponentData())
+abstract class DataComponent : AbstractComponent()
+{
+	abstract fun initialiseFrom(data: AbstractComponentData)
+}

@@ -25,11 +25,12 @@ class EntityLoader()
 
 			entity.addComponent(ComponentType.LoadData)
 
-			for (component in data.components)
+			for (componentData in data.components)
 			{
-				val componentID = component.classID
+				val componentID = componentData.classID
 				val componentType = ComponentType.valueOf(componentID)
-				entity.addComponent(componentType).swapData(component)
+				val component = entity.addComponent(componentType) as DataComponent
+				component.initialiseFrom(componentData)
 			}
 
 			return entity

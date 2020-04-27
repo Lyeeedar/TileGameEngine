@@ -61,7 +61,7 @@ class DialogueSystem(world: World<*>) : AbstractEntitySystem(world, world.getEnt
 			}
 		}
 
-		if (dialogue.displayedText != dialogue.data.text)
+		if (dialogue.displayedText != dialogue.text)
 		{
 			dialogue.textAccumulator += deltaTime
 			while (dialogue.textAccumulator >= 0.02f)
@@ -69,7 +69,7 @@ class DialogueSystem(world: World<*>) : AbstractEntitySystem(world, world.getEnt
 				dialogue.textAccumulator -= 0.02f
 
 				val currentPos = dialogue.displayedText.length
-				val nextChar = dialogue.data.text[currentPos]
+				val nextChar = dialogue.text[currentPos]
 				var nextString = "" + nextChar
 				if (nextChar == '[')
 				{
@@ -77,23 +77,23 @@ class DialogueSystem(world: World<*>) : AbstractEntitySystem(world, world.getEnt
 					var current = currentPos + 1
 					while (true)
 					{
-						val char = dialogue.data.text[current]
+						val char = dialogue.text[current]
 						nextString += char
 
 						current++
 						if (char == ']') break
 					}
 
-					if (current < dialogue.data.text.length)
+					if (current < dialogue.text.length)
 					{
-						val char = dialogue.data.text[current]
+						val char = dialogue.text[current]
 						nextString += char
 					}
 				}
 
 				dialogue.displayedText += nextString
 
-				if (dialogue.displayedText == dialogue.data.text) break
+				if (dialogue.displayedText == dialogue.text) break
 			}
 		}
 
@@ -120,7 +120,7 @@ class DialogueSystem(world: World<*>) : AbstractEntitySystem(world, world.getEnt
 			y += tileSize
 		}
 
-		layout.setText(font, dialogue.data.text, tempCol, Statics.stage.width * 0.5f, Align.left, true)
+		layout.setText(font, dialogue.text, tempCol, Statics.stage.width * 0.5f, Align.left, true)
 
 		var left = x - (layout.width * 0.5f) - 10f
 		if (left < 0) left = 0f

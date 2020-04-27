@@ -23,6 +23,7 @@ class EntityPool
 
 			if (obj.obtained) throw RuntimeException()
 			obj.obtained = true
+			obj.usageID++
 
 			return obj
 		}
@@ -46,6 +47,8 @@ class EntityPool
 
 			entity.obtained = false
 			pool.free(entity)
+
+			entity.usageID++
 		}
 
 		@JvmStatic fun flushFreedEntities()

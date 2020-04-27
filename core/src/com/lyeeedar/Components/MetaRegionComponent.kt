@@ -5,13 +5,18 @@ import com.lyeeedar.Util.XmlData
 import java.util.*
 import ktx.collections.addAll
 
-class MetaRegionComponent(data: MetaRegionComponentData) : AbstractComponent<MetaRegionComponentData>(data)
+class MetaRegionComponent : DataComponent()
 {
 	override val type: ComponentType = ComponentType.MetaRegion
 
 	override fun reset()
 	{
 
+	}
+
+	override fun initialiseFrom(data: AbstractComponentData)
+	{
+		val data = data as MetaRegionComponentData
 	}
 }
 

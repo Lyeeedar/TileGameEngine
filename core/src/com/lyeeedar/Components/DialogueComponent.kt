@@ -2,7 +2,7 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Util.XmlData
 
-class DialogueComponent(data: DialogueComponentData) : AbstractComponent<DialogueComponentData>(data)
+class DialogueComponent : DataComponent()
 {
 	override val type: ComponentType = ComponentType.Dialogue
 
@@ -23,12 +23,22 @@ class DialogueComponent(data: DialogueComponentData) : AbstractComponent<Dialogu
 			textFade = 0.5f
 		}
 
+	var text: String = ""
+	var turnsToShow: Int = -1
+
 	override fun reset()
 	{
-		remainingTurnsToShow = data.turnsToShow
+		remainingTurnsToShow = turnsToShow
 		displayedText = ""
 		textAccumulator = 0f
 		remove = false
+	}
+
+	override fun initialiseFrom(data: AbstractComponentData)
+	{
+		val data = data as DialogueComponentData
+		text = data.text
+		turnsToShow = data.turnsToShow
 	}
 }
 

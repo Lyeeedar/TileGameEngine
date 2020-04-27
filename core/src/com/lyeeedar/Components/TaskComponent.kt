@@ -3,7 +3,7 @@ package com.lyeeedar.Components
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 
-class TaskComponent : NonDataComponent()
+class TaskComponent : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.Task
 

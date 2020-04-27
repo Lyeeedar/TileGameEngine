@@ -3,7 +3,7 @@ package com.lyeeedar.Components
 import com.lyeeedar.ActionSequence.ActionSequence
 import com.lyeeedar.ActionSequence.ActionSequenceState
 
-class ActionSequenceComponent : NonDataComponent()
+class ActionSequenceComponent : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.ActionSequence
 

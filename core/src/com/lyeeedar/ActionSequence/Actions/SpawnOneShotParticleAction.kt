@@ -85,7 +85,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 			val pos = entity.position()!!
 
 			pos.position = tile
-			pos.data.slot = SpaceSlot.EFFECT
+			pos.slot = SpaceSlot.EFFECT
 
 			if (alignToVector)
 			{

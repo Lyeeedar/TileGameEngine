@@ -6,14 +6,27 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
+class EntityReference(val entity: Entity)
+{
+	val id = entity.usageID
+
+	fun isValid(): Boolean
+	{
+		if (!entity.obtained) return false
+		if (entity.usageID != id) return false
+
+		return true
+	}
+}
+
 class Entity
 {
 	var world: World<*>? = null
 
 	val signature = EnumBitflag<ComponentType>()
-	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent<*>>(ComponentType::class.java)
+	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent>(ComponentType::class.java)
 
-	fun addOrGet(componentType: ComponentType): AbstractComponent<*>
+	fun addOrGet(componentType: ComponentType): AbstractComponent
 	{
 		var comp = components[componentType]
 		if (comp == null)
@@ -24,7 +37,7 @@ class Entity
 		return comp
 	}
 
-	fun addComponent(component: AbstractComponent<*>)
+	fun addComponent(component: AbstractComponent)
 	{
 		components[component.type] = component
 		signature.setBit(component.type)
@@ -32,7 +45,7 @@ class Entity
 		component.onAddedToEntity(this)
 	}
 
-	fun addComponent(componentType: ComponentType): AbstractComponent<*>
+	fun addComponent(componentType: ComponentType): AbstractComponent
 	{
 		val component = ComponentPool.obtain(componentType)
 		addComponent(component)
@@ -40,7 +53,7 @@ class Entity
 		return component
 	}
 
-	fun removeComponent(componentType: ComponentType): AbstractComponent<*>?
+	fun removeComponent(componentType: ComponentType): AbstractComponent?
 	{
 		val component = components[componentType]
 		components.remove(componentType)
@@ -53,9 +66,11 @@ class Entity
 
 	fun hasComponent(componentType: ComponentType) = this.signature.contains(componentType)
 
+	var usageID = 0
 	var obtained = false
 	fun free()
 	{
+		usageID++
 		EntityPool.free(this)
 	}
 }

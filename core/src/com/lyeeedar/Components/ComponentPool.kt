@@ -8,9 +8,9 @@ class ComponentPool
 {
 	companion object
 	{
-		val pools = FastEnumMap<ComponentType, Pool<AbstractComponent<*>>>(ComponentType::class.java)
+		val pools = FastEnumMap<ComponentType, Pool<AbstractComponent>>(ComponentType::class.java)
 
-		fun obtain(type: ComponentType): AbstractComponent<*>
+		fun obtain(type: ComponentType): AbstractComponent
 		{
 			val pool = pools[type]
 
@@ -23,7 +23,7 @@ class ComponentPool
 			return obj
 		}
 
-		fun free(component: AbstractComponent<*>)
+		fun free(component: AbstractComponent)
 		{
 			if (!component.obtained) throw RuntimeException()
 			component.obtained = false
@@ -34,9 +34,9 @@ class ComponentPool
 		{
 			for (type in ComponentType.Values)
 			{
-				pools[type] = object : Pool<AbstractComponent<*>>()
+				pools[type] = object : Pool<AbstractComponent>()
 				{
-					override fun newObject(): AbstractComponent<*>
+					override fun newObject(): AbstractComponent
 					{
 						return type.constructor.invoke()
 					}

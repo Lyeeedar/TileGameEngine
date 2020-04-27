@@ -7,15 +7,17 @@ import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-class AdditionalRenderableComponent(data: AdditionalRenderableComponentData) : AbstractComponent<AdditionalRenderableComponentData>(data)
+class AdditionalRenderableComponent() : DataComponent()
 {
 	override val type: ComponentType = ComponentType.AdditionalRenderable
 
 	val below = ObjectMap<String, Renderable>()
 	val above = ObjectMap<String, Renderable>()
 
-	fun updateMaps()
+	override fun initialiseFrom(data: AbstractComponentData)
 	{
+		val data = data as AdditionalRenderableComponentData
+
 		below.clear()
 		above.clear()
 
@@ -32,12 +34,7 @@ class AdditionalRenderableComponent(data: AdditionalRenderableComponentData) : A
 
 	override fun reset()
 	{
-		updateMaps()
-	}
 
-	override fun onDataSwapped()
-	{
-		updateMaps()
 	}
 }
 

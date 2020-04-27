@@ -25,14 +25,7 @@ class ComponentType
 				val className = def.name
 				val enumName = className.replace("Component", "")
 
-				if (def.superClass!!.name == "NonDataComponent")
-				{
-					enumBuilder.appendln(1, "$enumName({ $className() }),")
-				}
-				else
-				{
-					enumBuilder.appendln(1, "$enumName({ $className(${className}Data()) }),")
-				}
+				enumBuilder.appendln(1, "$enumName({ $className() }),")
 
 				val extensionName = if (enumName.length < 4) enumName.toLowerCase() else enumName.substring(0, 1).toLowerCase() + enumName.substring(1)
 
@@ -42,7 +35,7 @@ class ComponentType
 			val output = IndentedStringBuilder()
 			output.appendln("package com.lyeeedar.Components")
 			output.appendln("")
-			output.appendln("enum class ComponentType private constructor(val constructor: ()->AbstractComponent<*>)")
+			output.appendln("enum class ComponentType private constructor(val constructor: ()->AbstractComponent)")
 			output.appendln("{")
 			output.appendln(enumBuilder.toString().trimEnd().dropLast(1) + ";")
 			output.appendln("")

@@ -2,7 +2,7 @@ package com.lyeeedar.Components
 
 import com.lyeeedar.Util.XmlData
 
-class LoadDataComponent() : NonDataComponent()
+class LoadDataComponent() : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.LoadData
 

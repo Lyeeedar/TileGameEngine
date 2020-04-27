@@ -73,7 +73,7 @@ class EntityArchetypeBuilder
 	}
 }
 
-class ArchetypeBuilderComponent : NonDataComponent()
+class ArchetypeBuilderComponent : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.ArchetypeBuilder
 
@@ -104,9 +104,9 @@ fun Renderable.addToWorld(world: World<*>, point: Point, offset: Vector2 = Vecto
 	pe.renderable()!!.renderable = this
 
 	val ppos = pe.position()!!
-	ppos.data.slot = SpaceSlot.EFFECT
+	ppos.slot = SpaceSlot.EFFECT
 
-	ppos.data.size = min(this.size[0], this.size[1])
+	ppos.size = min(this.size[0], this.size[1])
 	ppos.position = point
 	ppos.offset = offset
 
