@@ -15,8 +15,9 @@ import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
 import ktx.collections.set
 
-class ActionSequenceState
+class ActionSequenceState private constructor()
 {
+
 	lateinit var source: Entity
 	lateinit var world: World<*>
 

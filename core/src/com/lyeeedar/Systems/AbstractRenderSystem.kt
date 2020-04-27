@@ -186,8 +186,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val mousey = ((screenY - offsety) / tileSize).toInt()
 
 		val tile = world.grid.tryGet(mousex, mousey, null)
-		lastClickTile?.renderCol = Colour.WHITE
-		tile?.renderCol = Colour.YELLOW
+		lastClickTile?.renderCol?.set(Colour.WHITE)
+		tile?.renderCol?.set(Colour.YELLOW)
 		lastClickTile = tile
 
 		return tile
