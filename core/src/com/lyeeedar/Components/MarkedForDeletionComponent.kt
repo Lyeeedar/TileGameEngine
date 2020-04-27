@@ -2,8 +2,8 @@ package com.lyeeedar.Components
 
 fun Entity.markForDeletion(delay: Float, reason: String = "")
 {
-	this.addComponent(ComponentType.MarkedForDeletion)
-	this.markedForDeletion()!!.set(delay, reason)
+	val mfd = this.addOrGet(ComponentType.MarkedForDeletion) as MarkedForDeletionComponent
+	mfd.set(delay, reason)
 }
 
 inline fun Entity.isMarkedForDeletion() = this.markedForDeletion() != null

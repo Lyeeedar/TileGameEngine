@@ -20,6 +20,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 	var wall: SpriteWrapper? = null
 	val contents: FastEnumMap<SpaceSlot, Entity> = FastEnumMap(SpaceSlot::class.java)
 
+	var tileCol: Colour = Colour.WHITE.copy()
 	var renderCol: Colour = Colour.WHITE.copy()
 	var skipRender: Boolean = false
 	var skipRenderEntities: Boolean = true

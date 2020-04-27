@@ -103,13 +103,11 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
 		val tile = world.grid.tryGet(pos.position, null) ?: return
-		if (tile.skipRender) return
-		if (tile.skipRenderEntities) return
 
 		val px = pos.position.x.toFloat()
 		val py = pos.position.y.toFloat()
 
-		if (pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 50)
+		if (tile.skipRender || tile.skipRenderEntities || pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 50)
 		{
 			renderable.animation = null
 			if (entity.components.containsKey(ComponentType.Transient))
@@ -172,24 +170,5 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	override fun onTurnEntity(entity: Entity)
 	{
 
-	}
-
-	var lastClickTile: AbstractTile? = null
-	fun getClickTile(screenX: Int, screenY: Int): AbstractTile?
-	{
-		val playerPos = getPlayerPosition()
-
-		val offsetx = Statics.resolution.x * 0.5f - playerPos.x * tileSize - tileSize * 0.5f
-		val offsety = Statics.resolution.y * 0.5f - playerPos.y * tileSize - tileSize * 0.5f
-
-		val mousex = ((screenX - offsetx) / tileSize).toInt()
-		val mousey = ((screenY - offsety) / tileSize).toInt()
-
-		val tile = world.grid.tryGet(mousex, mousey, null)
-		lastClickTile?.renderCol?.set(Colour.WHITE)
-		tile?.renderCol?.set(Colour.YELLOW)
-		lastClickTile = tile
-
-		return tile
 	}
 }
