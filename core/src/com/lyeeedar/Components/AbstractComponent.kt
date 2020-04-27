@@ -35,6 +35,9 @@ abstract class AbstractComponent<T: AbstractComponentData>(var data: T)
 	}
 	open fun onDataSwapped() {}
 
+	open fun onAddedToEntity(entity: Entity) { }
+	open fun onRemovedFromEntity(entity: Entity) { }
+
 	var obtained = false
 	fun free()
 	{

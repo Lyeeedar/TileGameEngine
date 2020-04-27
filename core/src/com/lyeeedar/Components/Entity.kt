@@ -28,6 +28,8 @@ class Entity
 	{
 		components[component.type] = component
 		signature.setBit(component.type)
+
+		component.onAddedToEntity(this)
 	}
 
 	fun addComponent(componentType: ComponentType): AbstractComponent<*>
@@ -43,6 +45,8 @@ class Entity
 		val component = components[componentType]
 		components.remove(componentType)
 		signature.clearBit(componentType)
+
+		component?.onRemovedFromEntity(this)
 
 		return component
 	}
