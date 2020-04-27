@@ -23,8 +23,8 @@ class LwjglApplicationChanger : AbstractApplicationChanger(LwjglPreferences("gam
 		val cfg = LwjglApplicationConfiguration()
 
 		cfg.title = "Game"
-		cfg.width = 800
-		cfg.height = 600
+		cfg.width = Statics.resolution.x
+		cfg.height = Statics.resolution.y
 		cfg.fullscreen = pref.getBoolean("fullscreen")
 		cfg.vSyncEnabled = pref.getBoolean("vSync")
 		cfg.foregroundFPS = 0

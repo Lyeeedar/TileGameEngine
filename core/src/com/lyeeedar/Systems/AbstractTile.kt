@@ -6,6 +6,7 @@ import com.lyeeedar.Components.Entity
 import com.lyeeedar.Pathfinding.IPathfindingTile
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.FastEnumMap
 import com.lyeeedar.Util.Point
 
@@ -16,6 +17,8 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 	var floor: SpriteWrapper? = null
 	var wall: SpriteWrapper? = null
 	val contents: FastEnumMap<SpaceSlot, Entity> = FastEnumMap(SpaceSlot::class.java)
+
+	var renderCol: Colour = Colour.WHITE
 
 	val queuedActions = Array<DelayedAction>(false, 4)
 	fun addDelayedAction(function: () -> Unit, delay: Float)

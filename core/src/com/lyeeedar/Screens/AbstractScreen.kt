@@ -166,7 +166,12 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 	}
 
 	// ----------------------------------------------------------------------
-	override fun keyUp( keycode: Int ) = false
+	override fun keyUp( keycode: Int ): Boolean
+	{
+		Statics.controls.keyReleased(KeySource.KEYBOARD, keycode)
+
+		return false
+	}
 
 	// ----------------------------------------------------------------------
 	override fun keyTyped( character: Char ) = false

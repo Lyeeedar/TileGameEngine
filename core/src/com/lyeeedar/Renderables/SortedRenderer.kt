@@ -404,7 +404,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		}
 
 		var regionsDifferent = false
-		if (Statics.collisionGrid != null)
+		if (Statics.lightCollisionGrid != null)
 		{
 			for (i in 0 until sortedShadowLights.size)
 			{
@@ -993,7 +993,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	{
 		light.pos.set(ix, iy)
 
-		if (Statics.collisionGrid != null && light.hasShadows && shadowMode != ShadowMode.NONE)
+		if (Statics.lightCollisionGrid != null && light.hasShadows && shadowMode != ShadowMode.NONE)
 		{
 			shadowLights.add(light)
 		}

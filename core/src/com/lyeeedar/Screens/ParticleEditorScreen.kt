@@ -237,7 +237,7 @@ class ParticleEditorScreen : AbstractScreen()
 
 		batch.projectionMatrix = stage.camera.combined
 
-		Statics.collisionGrid = collision
+		Statics.lightCollisionGrid = collision
 
 		spriteRender.begin(delta * deltaMultiplier, 0f, 0f, Colour.WHITE)
 

@@ -9,14 +9,13 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Statics
-import com.lyeeedar.Util.Statics.Companion.collisionGrid
 import squidpony.squidmath.LightRNG
 
 class World<T: AbstractTile>(var grid: Array2D<T>)
 {
 	lateinit var rng: LightRNG
 
-	var tileSize: Float = 40f
+	var tileSize: Float = 32f
 
 	val entities = Array<Entity>(false, 128)
 	private val toBeAdded = Array<Entity>(false, 128)
@@ -121,9 +120,9 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	fun updateCollisionGrid()
 	{
-		if (Statics.collisionGrid == null || Statics.collisionGrid!!.width != grid.width || Statics.collisionGrid!!.height != grid.height)
+		if (Statics.lightCollisionGrid == null || Statics.lightCollisionGrid!!.width != grid.width || Statics.lightCollisionGrid!!.height != grid.height)
 		{
-			Statics.collisionGrid = Array2D(grid.width, grid.height) { x, y -> grid[x, y].getPassable(SpaceSlot.ENTITY, null) }
+			Statics.lightCollisionGrid = Array2D(grid.width, grid.height) { x, y -> !grid[x, y].getPassable(SpaceSlot.LIGHT, null) }
 		}
 		else
 		{
@@ -131,7 +130,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 			{
 				for (y in 0 until grid.height)
 				{
-					Statics.collisionGrid!![x, y] = grid[x, y].getPassable(SpaceSlot.ENTITY, null)
+					Statics.lightCollisionGrid!![x, y] = !grid[x, y].getPassable(SpaceSlot.LIGHT, null)
 				}
 			}
 		}

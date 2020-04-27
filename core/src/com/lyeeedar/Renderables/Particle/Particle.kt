@@ -17,7 +17,7 @@ import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Random
-import com.lyeeedar.Util.Statics.Companion.collisionGrid
+import com.lyeeedar.Util.Statics.Companion.lightCollisionGrid
 import ktx.collections.toGdxArray
 import ktx.math.div
 import java.util.*
@@ -193,11 +193,11 @@ class Particle(val emitter: Emitter)
 
 				particle.position.add(moveVec)
 
-				if (collision != CollisionAction.NONE && collisionGrid != null)
+				if (collision != CollisionAction.NONE && lightCollisionGrid != null)
 				{
 					val aabb = getBoundingBox(particle)
 
-					if (checkColliding(aabb, collisionGrid!!))
+					if (checkColliding(aabb, lightCollisionGrid!!))
 					{
 						if (collision == CollisionAction.DIE)
 						{
@@ -226,12 +226,12 @@ class Particle(val emitter: Emitter)
 								val xaabb = getBoundingBox(particle, temp.set(oldPos.x, particle.position.y))
 
 								// negate y
-								if (!checkColliding(yaabb, collisionGrid!!))
+								if (!checkColliding(yaabb, lightCollisionGrid!!))
 								{
 									particle.position.y = oldPos.y
 								}
 								// negate x
-								else if (!checkColliding(xaabb, collisionGrid!!))
+								else if (!checkColliding(xaabb, lightCollisionGrid!!))
 								{
 									particle.position.x = oldPos.x
 								}

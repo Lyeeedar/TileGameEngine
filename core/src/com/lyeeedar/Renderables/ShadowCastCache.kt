@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Direction
 import com.lyeeedar.Util.*
-import com.lyeeedar.Util.Statics.Companion.collisionGrid
+import com.lyeeedar.Util.Statics.Companion.lightCollisionGrid
 import ktx.collections.isNotEmpty
 import squidpony.squidgrid.FOV
 import squidpony.squidgrid.Radius
@@ -58,7 +58,7 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 
 	private fun updateCurrentCastRegions(rawOutput: Array<DoubleArray>)
 	{
-		val collisionGrid = collisionGrid!!
+		val collisionGrid = lightCollisionGrid!!
 
 		val visible = com.badlogic.gdx.utils.Array<Point>()
 		val visibleOOB = com.badlogic.gdx.utils.Array<Point>()
@@ -271,7 +271,7 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 
 	fun getShadowCast(x: Int, y: Int, range: Int): com.badlogic.gdx.utils.Array<Point>
 	{
-		val collisionGrid = collisionGrid
+		val collisionGrid = lightCollisionGrid
 		if (collisionGrid == null)
 		{
 			var recalculate = false
