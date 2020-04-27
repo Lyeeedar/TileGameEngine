@@ -12,13 +12,17 @@ import com.lyeeedar.Util.Point
 
 abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 {
+	var isTileDirty = false
+
 	lateinit var world: World<*>
 
 	var floor: SpriteWrapper? = null
 	var wall: SpriteWrapper? = null
 	val contents: FastEnumMap<SpaceSlot, Entity> = FastEnumMap(SpaceSlot::class.java)
 
-	var renderCol: Colour = Colour.WHITE
+	var renderCol: Colour = Colour.WHITE.copy()
+	var skipRender: Boolean = false
+	var skipRenderEntities: Boolean = true
 
 	val queuedActions = Array<DelayedAction>(false, 4)
 	fun addDelayedAction(function: () -> Unit, delay: Float)

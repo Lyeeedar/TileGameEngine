@@ -28,10 +28,6 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	private var renderedStaticOffsetX: Float = -10000f
 	private var renderedStaticOffsetY: Float = -10000f
 
-	val visionShadowCast = ShadowCastCache()
-	val visionSet = IntSet()
-	val seenSet = IntSet()
-	val tempCol = Colour()
 	override fun beforeUpdate(deltaTime: Float)
 	{
 		val playerOffset = getPlayerPosition()
@@ -41,15 +37,6 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val screenTileWidth = (Statics.resolution.x.toFloat() / tileSize).toInt() + 4
 		val screenTileHeight = (Statics.resolution.y.toFloat() / tileSize).toInt() + 4
 
-		val rawCast = visionShadowCast.getShadowCast(playerOffset.x.toInt(), playerOffset.y.toInt(), max(screenTileWidth, screenTileHeight)/2)
-		visionSet.clear()
-		for (point in rawCast)
-		{
-			val hash = point.hashCode()
-			visionSet.add(hash)
-			seenSet.add(hash)
-		}
-
 		offsetx = (Statics.resolution.x * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f)
 		offsety = (Statics.resolution.y * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f)
 
@@ -58,7 +45,21 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val ys = playerOffsetY.toInt()-screenTileHeight/2
 		val ye = playerOffsetY.toInt()+screenTileHeight/2
 
-		if (renderedStaticOffsetX != offsetx || renderedStaticOffsetY != offsety)
+		var isMapDirty = false
+		outer@for (x in xs until xe)
+		{
+			for (y in ys until ye)
+			{
+				val tile = world.grid.tryGet(x, y, null) ?: continue
+				if (tile.isTileDirty)
+				{
+					isMapDirty = true
+					break@outer
+				}
+			}
+		}
+
+		if (isMapDirty || renderedStaticOffsetX != offsetx || renderedStaticOffsetY != offsety)
 		{
 			renderedStaticOffsetX = offsetx
 			renderedStaticOffsetY = offsety
@@ -70,18 +71,12 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				for (y in ys until ye)
 				{
 					val tile = world.grid.tryGet(x, y, null) ?: continue
+					tile.isTileDirty = false
+
 					val floor = tile.floor ?: continue
+					if (tile.skipRender) continue
 
-					val tileHash = tile.hashCode()
-					if (!seenSet.contains(tileHash)) continue
-
-					tempCol.set(tile.renderCol)
-					if (!visionSet.contains(tileHash))
-					{
-						tempCol.mul(0.5f)
-					}
-
-					renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tempCol)
+					renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.renderCol)
 				}
 			}
 
@@ -96,17 +91,9 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			{
 				val tile = world.grid.tryGet(x, y, null) ?: continue
 				val wall = tile.wall ?: continue
+				if (tile.skipRender) continue
 
-				val tileHash = tile.hashCode()
-				if (!seenSet.contains(tileHash)) continue
-
-				tempCol.set(tile.renderCol)
-				if (!visionSet.contains(tileHash))
-				{
-					tempCol.mul(0.5f)
-				}
-
-				renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tempCol)
+				renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.renderCol)
 			}
 		}
 	}
@@ -116,17 +103,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
 		val tile = world.grid.tryGet(pos.position, null) ?: return
-
-		val tileHash = tile.hashCode()
-		if (!seenSet.contains(tileHash)) return
-
-		tempCol.set(tile.renderCol)
-		if (!visionSet.contains(tileHash))
-		{
-			if (SpaceSlot.EntityValues.contains(pos.data.slot)) return
-
-			tempCol.mul(0.5f)
-		}
+		if (tile.skipRender) return
+		if (tile.skipRenderEntities) return
 
 		val px = pos.position.x.toFloat()
 		val py = pos.position.y.toFloat()
@@ -152,7 +130,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		renderable.size[0] = pos.data.size
 		renderable.size[1] = pos.data.size
 
-		renderer.queue(renderable, px, py, pos.data.slot.ordinal, 1, colour = tempCol)
+		renderer.queue(renderable, px, py, pos.data.slot.ordinal, 1, colour = tile.renderCol)
 
 		val offset = renderable.animation?.renderOffset(false)
 
@@ -170,12 +148,12 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		{
 			for (below in additional.below.values())
 			{
-				renderer.queue(below, ax, ay, pos.data.slot.ordinal, 0, colour = tempCol)
+				renderer.queue(below, ax, ay, pos.data.slot.ordinal, 0, colour = tile.renderCol)
 			}
 
 			for (above in additional.above.values())
 			{
-				renderer.queue(above, ax, ay, pos.data.slot.ordinal, 2, colour = tempCol)
+				renderer.queue(above, ax, ay, pos.data.slot.ordinal, 2, colour = tile.renderCol)
 			}
 		}
 
