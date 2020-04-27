@@ -102,10 +102,10 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	{
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
-		val tile = world.grid.tryGet(pos.position, null) ?: return
+		val px = pos.position.x.toFloat() + pos.offset.x
+		val py = pos.position.y.toFloat() + pos.offset.x
 
-		val px = pos.position.x.toFloat()
-		val py = pos.position.y.toFloat()
+		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 
 		if (tile.skipRender || tile.skipRenderEntities || pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 50)
 		{

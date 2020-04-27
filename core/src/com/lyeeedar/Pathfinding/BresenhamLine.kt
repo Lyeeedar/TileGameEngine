@@ -6,6 +6,7 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Point
+import kotlin.math.abs
 
 object BresenhamLine
 {
@@ -50,7 +51,7 @@ object BresenhamLine
 		return path
 	}
 
-	fun line(x: Int, y: Int, x2: Int, y2: Int, grid: Array2D<IPathfindingTile>, checkPassable: Boolean, range: Int, travelType: SpaceSlot, self: Any): Array<Point>?
+	fun <T: IPathfindingTile>line(x: Int, y: Int, x2: Int, y2: Int, grid: Array2D<T>, checkPassable: Boolean, travelType: SpaceSlot, self: Any? = null): Array<Point>?
 	{
 		var x = x
 		var y = y
@@ -100,13 +101,18 @@ object BresenhamLine
 
 		var numerator = longest shr 1
 
-		val dist = range
+		val dist = abs(x2-x) + abs(y2-y)
 
 		val path = Array<Point>()
 
 		for (i in 0..dist)
 		{
 			path.add(Point.obtain().set(x, y))
+
+			if (x == x2 && y == y2)
+			{
+				break
+			}
 
 			numerator += shortest
 			if (numerator >= longest)
@@ -127,5 +133,10 @@ object BresenhamLine
 		}
 
 		return path
+	}
+
+	fun <T: IPathfindingTile>line(start: Point, end: Point, grid: Array2D<T>, travelType: SpaceSlot = SpaceSlot.LIGHT, self: Any? = null): Array<Point>?
+	{
+		return line(start.x, start.y, end.x, end.y, grid, true, travelType, self)
 	}
 }
