@@ -18,13 +18,25 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 {
 	override val type: ComponentType = ComponentType.Renderable
 
+	var dataRenderable: Renderable = data.renderable.copy()
 	var renderable: Renderable
-		get() = overrideRenderable ?: data.renderable
+		get() = overrideRenderable ?: dataRenderable
 		set(value)
 		{
 			overrideRenderable = value
 		}
 	private var overrideRenderable: Renderable? = null
+
+	override fun onDataSwapped()
+	{
+		dataRenderable = data.renderable.copy()
+	}
+
+	fun set(renderable: Renderable): RenderableComponent
+	{
+		dataRenderable = renderable
+		return this
+	}
 
 	override fun reset()
 	{
@@ -36,6 +48,10 @@ class RenderableComponent(data: RenderableComponentData) : AbstractComponent<Ren
 class RenderableComponentData : AbstractComponentData()
 {
 	var renderable: Renderable = AssetManager.loadSprite("blank")
+		private set(value)
+		{
+			field = value
+		}
 
 	//region generated
 	override fun load(xmlData: XmlData)

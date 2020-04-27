@@ -57,7 +57,7 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 			val entity = transientParticleArchetype.build()
 
 			val r = particle.getParticleEffect()
-			entity.renderable()!!.data.renderable = r
+			entity.renderable()?.set(r)
 
 			val renderDelay: Float
 			if (spawnBehaviour == SpawnBehaviour.IMMEDIATE)

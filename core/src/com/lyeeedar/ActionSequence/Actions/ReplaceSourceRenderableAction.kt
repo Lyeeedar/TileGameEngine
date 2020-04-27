@@ -32,7 +32,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 		if (srcRenderable == null)
 		{
 			srcRenderable = source.addComponent(ComponentType.Renderable) as RenderableComponent
-			srcRenderable.data.renderable = AssetManager.loadSprite("blank")
+			srcRenderable.set(AssetManager.loadSprite("blank"))
 		}
 
 		val oldRenderable = srcRenderable.renderable
