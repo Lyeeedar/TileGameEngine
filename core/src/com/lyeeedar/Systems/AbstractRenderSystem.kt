@@ -28,6 +28,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	private var renderedStaticOffsetX: Float = -10000f
 	private var renderedStaticOffsetY: Float = -10000f
 
+	private val nonVisibleColour = Colour(0.1f, 0.1f, 0.1f, 1f, true)
+
 	override fun beforeUpdate(deltaTime: Float)
 	{
 		val playerOffset = getPlayerPosition()
@@ -70,13 +72,29 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			{
 				for (y in ys until ye)
 				{
-					val tile = world.grid.tryGet(x, y, null) ?: continue
-					tile.isTileDirty = false
+					val tile = world.grid.tryGet(x, y, null)
+					if (tile != null && tile.skipRender == false)
+					{
+						tile.isTileDirty = false
 
-					val floor = tile.floor ?: continue
-					if (tile.skipRender) continue
+						val floor = tile.floor ?: continue
 
-					renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.renderCol)
+						renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.renderCol)
+					}
+					else
+					{
+						val tile = world.grid[0, 0]
+
+						if (tile.floor != null)
+						{
+							renderer.queueSpriteWrapper(tile.floor!!, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = nonVisibleColour)
+						}
+
+						if (tile.wall != null)
+						{
+							renderer.queueSpriteWrapper(tile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
+						}
+					}
 				}
 			}
 
@@ -91,7 +109,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			{
 				val tile = world.grid.tryGet(x, y, null) ?: continue
 				val wall = tile.wall ?: continue
-				if (tile.skipRender) continue
+				if (tile.skipRender || tile.renderCol.isBlack()) continue
 
 				renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.renderCol)
 			}

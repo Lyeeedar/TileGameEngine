@@ -57,6 +57,7 @@ class Colour()
 	fun copy(): Colour = Colour(this)
 
 	fun isWhite(): Boolean = r == 1f && g == 1f && b == 1f && a == 1f
+	fun isBlack(): Boolean = r == 0f && g == 0f && b == 0f && a == 1f
 
 	fun r(r: Float): Colour
 	{
