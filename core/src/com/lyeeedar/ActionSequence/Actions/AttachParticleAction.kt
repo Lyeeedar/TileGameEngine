@@ -27,7 +27,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val attachedParticles = Array<EntityReference>()
 		for (target in state.targets)
@@ -57,8 +57,6 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 		}
 
 		state.data[dataKey] = attachedParticles
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

@@ -27,7 +27,7 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 	val currentTargets = Array<Point>(false, 4)
 	//endregion
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		currentTargets.clear()
 		currentTargets.addAll(state.targets)
@@ -59,8 +59,6 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 				}
 			}
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated

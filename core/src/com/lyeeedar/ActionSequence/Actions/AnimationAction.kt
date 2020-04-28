@@ -49,7 +49,7 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val source = state.source
 		val sourceRenderable = source.get()?.renderable()?.renderable
@@ -64,8 +64,6 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 				Animation.FLASH -> BlinkAnimation.obtain().set(targetColour, sourceRenderable.colour, duration)
 			}
 		}
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

@@ -24,7 +24,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val source = state.source.get()!!
 
@@ -51,8 +51,6 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 			newRenderable.animation = AlphaAnimation.obtain().set(blendDuration, 0f, 1f)
 			newRenderable.animation = ColourChangeAnimation.obtain().set(Colour.WHITE.copy().mul(50f), Colour.WHITE, blendDuration)
 		}
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

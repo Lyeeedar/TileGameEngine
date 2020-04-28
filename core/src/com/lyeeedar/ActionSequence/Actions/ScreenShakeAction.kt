@@ -16,13 +16,11 @@ class ScreenShakeAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val renderSystem = state.world.systems.filterIsInstance<AbstractRenderSystem>().first()
 		renderSystem.renderer.setScreenShake(amount, 1f / speed)
 		renderSystem.renderer.lockScreenShake()
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

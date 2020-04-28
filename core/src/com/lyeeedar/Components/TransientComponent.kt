@@ -5,8 +5,10 @@ class TransientComponent : AbstractComponent()
 {
 	override val type: ComponentType = ComponentType.Transient
 
+	var blocksTurns = true
+
 	override fun reset()
 	{
-
+		blocksTurns = true
 	}
 }

@@ -8,7 +8,7 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "252,102,9")
 class LockEntityTargetsAction : AbstractOneShotActionSequenceAction()
 {
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.lockedEntityTargets.clear()
 		for (target in state.targets)
@@ -23,8 +23,6 @@ class LockEntityTargetsAction : AbstractOneShotActionSequenceAction()
 				}
 			}
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated

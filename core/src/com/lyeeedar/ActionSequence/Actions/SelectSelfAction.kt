@@ -8,12 +8,10 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "252,102,9")
 class SelectSelfAction : AbstractOneShotActionSequenceAction()
 {
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.targets.clear()
 		state.targets.add(state.source.get()!!.position()!!.position)
-
-		return ActionState.Completed
 	}
 
 	//region generated

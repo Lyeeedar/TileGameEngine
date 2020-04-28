@@ -7,14 +7,12 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "247,176,78")
 class SetSourcePointAction : AbstractOneShotActionSequenceAction()
 {
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		if (state.targets.size > 0)
 		{
 			state.sourcePoint = state.targets[0]
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated

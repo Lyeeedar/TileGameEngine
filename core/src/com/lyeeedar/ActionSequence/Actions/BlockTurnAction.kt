@@ -20,11 +20,9 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 		return if (counter <= 0) ActionState.Completed else ActionState.Blocked
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.data[key] = turns
-
-		return ActionState.Blocked
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

@@ -32,6 +32,7 @@ class EntityPool
 
 		@JvmStatic fun free(entity: Entity)
 		{
+			if (!entity.obtained) throw RuntimeException()
 			toBeFreed.add(entity)
 		}
 
@@ -55,6 +56,8 @@ class EntityPool
 		{
 			for (entity in toBeFreed)
 			{
+				if (!entity.obtained) throw RuntimeException()
+
 				for (type in ComponentType.Temporary)
 				{
 					val component = entity.removeComponent(type)

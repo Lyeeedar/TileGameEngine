@@ -25,9 +25,9 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
-		if (state.targets.size == 0) return ActionState.Completed
+		if (state.targets.size == 0) return
 
 		val spawnedParticles = Array<Entity>()
 		if (spawnSingleParticle)
@@ -70,8 +70,6 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 			}
 		}
 		state.data[key] = spawnedParticles
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

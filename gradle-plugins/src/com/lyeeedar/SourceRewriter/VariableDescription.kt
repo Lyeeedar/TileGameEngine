@@ -359,6 +359,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				builder.appendln(indentation, "val $elName = xmlData")
 			}
+			else if (sourceElName != null)
+			{
+				builder.appendln(indentation, "val $elName = $sourceElName")
+			}
 			else
 			{
 				builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
@@ -521,7 +525,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				}
 
 				builder.appendln(indentation+2, "val obj$name: $valueType$creation")
-				writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, valueType, VariableType.VAR, "obj$name")
+				writeLoad(builder, indentation+2, classDefinition, classRegister, extraVariables, valueType, VariableType.VAR, "obj$name", "el")
 				builder.appendln(indentation+2, "$name[enumVal] = obj$name")
 			}
 

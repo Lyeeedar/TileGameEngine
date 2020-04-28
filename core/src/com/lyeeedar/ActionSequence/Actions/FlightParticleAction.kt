@@ -40,11 +40,11 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val sourceTile = state.sourcePoint
 
-		if (state.targets.size == 0) return ActionState.Completed
+		if (state.targets.size == 0) return
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
@@ -120,8 +120,6 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 			state.world.addEntity(entity)
 		}
-
-		return ActionState.Completed
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState

@@ -22,7 +22,7 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	//endregion
 
 	abstract fun onTurn(state: ActionSequenceState): ActionState
-	abstract fun enter(state: ActionSequenceState): ActionState
+	abstract fun enter(state: ActionSequenceState)
 	abstract fun exit(state: ActionSequenceState): ActionState
 
 	//region generated

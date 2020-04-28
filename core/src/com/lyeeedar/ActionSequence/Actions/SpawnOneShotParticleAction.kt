@@ -27,12 +27,13 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 	var alignToVector: Boolean = true
 	var spawnBehaviour: SpawnBehaviour = SpawnBehaviour.IMMEDIATE
 	var spawnDuration: Float = 0f
+	var makeParticleNonBlocking: Boolean = false
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		val sourceTile = state.sourcePoint
 
-		if (state.targets.size == 0) return ActionState.Completed
+		if (state.targets.size == 0) return
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
@@ -43,6 +44,11 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 			val tile = state.world.grid.tryGet(point, null) ?: continue
 
 			val entity = transientParticleArchetype.build()
+
+			if (makeParticleNonBlocking)
+			{
+				entity.transient()!!.blocksTurns = false
+			}
 
 			val r = particle.getParticleEffect()
 			entity.renderable()?.set(r)
@@ -96,8 +102,6 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 			state.world.addEntity(entity)
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated
@@ -108,6 +112,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 		alignToVector = xmlData.getBoolean("AlignToVector", true)
 		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
+		makeParticleNonBlocking = xmlData.getBoolean("MakeParticleNonBlocking", false)
 	}
 	override val classID: String = "SpawnOneShotParticle"
 	//endregion

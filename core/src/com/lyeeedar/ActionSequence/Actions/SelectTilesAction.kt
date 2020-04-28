@@ -23,7 +23,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 	val variables = ObjectFloatMap<String>()
 	//endregion
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.targets.clear()
 		state.lockedEntityTargets.clear()
@@ -76,8 +76,6 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 			}
 			rng.freeTS()
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated

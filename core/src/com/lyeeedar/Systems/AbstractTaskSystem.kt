@@ -30,7 +30,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 				canUpdate = false
 				break
 			}
-			else if (entity.isTransient() && renderable.renderable.isBlocking)
+			else if (entity.transient()?.blocksTurns == true && renderable.renderable.isBlocking)
 			{
 				canUpdate = false
 				break

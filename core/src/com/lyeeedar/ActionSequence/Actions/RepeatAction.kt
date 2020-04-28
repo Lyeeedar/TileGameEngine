@@ -13,11 +13,10 @@ class RepeatAction : AbstractDurationActionSequenceAction()
 
 	override fun onTurn(state: ActionSequenceState): ActionState
 	{
-		val count = state.data[key] as Int
-		return if (count <= 0) ActionState.Completed else ActionState.Blocked
+		return ActionState.Completed
 	}
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		if (state.data.containsKey(key))
 		{
@@ -28,10 +27,8 @@ class RepeatAction : AbstractDurationActionSequenceAction()
 		else
 		{
 			state.data[key] = count
-			state.data["i"] = state.index
+			state.data["i"] = state.index-1
 		}
-
-		return ActionState.Blocked
 	}
 
 	override fun exit(state: ActionSequenceState): ActionState
@@ -48,18 +45,7 @@ class RepeatAction : AbstractDurationActionSequenceAction()
 			state.currentTime = time
 			state.index = state.data["i"] as Int
 
-			val itr = state.enteredActions.iterator()
-			while (itr.hasNext())
-			{
-				val action = itr.next()
-				if (action.time < time)
-				{
-					action.exit(state)
-					itr.remove()
-				}
-			}
-
-			return ActionState.Blocked
+			return ActionState.Completed
 		}
 	}
 

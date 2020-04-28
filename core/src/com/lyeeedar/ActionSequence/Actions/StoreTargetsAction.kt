@@ -13,11 +13,9 @@ class StoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
 	lateinit var key: String
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.data[key] = state.targets.toGdxArray()
-
-		return ActionState.Completed
 	}
 
 	//region generated
@@ -35,14 +33,12 @@ class RestoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
 	lateinit var key: String
 
-	override fun enter(state: ActionSequenceState): ActionState
+	override fun enter(state: ActionSequenceState)
 	{
 		state.targets.clear()
 
 		val targets = state.data[key] as Array<Point>
 		state.targets.addAll(targets)
-
-		return ActionState.Completed
 	}
 
 	//region generated

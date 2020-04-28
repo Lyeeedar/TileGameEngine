@@ -22,7 +22,7 @@ class ActionSequenceState
 	lateinit var sourcePoint: Point
 	lateinit var world: World<*>
 
-	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 4)
+	val enteredActions: ObjectSet<AbstractActionSequenceAction> = ObjectSet()
 	val targets: Array<Point> = Array(1)
 	val lockedEntityTargets: Array<EntityReference> = Array(1)
 	var facing: Direction = Direction.NORTH
@@ -87,10 +87,24 @@ class ActionSequenceState
 class ActionSequence : XmlDataClass()
 {
 	var cancellable = true
-	var removeOnDeath = false
 
+	@DataValue(dataName = "Actions")
 	@DataTimeline(timelineGroup = true)
-	val actions: Array<AbstractActionSequenceAction> = Array(4)
+	val rawActions: Array<AbstractActionSequenceAction> = Array(4)
+
+	//region non-data
+	val triggers = Array<AbstractActionSequenceTrigger>(4)
+	//endregion
+
+	override fun afterLoad()
+	{
+		for (action in rawActions)
+		{
+			triggers.add(EnterTrigger(action))
+			triggers.add(ExitTrigger(action))
+		}
+		triggers.sort(compareBy { it.time })
+	}
 
 	fun onTurn(state: ActionSequenceState)
 	{
@@ -140,61 +154,30 @@ class ActionSequence : XmlDataClass()
 
 		state.currentTime += delta
 
-		val itr = state.enteredActions.iterator()
-		while (itr.hasNext())
+		while(state.index < triggers.size)
 		{
-			val action = itr.next()
-			if (action.end <= state.currentTime)
+			val trigger = triggers[state.index]
+			if (trigger.time <= state.currentTime)
 			{
-				val actionState = action.exit(state)
-				if (actionState != ActionState.Blocked)
-				{
-					itr.remove()
-				}
-			}
-		}
-
-		if (state.index >= actions.size)
-		{
-			if (state.enteredActions.size == 0)
-			{
-				state.blocked = false
-				return true
-			}
-		}
-
-		for (i in state.index until actions.size)
-		{
-			val action = actions[i]
-			if (action.time <= state.currentTime)
-			{
-				state.index = i + 1
-
-				val actionState = action.enter(state)
+				val actionState = trigger.executeTrigger(state)
 				if (actionState == ActionState.Blocked)
 				{
 					state.blocked = true
-					state.currentTime = action.time
-					state.enteredActions.add(action)
+					state.currentTime = trigger.time
 					break
-				}
-				else
-				{
-					if (action.end <= state.currentTime)
-					{
-						action.exit(state)
-					}
-					else
-					{
-						state.enteredActions.add(action)
-					}
 				}
 			}
 			else
 			{
-				state.index = i
 				break
 			}
+
+			state.index++
+		}
+
+		if (state.index >= triggers.size)
+		{
+			return true
 		}
 
 		return false
@@ -236,20 +219,49 @@ class ActionSequence : XmlDataClass()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		val actionsEl = xmlData.getChildByName("Actions")
-		if (actionsEl != null)
+		val rawActionsEl = xmlData.getChildByName("Actions")
+		if (rawActionsEl != null)
 		{
-			for (el in actionsEl.children)
+			for (el in rawActionsEl.children)
 			{
 				for (keyframeEl in el.children)
 				{
-					val objactions = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID", keyframeEl.name)!!)
-					objactions.load(keyframeEl)
-					actions.add(objactions)
+					val objrawActions = XmlDataClassLoader.loadAbstractActionSequenceAction(keyframeEl.get("classID", keyframeEl.name)!!)
+					objrawActions.load(keyframeEl)
+					rawActions.add(objrawActions)
 				}
 			}
 		}
-		actions.sort(compareBy{ it.time })
+		rawActions.sort(compareBy{ it.time })
+		afterLoad()
 	}
 	//endregion
+}
+
+abstract class AbstractActionSequenceTrigger(val action: AbstractActionSequenceAction, val time: Float)
+{
+	abstract fun executeTrigger(state: ActionSequenceState): ActionState
+}
+class EnterTrigger(action: AbstractActionSequenceAction) : AbstractActionSequenceTrigger(action, action.time)
+{
+	override fun executeTrigger(state: ActionSequenceState): ActionState
+	{
+		state.enteredActions.add(action)
+		action.enter(state)
+		return ActionState.Completed
+	}
+}
+
+class ExitTrigger(action: AbstractActionSequenceAction) : AbstractActionSequenceTrigger(action, action.end)
+{
+	override fun executeTrigger(state: ActionSequenceState): ActionState
+	{
+		val actionState = action.exit(state)
+		if (actionState != ActionState.Blocked)
+		{
+			state.enteredActions.remove(action)
+		}
+
+		return actionState
+	}
 }
