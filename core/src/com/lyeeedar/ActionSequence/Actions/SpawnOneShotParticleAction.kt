@@ -37,7 +37,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
-		val furthest = state.targets.maxBy { it.taxiDist(sourceTile) }!!
+		val furthest = state.targets.maxBy { it.dist(sourceTile) }!!
 
 		for (point in state.targets)
 		{

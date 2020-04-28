@@ -89,14 +89,14 @@ class BehaviourTreeState
 					val epos = value.entity.position()
 					if (epos != null)
 					{
-						val dist = srcPos.position.taxiDist(epos.position)
+						val dist = srcPos.position.dist(epos.position)
 						resolvedVariables[entry.key + ".dist"] = dist.toFloat()
 					}
 				}
 			}
 			else if (value is Point)
 			{
-				val dist = srcPos.position.taxiDist(value)
+				val dist = srcPos.position.dist(value)
 				resolvedVariables[entry.key+".dist"] = dist.toFloat()
 			}
 		}

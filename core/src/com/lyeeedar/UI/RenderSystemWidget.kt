@@ -18,8 +18,10 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 {
 	val white = AssetManager.loadTextureRegion("GUI/border")
 
-	var selectedPoint: Point? = null
-	var selectedTile: AbstractTile? = null
+	var mousePos = Vector2()
+	val selectedPoint: Point
+		get() = screenspaceToPoint(mousePos.x, mousePos.y)
+	var isSelected = false
 
 	init
 	{
@@ -31,8 +33,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 		            {
 			            override fun touchDown(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int): Boolean
 			            {
-				            selectedPoint = screenspaceToPoint(x, y)
-				            selectedTile = world.grid.tryGet(selectedPoint!!, null)
+				            mousePos.set(x, y)
+				            isSelected = true
 
 				            super.touchDown(event, x, y, pointer, button)
 				            return true
@@ -40,8 +42,9 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 			            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: Int)
 			            {
-				            selectedPoint = null
-				            selectedTile = null
+				            mousePos.set(x, y)
+
+				            isSelected = false
 
 				            super.touchUp(event, x, y, pointer, button)
 			            }
