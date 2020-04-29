@@ -6,9 +6,11 @@ import com.lyeeedar.AI.BehaviourTree.Actions.AbstractBehaviourAction
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
+@DataClass(category = "Until")
 class RunUntilNotFailedBehaviourNode : AbstractBehaviourNode()
 {
 	override val actions: Array<AbstractBehaviourAction> = Array()

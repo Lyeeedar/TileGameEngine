@@ -5,8 +5,10 @@ import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.markForDeletion
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
+@DataClass(category = "Action")
 class KillBehaviourAction : AbstractBehaviourAction()
 {
 	override fun evaluate(state: BehaviourTreeState): EvaluationState

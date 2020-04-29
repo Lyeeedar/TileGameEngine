@@ -10,6 +10,7 @@ import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
+import java.lang.RuntimeException
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
@@ -59,6 +60,8 @@ class BehaviourTreeState
 	}
 	fun setData(key: String, guid: Int, value: Any)
 	{
+		if (value is Entity) throw RuntimeException("Use entityreference!")
+
 		val dataKey = "$guid$dataScope$key"
 		data[dataKey] = value
 
@@ -100,6 +103,7 @@ class BehaviourTreeState
 				resolvedVariables[entry.key+".dist"] = dist.toFloat()
 			}
 		}
+		resolvedVariables["else"] = 1.0f
 	}
 
 	val map = ObjectFloatMap<String>()
@@ -116,6 +120,7 @@ class BehaviourTreeState
 				is Float -> value
 				is Int -> value.toFloat()
 				is Boolean -> if (value) 1.0f else 0.0f
+				is EntityReference -> if (value.isValid()) 1.0f else 0.0f
 				else -> 1.0f
 			}
 		}

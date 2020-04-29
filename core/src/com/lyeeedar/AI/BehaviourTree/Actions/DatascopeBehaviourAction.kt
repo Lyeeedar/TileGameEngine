@@ -4,10 +4,12 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
+@DataClass(category = "Data")
 class DatascopeBehaviourAction : AbstractBehaviourAction()
 {
 	@DataGraphReference

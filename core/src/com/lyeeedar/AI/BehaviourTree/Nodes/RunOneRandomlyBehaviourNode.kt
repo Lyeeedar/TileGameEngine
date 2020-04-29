@@ -6,10 +6,12 @@ import com.lyeeedar.AI.BehaviourTree.Actions.AbstractBehaviourAction
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.removeRandom
 
+@DataClass(category = "Other")
 class RunOneRandomlyBehaviourNode : AbstractBehaviourNode()
 {
 	override val actions: Array<AbstractBehaviourAction> = Array()

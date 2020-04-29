@@ -6,12 +6,11 @@ import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
-import com.lyeeedar.Util.DataGraphReference
-import com.lyeeedar.Util.GraphXmlDataClass
+import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
-import com.lyeeedar.Util.round
 
+@DataClass(category = "Flow Control")
 class BranchBehaviourAction : AbstractBehaviourAction()
 {
 	val branches: Array<ConditionAndNode> = Array()
@@ -27,7 +26,7 @@ class BranchBehaviourAction : AbstractBehaviourAction()
 			}
 		}
 
-		return EvaluationState.FAILED
+		return EvaluationState.COMPLETED
 	}
 
 	//region generated

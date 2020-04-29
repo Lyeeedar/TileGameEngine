@@ -7,9 +7,11 @@ import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import java.lang.RuntimeException
 
+@DataClass(category = "Data")
 class ConvertToPositionBehaviourAction : AbstractBehaviourAction()
 {
 	lateinit var input: String

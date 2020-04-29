@@ -1,42 +1,33 @@
 package com.lyeeedar.AI.BehaviourTree.Actions
 
 import com.badlogic.gdx.utils.ObjectMap
-import com.lyeeedar.AI.BehaviourTree.BehaviourTree
+import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Util.DataClass
-import com.lyeeedar.Util.DataFileReference
 import com.lyeeedar.Util.XmlData
 
-@DataClass(category = "Flow Control")
-class ImportBehaviourAction : AbstractBehaviourAction()
+@DataClass(category = "Data")
+class SetValueBehaviourAction : AbstractBehaviourAction()
 {
-	@DataFileReference(resourceType = "BehaviourTree")
-	lateinit var path: String
-
-	//region non-data
-	lateinit var importedTree: BehaviourTree
-	//endregion
-
-	override fun afterLoad()
-	{
-		importedTree = BehaviourTree.load(path)
-	}
+	lateinit var key: String
+	lateinit var value: CompiledExpression
 
 	override fun evaluate(state: BehaviourTreeState): EvaluationState
 	{
-		return importedTree.root.evaluate(state)
+		state.setData(key, 0, value.evaluate(state.getVariables(), state.rng.nextLong()))
+		return EvaluationState.COMPLETED
 	}
 
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		path = xmlData.get("Path")
-		afterLoad()
+		key = xmlData.get("Key")
+		value = CompiledExpression(xmlData.get("Value"))
 	}
-	override val classID: String = "Import"
+	override val classID: String = "SetValue"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
 	{
 		super.resolve(nodes)
