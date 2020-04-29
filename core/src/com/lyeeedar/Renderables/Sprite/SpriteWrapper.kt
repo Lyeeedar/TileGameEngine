@@ -3,6 +3,7 @@ package com.lyeeedar.Renderables.Sprite
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
+import squidpony.squidmath.LightRNG
 
 /**
  * Created by Philip on 06-Jul-16.
@@ -10,70 +11,63 @@ import com.lyeeedar.Util.XmlData
 
 class SpriteWrapper
 {
+	val rng = LightRNG()
+
 	var sprite: Sprite? = null
 	var tilingSprite: TilingSprite? = null
 
 	val spriteVariants = com.badlogic.gdx.utils.Array<Pair<Float, Sprite>>(1)
 	val tilingSpriteVariants = com.badlogic.gdx.utils.Array<Pair<Float, TilingSprite>>(1)
 
-	var chosenSprite: Sprite? = null
-	var chosenTilingSprite: TilingSprite? = null
-	var hasChosenSprites = false
-
-	fun chooseSprites()
+	fun getChosenSprite(x: Int, y: Int): Sprite?
 	{
-		chosenSprite = sprite
-		if (spriteVariants.size > 0)
+		if (spriteVariants.size == 0) return sprite
+
+		val seed = 1000 * x + y
+		rng.setSeed(seed.toLong())
+		val value = rng.nextFloat()
+
+		var counter = 0f
+		for (i in 0 until spriteVariants.size)
 		{
-			val rand = Random.random(Random.sharedRandom)
-			var total = 0f
-			for (variant in spriteVariants)
+			val variant = spriteVariants[i]
+			counter += variant.first
+
+			if (value <= counter)
 			{
-				total += variant.first
-				if (rand <= total)
-				{
-					chosenSprite = variant.second
-					break
-				}
+				return variant.second
 			}
 		}
 
-		chosenTilingSprite = tilingSprite
-		if (tilingSpriteVariants.size > 0)
+		return sprite
+	}
+
+	fun getChosenTilingSprite(x: Int, y: Int): TilingSprite?
+	{
+		if (tilingSpriteVariants.size == 0) return tilingSprite
+
+		val seed = 1000 * x + y
+		rng.setSeed(seed.toLong())
+		val value = rng.nextFloat()
+
+		var counter = 0f
+		for (i in 0 until tilingSpriteVariants.size)
 		{
-			val rand = Random.random(Random.sharedRandom)
-			var total = 0f
-			for (variant in tilingSpriteVariants)
+			val variant = tilingSpriteVariants[i]
+			counter += variant.first
+
+			if (value <= counter)
 			{
-				total += variant.first
-				if (rand <= total)
-				{
-					chosenTilingSprite = variant.second
-					break
-				}
+				return variant.second
 			}
 		}
 
-		hasChosenSprites = true
+		return tilingSprite
 	}
 
 	fun copy(): SpriteWrapper
 	{
-		val wrapper = SpriteWrapper()
-		wrapper.sprite = sprite?.copy()
-		wrapper.tilingSprite = tilingSprite?.copy()
-
-		for (variant in spriteVariants)
-		{
-			wrapper.spriteVariants.add(Pair(variant.first, variant.second.copy()))
-		}
-
-		for (variant in tilingSpriteVariants)
-		{
-			wrapper.tilingSpriteVariants.add(Pair(variant.first, variant.second.copy()))
-		}
-
-		return wrapper
+		return this
 	}
 
 	companion object

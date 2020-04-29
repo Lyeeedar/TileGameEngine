@@ -73,8 +73,8 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	private val BLEND_BLOCK_SIZE = 1
 	private val INDEX_BLOCK_SIZE = BLEND_BLOCK_SIZE * NUM_BLENDS
 	private val LAYER_BLOCK_SIZE = INDEX_BLOCK_SIZE * MAX_INDEX
-	private val X_BLOCK_SIZE = LAYER_BLOCK_SIZE * MAX_LAYER
-	private val Y_BLOCK_SIZE = X_BLOCK_SIZE * width.toInt()
+	private val X_BLOCK_SIZE = LAYER_BLOCK_SIZE * MAX_LAYER * 10
+	private val Y_BLOCK_SIZE = X_BLOCK_SIZE * width.toInt() * 10
 
 	private var delta: Float = 0f
 
@@ -754,13 +754,13 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	}
 
 	// ----------------------------------------------------------------------
-	private fun getComparisonVal(x: Int, y: Int, layer: Int, index: Int, blend: BlendMode) : Int
+	private fun getComparisonVal(x: Float, y: Float, layer: Int, index: Int, blend: BlendMode) : Int
 	{
 		if (index > MAX_INDEX-1) throw RuntimeException("Index too high! $index >= $MAX_INDEX!")
 		if (layer > MAX_LAYER-1) throw RuntimeException("Layer too high! $layer >= $MAX_LAYER!")
 
-		val yBlock = y * Y_BLOCK_SIZE * -1
-		val xBlock = x * X_BLOCK_SIZE * -1
+		val yBlock = (y*10).toInt() * Y_BLOCK_SIZE * -1
+		val xBlock = (x*10).toInt() * X_BLOCK_SIZE * -1
 		val lBlock = layer * LAYER_BLOCK_SIZE
 		val iBlock = index * INDEX_BLOCK_SIZE
 		val bBlock = blend.ordinal * BLEND_BLOCK_SIZE
@@ -948,7 +948,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 					if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) continue
 
-					val comparisonVal = getComparisonVal((drawx-sizex*0.5f-1f).floor(), (drawy-sizey*0.5f-1f).floor(), layer, index, particle.blend)
+					val comparisonVal = getComparisonVal(drawx-sizex*0.5f-1f, drawy-sizey*0.5f-1f, layer, index, particle.blend)
 
 					val tex1Index = tex1.toInt()
 					val texture1 = particle.textures[pdata.texStream][tex1Index].second
@@ -1004,20 +1004,15 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	}
 
 	// ----------------------------------------------------------------------
-	fun queueSpriteWrapper(spriteWrapper: SpriteWrapper, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Int? = null, sortY: Int? = null)
+	fun queueSpriteWrapper(spriteWrapper: SpriteWrapper, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Float? = null, sortY: Float? = null)
 	{
-		if (!spriteWrapper.hasChosenSprites)
-		{
-			spriteWrapper.chooseSprites()
-		}
-
-		val sprite = spriteWrapper.chosenSprite
+		val sprite = spriteWrapper.getChosenSprite(ix.toInt(), iy.toInt())
 		if (sprite != null)
 		{
 			queueSprite(sprite, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY)
 		}
 
-		val tilingSprite = spriteWrapper.chosenTilingSprite
+		val tilingSprite = spriteWrapper.getChosenTilingSprite(ix.toInt(), iy.toInt())
 		if (tilingSprite != null)
 		{
 			queueSprite(tilingSprite, ix, iy, layer, index, colour, width, height, lit)
@@ -1067,7 +1062,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		// check if onscreen
 		if (!alwaysOnscreen && !isSpriteOnscreen(tilingSprite, x, y, width, height)) return
 
-		val comparisonVal = getComparisonVal(lx.toInt(), ly.toInt(), layer, index, BlendMode.MULTIPLICATIVE)
+		val comparisonVal = getComparisonVal(lx, ly, layer, index, BlendMode.MULTIPLICATIVE)
 
 		val rs = RenderSprite.obtain().set(null, tilingSprite, null, x, y, ix, iy, colour, width, height, 0f, 1f, 1f, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 
@@ -1075,7 +1070,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	}
 
 	// ----------------------------------------------------------------------
-	fun queueSprite(sprite: Sprite, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Int? = null, sortY: Int? = null)
+	fun queueSprite(sprite: Sprite, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Float? = null, sortY: Float? = null)
 	{
 		if (!inBegin && !inStaticBegin) throw Exception("Queue called before begin!")
 
@@ -1149,7 +1144,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		// check if onscreen
 		if (!alwaysOnscreen && !isSpriteOnscreen(sprite, x, y, width, height, scaleX, scaleY)) return
 
-		val comparisonVal = getComparisonVal(sortX ?: lx.toInt(), sortY ?: ly.toInt(), layer, index, BlendMode.MULTIPLICATIVE)
+		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
 		val rs = RenderSprite.obtain().set(sprite, null, null, x, y, ix, iy, colour, width, height, rotation, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 
@@ -1176,7 +1171,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
 
-		val comparisonVal = getComparisonVal((sortX ?: lx).toInt(), (sortY ?: ly).toInt(), layer, index, BlendMode.MULTIPLICATIVE)
+		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
 		val rs = RenderSprite.obtain().set(null, null, texture, x, y, ix, iy, colour, width, height, 0f, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 

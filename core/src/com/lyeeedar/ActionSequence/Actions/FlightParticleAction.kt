@@ -110,12 +110,12 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 
 			if (useLeap)
 			{
-				r.animation = LeapAnimation.obtain().set(duration, pos.position.getPosDiff(sourceTile), 2f)
+				r.animation = LeapAnimation.obtain().set(duration, tile.getPosDiff(sourceTile), 2f)
 				r.animation = ExpandAnimation.obtain().set(duration, 0.5f, 1.5f, false)
 			}
 			else
 			{
-				r.animation = MoveAnimation.obtain().set(duration, UnsmoothedPath(midPoint.getPosDiff(sourceTile)), Interpolation.linear)
+				r.animation = MoveAnimation.obtain().set(duration, UnsmoothedPath(tile.getPosDiff(sourceTile)), Interpolation.linear)
 			}
 
 			state.world.addEntity(entity)

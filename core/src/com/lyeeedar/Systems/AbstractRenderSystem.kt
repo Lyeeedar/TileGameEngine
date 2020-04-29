@@ -83,16 +83,16 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 					}
 					else
 					{
-						val tile = world.grid[0, 0]
+						val cornertile = world.grid[0, 0]
 
-						if (tile.floor != null)
+						if (cornertile.floor != null)
 						{
-							renderer.queueSpriteWrapper(tile.floor!!, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = nonVisibleColour)
+							renderer.queueSpriteWrapper(cornertile.floor!!, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = nonVisibleColour)
 						}
 
-						if (tile.wall != null)
+						if (tile == null && cornertile.wall != null)
 						{
-							renderer.queueSpriteWrapper(tile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
+							renderer.queueSpriteWrapper(cornertile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
 						}
 					}
 				}
@@ -107,11 +107,24 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		{
 			for (y in ys until ye)
 			{
-				val tile = world.grid.tryGet(x, y, null) ?: continue
-				val wall = tile.wall ?: continue
-				if (tile.skipRender || tile.renderCol.isBlack()) continue
+				val tile = world.grid.tryGet(x, y, null)
 
-				renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.renderCol)
+				if (tile != null)
+				{
+					if (!tile.skipRender)
+					{
+						val wall = tile.wall ?: continue
+						renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.renderCol)
+					}
+					else
+					{
+						val cornertile = world.grid[0, 0]
+						if (cornertile.wall != null)
+						{
+							renderer.queueSpriteWrapper(cornertile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
+						}
+					}
+				}
 			}
 		}
 	}
