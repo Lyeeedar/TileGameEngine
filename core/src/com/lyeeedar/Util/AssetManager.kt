@@ -219,6 +219,13 @@ class AssetManager
 			return loadParticleEffect(xml)
 		}
 
+		fun tryLoadSpriteWrapper(path: String?): SpriteWrapper?
+		{
+			if (path == null) return null
+			val xml = getXml(path)
+			return SpriteWrapper.load(xml)
+		}
+
 		fun tryLoadSpriteWrapper(xml: XmlData?): SpriteWrapper?
 		{
 			if (xml == null) return null

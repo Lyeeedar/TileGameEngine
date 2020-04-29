@@ -1,8 +1,10 @@
 package com.lyeeedar.Renderables.Sprite
 
+import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
 /**
@@ -72,8 +74,12 @@ class SpriteWrapper
 
 	companion object
 	{
+		private val loaded = ObjectMap<XmlData, SpriteWrapper>()
 		fun load(xml: XmlData): SpriteWrapper
 		{
+			val existing = loaded[xml]
+			if (existing != null) return existing
+
 			var spriteEl = xml.getChildByName("Sprite")
 			var tilingEl = xml.getChildByName("TilingSprite")
 
@@ -127,6 +133,8 @@ class SpriteWrapper
 					wrapper.tilingSpriteVariants.add(Pair(weight, sprite))
 				}
 			}
+
+			loaded[xml] = wrapper
 
 			return wrapper
 		}
