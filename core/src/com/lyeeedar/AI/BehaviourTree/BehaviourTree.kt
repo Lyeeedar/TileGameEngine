@@ -39,13 +39,15 @@ class BehaviourTreeState
 		data.clear()
 	}
 
+	inline fun buildKey(key: String, scope: Int, guid: Int): String = "$guid$scope|$key"
+
 	private val data = ObjectMap<String, Any>()
 	fun <T> getData(key: String, guid: Int, fallback: T? = null): T?
 	{
 		var currentScope = dataScope
 		while (currentScope >= 0)
 		{
-			val dataKey = "$guid$currentScope$key"
+			val dataKey = buildKey(key, currentScope, guid)
 			val value = data[dataKey] as? T
 
 			if (value != null)
@@ -62,7 +64,7 @@ class BehaviourTreeState
 	{
 		if (value is Entity) throw RuntimeException("Use entityreference!")
 
-		val dataKey = "$guid$dataScope$key"
+		val dataKey = buildKey(key, dataScope, guid)
 		data[dataKey] = value
 
 		if (value is Entity || value is Point)
@@ -72,7 +74,7 @@ class BehaviourTreeState
 	}
 	fun removeData(key: String, guid: Int)
 	{
-		val dataKey = "$guid$dataScope$key"
+		val dataKey = buildKey(key, dataScope, guid)
 		data.remove(dataKey)
 	}
 
@@ -84,6 +86,8 @@ class BehaviourTreeState
 		resolvedVariables.clear()
 		for (entry in data)
 		{
+			val key = entry.key.split("|")[1]
+
 			val value = entry.value
 			if (value is EntityReference)
 			{
@@ -93,14 +97,14 @@ class BehaviourTreeState
 					if (epos != null)
 					{
 						val dist = srcPos.position.dist(epos.position)
-						resolvedVariables[entry.key + ".dist"] = dist.toFloat()
+						resolvedVariables["$key.dist"] = dist.toFloat()
 					}
 				}
 			}
 			else if (value is Point)
 			{
 				val dist = srcPos.position.dist(value)
-				resolvedVariables[entry.key+".dist"] = dist.toFloat()
+				resolvedVariables["$key.dist"] = dist.toFloat()
 			}
 		}
 		resolvedVariables["else"] = 1.0f
@@ -114,8 +118,10 @@ class BehaviourTreeState
 
 		for (entry in data)
 		{
+			val key = entry.key.split("|")[1]
+
 			val value = entry.value
-			map[entry.key] = when(value)
+			map[key] = when(value)
 			{
 				is Float -> value
 				is Int -> value.toFloat()
