@@ -12,7 +12,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 	private val entitiesToProcess = Array<Entity>(false, 16)
 
-	val minTurnTime = 0.1f
+	val minTurnTime = 0.0f
 	var turnTimeAccumulator = 0f
 
 	private fun getCanStartTurn(): Boolean

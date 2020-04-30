@@ -666,7 +666,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	}
 
 	// ----------------------------------------------------------------------
-	private fun cleanup()
+	private fun cleanup(updateBatchID: Boolean)
 	{
 		// clean up
 		for (i in 0 until queuedSprites)
@@ -675,7 +675,8 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			rs.free()
 		}
 
-		batchID = random.nextInt()
+		if (updateBatchID) batchID = random.nextInt()
+
 		Particle.generateBrownianVectors()
 
 		for (entry in tilingMap)
@@ -743,14 +744,14 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		if (inStaticBegin)
 		{
 			storeStatic()
+			cleanup(false)
 		}
 		else
 		{
 			combinedMatrix.set(batch!!.projectionMatrix).mul(batch!!.transformMatrix)
 			waitOnRender()
+			cleanup(true)
 		}
-
-		cleanup()
 	}
 
 	// ----------------------------------------------------------------------

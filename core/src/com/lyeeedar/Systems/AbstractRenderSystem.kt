@@ -28,11 +28,11 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	private var renderedStaticOffsetX: Float = -10000f
 	private var renderedStaticOffsetY: Float = -10000f
 
-	private val nonVisibleColour = Colour(0.1f, 0.1f, 0.1f, 1f, true)
+	private val nonVisibleColour = Colour(0.25f, 0.25f, 0.25f, 1f, true)
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
-		val playerOffset = getPlayerPosition()
+		val playerOffset = getPlayerPosition(deltaTime)
 		playerOffsetX = playerOffset.x
 		playerOffsetY = playerOffset.y
 
@@ -196,7 +196,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	abstract fun drawExtraEntity(entity: Entity, deltaTime: Float)
 
-	abstract fun getPlayerPosition(): Vector2
+	abstract fun getPlayerPosition(deltaTime: Float): Vector2
 
 	override fun onTurnEntity(entity: Entity)
 	{

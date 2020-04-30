@@ -15,7 +15,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 {
 	lateinit var rng: LightRNG
 
-	var tileSize: Float = 32f
+	var tileSize: Float = 40f
 
 	val entities = Array<Entity>(false, 128)
 	private val toBeAdded = Array<Entity>(false, 128)
