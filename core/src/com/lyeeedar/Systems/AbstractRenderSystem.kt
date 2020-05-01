@@ -134,7 +134,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
 		val px = pos.position.x.toFloat() + pos.offset.x
-		val py = pos.position.y.toFloat() + pos.offset.x
+		val py = pos.position.y.toFloat() + pos.offset.y
 
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 
