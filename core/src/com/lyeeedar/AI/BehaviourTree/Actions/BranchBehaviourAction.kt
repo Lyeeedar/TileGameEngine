@@ -60,6 +60,7 @@ class BranchBehaviourAction : AbstractBehaviourAction()
 
 class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 {
+	@DataCompiledExpression(knownVariables = "else")
 	lateinit var condition: CompiledExpression
 
 	@DataGraphReference(useParentDescription = true)
@@ -68,7 +69,7 @@ class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		condition = CompiledExpression(xmlData.get("Condition"))
+		condition = CompiledExpression(xmlData.get("Condition"), "else")
 		nodeGUID = xmlData.get("Node")
 	}
 	private lateinit var nodeGUID: String

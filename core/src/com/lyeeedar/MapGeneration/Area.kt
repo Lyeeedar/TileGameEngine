@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.Util.Array2D
+import com.lyeeedar.Util.Point
 
 class Area()
 {
@@ -299,4 +300,6 @@ class Pos(val x: Int, val y: Int)
 	{
 		return Vector2.dst2(x.toFloat(), y.toFloat(), other.x.toFloat(), other.y.toFloat())
 	}
+
+	fun toPoint(): Point = Point(x, y)
 }

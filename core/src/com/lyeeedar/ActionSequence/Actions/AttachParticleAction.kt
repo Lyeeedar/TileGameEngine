@@ -86,7 +86,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 				newEntity.position()!!.position = entity.position()!!.position
 				newEntity.renderable()!!.renderable = r
 
-				state.world.addEntity(entity)
+				state.world.addEntity(newEntity)
 			}
 		}
 		state.data.remove(dataKey)

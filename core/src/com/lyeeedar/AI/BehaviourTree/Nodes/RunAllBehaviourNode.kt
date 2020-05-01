@@ -3,6 +3,7 @@ package com.lyeeedar.AI.BehaviourTree.Nodes
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.Actions.AbstractBehaviourAction
+import com.lyeeedar.AI.BehaviourTree.Actions.BreakpointBehaviourAction
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
@@ -21,6 +22,8 @@ class RunAllBehaviourNode : AbstractBehaviourNode()
 		for (i in 0 until actions.size)
 		{
 			val childState = actions[i].evaluate(state)
+			if (actions[i] is BreakpointBehaviourAction) continue
+
 			if (childState.ordinal > retState.ordinal)
 			{
 				retState = childState

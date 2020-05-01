@@ -344,6 +344,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\").toUpperCase(Locale.ENGLISH))")
 			}
+			else if (sourceElName != null)
+			{
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf($sourceElName.text.toUpperCase(Locale.ENGLISH))")
+			}
 			else if (variableType == VariableType.VAR)
 			{
 				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\", ${defaultValue}.toString())!!.toUpperCase(Locale.ENGLISH))")

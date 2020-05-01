@@ -31,6 +31,7 @@ class EntityArchetypeBuilder
 			entity = entityPool.pop()
 			if (entity.obtained) throw RuntimeException()
 			entity.obtained = true
+			entity.usageID++
 
 			for (type in ComponentType.Values)
 			{
@@ -60,6 +61,7 @@ class EntityArchetypeBuilder
 	{
 		if (!entity.obtained) throw RuntimeException()
 		entity.obtained = false
+		entity.usageID++
 
 		for (type in ComponentType.Values)
 		{

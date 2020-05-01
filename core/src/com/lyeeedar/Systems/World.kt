@@ -62,6 +62,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 		for (i in 0 until toBeAdded.size)
 		{
+			toBeAdded[i].world = this
 			entities.add(toBeAdded[i])
 		}
 
