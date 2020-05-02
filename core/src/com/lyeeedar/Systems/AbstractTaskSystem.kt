@@ -44,7 +44,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 				val entity = actionSequenceEntities.entities[i]
 				val sequence = entity.actionSequence()!!
 
-				if (!sequence.actionSequenceState!!.blocked)
+				if (!sequence.actionSequenceState.blocked)
 				{
 					canUpdate = false
 					break
@@ -52,8 +52,14 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 			}
 		}
 
+		if (canUpdate)
+		{
+			canUpdate = canStartTurn()
+		}
+
 		return canUpdate
 	}
+	abstract fun canStartTurn(): Boolean
 
 	override fun doUpdate(deltaTime: Float)
 	{

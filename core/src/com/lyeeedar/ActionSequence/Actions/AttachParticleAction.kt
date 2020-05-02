@@ -65,7 +65,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 		for (entityRef in attachedParticles)
 		{
 			val entity = entityRef.get() ?: continue
-			val addRenderable = entity.additionalRenderable() ?: continue
+			val addRenderable = entity.additionalRenderable()!!
 
 			val r: ParticleEffect
 			if (above)

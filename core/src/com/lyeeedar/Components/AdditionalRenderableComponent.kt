@@ -34,7 +34,8 @@ class AdditionalRenderableComponent() : DataComponent()
 
 	override fun reset()
 	{
-
+		below.clear()
+		above.clear()
 	}
 }
 
