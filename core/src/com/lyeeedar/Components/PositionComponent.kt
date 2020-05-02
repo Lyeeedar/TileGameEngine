@@ -13,6 +13,7 @@ class PositionComponent : DataComponent()
 
 	var slot = SpaceSlot.ENTITY
 	var moveable = true
+	var canSwap = false
 	var size = 1
 
 	var position: Point = Point(-1, -1) // bottom left pos
@@ -65,6 +66,7 @@ class PositionComponent : DataComponent()
 		slot = data.slot
 		moveable = data.moveable
 		size = data.size
+		canSwap = data.canSwap
 	}
 }
 
@@ -72,6 +74,7 @@ class PositionComponentData : AbstractComponentData()
 {
 	var slot: SpaceSlot = SpaceSlot.ENTITY
 	var moveable: Boolean = true
+	var canSwap: Boolean = false
 	var size: Int = 1
 
 	//region generated
@@ -80,6 +83,7 @@ class PositionComponentData : AbstractComponentData()
 		super.load(xmlData)
 		slot = SpaceSlot.valueOf(xmlData.get("Slot", SpaceSlot.ENTITY.toString())!!.toUpperCase(Locale.ENGLISH))
 		moveable = xmlData.getBoolean("Moveable", true)
+		canSwap = xmlData.getBoolean("CanSwap", false)
 		size = xmlData.getInt("Size", 1)
 	}
 	override val classID: String = "Position"
