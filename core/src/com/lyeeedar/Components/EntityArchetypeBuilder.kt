@@ -100,13 +100,13 @@ val nonTransientParticleArchetype =
 		.add(ComponentType.Position)
 		.add(ComponentType.Renderable)
 
-fun Renderable.addToWorld(world: World<*>, point: Point, offset: Vector2 = Vector2()): Entity
+fun Renderable.addToWorld(world: World<*>, point: Point, offset: Vector2 = Vector2(), slot: SpaceSlot = SpaceSlot.EFFECT): Entity
 {
 	val pe = transientParticleArchetype.build()
 	pe.renderable()!!.renderable = this
 
 	val ppos = pe.position()!!
-	ppos.slot = SpaceSlot.EFFECT
+	ppos.slot = slot
 
 	ppos.size = min(this.size[0], this.size[1])
 	ppos.position = point

@@ -23,9 +23,10 @@ enum class SplitSide
 }
 
 @DataClass(category = "Area", colour = "28,168,232")
+@DataClassCollection
 class SplitAction : AbstractMapGenerationAction()
 {
-	val splits: Array<Split> = Array<Split>()
+	val splits: Array<SplitPart> = Array<SplitPart>()
 
 	val variables = ObjectFloatMap<String>()
 	override fun execute(generator: MapGenerator, args: NodeArguments)
@@ -190,14 +191,14 @@ class SplitAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		val splitsEl = xmlData.getChildByName("Splits")
+		val splitsEl = xmlData
 		if (splitsEl != null)
 		{
 			for (el in splitsEl.children)
 			{
-				val objsplits: Split
+				val objsplits: SplitPart
 				val objsplitsEl = el
-				objsplits = Split()
+				objsplits = SplitPart()
 				objsplits.load(objsplitsEl)
 				splits.add(objsplits)
 			}
@@ -215,7 +216,7 @@ class SplitAction : AbstractMapGenerationAction()
 	//endregion
 }
 
-class Split : GraphXmlDataClass<MapGeneratorNode>()
+class SplitPart : GraphXmlDataClass<MapGeneratorNode>()
 {
 	lateinit var side: SplitSide
 

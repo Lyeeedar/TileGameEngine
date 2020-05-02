@@ -24,6 +24,27 @@ class EntityReference(val entity: Entity)
 
 		return null
 	}
+
+	override fun hashCode(): Int
+	{
+		return entity.hashCode() + id
+	}
+
+	override fun equals(other: Any?): Boolean
+	{
+		if (other is Entity)
+		{
+			return other == entity && other.usageID == id
+		}
+		else if (other is EntityReference)
+		{
+			return other.hashCode() == hashCode()
+		}
+		else
+		{
+			return false
+		}
+	}
 }
 
 class Entity
