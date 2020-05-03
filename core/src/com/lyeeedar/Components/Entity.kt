@@ -6,7 +6,7 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 
-class EntityReference(val entity: Entity)
+class EntityReference private constructor(val entity: Entity)
 {
 	val id = entity.usageID
 
@@ -43,6 +43,14 @@ class EntityReference(val entity: Entity)
 		else
 		{
 			return false
+		}
+	}
+
+	companion object
+	{
+		fun create(entity: Entity): EntityReference
+		{
+			return EntityReference(entity)
 		}
 	}
 }
@@ -100,6 +108,16 @@ class Entity
 	{
 		usageID++
 		EntityPool.free(this)
+	}
+
+	private var currentRef: EntityReference? = null
+	fun getRef(): EntityReference
+	{
+		if (currentRef != null && currentRef!!.isValid()) return currentRef!!
+
+		currentRef = EntityReference.create(this)
+
+		return currentRef!!
 	}
 }
 
