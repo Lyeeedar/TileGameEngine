@@ -28,6 +28,12 @@ open class Point : Pool.Poolable, Comparable<Point>
 			if (fromPool && !obtained) throw RuntimeException("Tried to edit a freed point")
 			if (field != value) dirty = true
 			field = value
+			xFloat = value.toFloat()
+		}
+	var xFloat: Float = 0f
+		private set(value)
+		{
+			field = value
 		}
 
 	var y: Int = 0
@@ -36,6 +42,12 @@ open class Point : Pool.Poolable, Comparable<Point>
 			if (locked) throw RuntimeException("Tried to edit a locked point")
 			if (fromPool && !obtained) throw RuntimeException("Tried to edit a freed point")
 			if (field != value) dirty = true
+			field = value
+			yFloat = value.toFloat()
+		}
+	var yFloat: Float = 0f
+		private set(value)
+		{
 			field = value
 		}
 
@@ -189,7 +201,7 @@ open class Point : Pool.Poolable, Comparable<Point>
 
     private var obtained = false
 
-	fun toVec(): Vector2 = Vector2(x.toFloat(), y.toFloat())
+	fun toVec(): Vector2 = Vector2(xFloat, yFloat)
 
 	fun set(string: String): Point
 	{
@@ -243,10 +255,10 @@ open class Point : Pool.Poolable, Comparable<Point>
 	internal inline fun taxiDist(ox: Int, oy: Int) = Math.max( Math.abs(ox - x), Math.abs(oy - y) )
 	internal inline fun dist(other: Point) = Math.abs(other.x - x) + Math.abs(other.y - y)
 	internal inline fun dist(ox: Int, oy: Int) = Math.abs(ox - x) + Math.abs(oy - y)
-	internal inline fun euclideanDist(other: Point) = Vector2.dst(x.toFloat(), y.toFloat(), other.x.toFloat(), other.y.toFloat())
-	internal inline fun euclideanDist(ox: Float, oy:Float) = Vector2.dst(x.toFloat(), y.toFloat(), ox, oy)
-	internal inline fun euclideanDist2(other: Point) = Vector2.dst2(x.toFloat(), y.toFloat(), other.x.toFloat(), other.y.toFloat())
-	internal inline fun euclideanDist2(ox: Float, oy:Float) = Vector2.dst2(x.toFloat(), y.toFloat(), ox, oy)
+	internal inline fun euclideanDist(other: Point) = Vector2.dst(xFloat, yFloat, other.xFloat, other.yFloat)
+	internal inline fun euclideanDist(ox: Float, oy:Float) = Vector2.dst(xFloat, yFloat, ox, oy)
+	internal inline fun euclideanDist2(other: Point) = Vector2.dst2(xFloat, yFloat, other.xFloat, other.yFloat)
+	internal inline fun euclideanDist2(ox: Float, oy:Float) = Vector2.dst2(xFloat, yFloat, ox, oy)
 
 	internal inline fun liesInRect(min: Point, max: Point): Boolean = x >= min.x && x <= max.x && y >= min.y&& y <= max.y
 
@@ -305,12 +317,12 @@ open class Point : Pool.Poolable, Comparable<Point>
 
 	internal inline fun lerp(p2: Point, alpha: Float) = obtain().set(x + ((p2.x - x) * alpha).toInt(), y + ((p2.y - y) * alpha).toInt())
 
-	internal inline fun getPosDiff(p: Point, invertY: Boolean = false): kotlin.Array<Vector2> = getPosDiff(p.x.toFloat(), p.y.toFloat(), invertY)
+	internal inline fun getPosDiff(p: Point, invertY: Boolean = false): kotlin.Array<Vector2> = getPosDiff(p.xFloat, p.yFloat, invertY)
 	internal inline fun getPosDiff(px: Int, py: Int, invertY: Boolean = false): kotlin.Array<Vector2> = getPosDiff(px.toFloat(), py.toFloat(), invertY)
 	internal inline fun getPosDiff(px: Float, py: Float, invertY: Boolean = false): kotlin.Array<Vector2>
 	{
 		val oldPos = Vector2(px, py)
-		val newPos = Vector2(x.toFloat(), y.toFloat())
+		val newPos = Vector2(xFloat, yFloat)
 
 		val diff = oldPos.sub(newPos)
 
@@ -328,7 +340,7 @@ open class Point : Pool.Poolable, Comparable<Point>
 	{
 		val vec = Pools.obtain(Vector3::class.java)
 
-		vec.set(x.toFloat(), y.toFloat(), 0f);
+		vec.set(xFloat, yFloat, 0f);
 		vec.mul(other)
 		x = vec.x.toInt()
 		y = vec.y.toInt()

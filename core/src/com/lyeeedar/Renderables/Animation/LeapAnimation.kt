@@ -60,7 +60,7 @@ class LeapAnimation : AbstractMoveAnimation
 	fun setRelative(duration: Float, p1: Point, p2: Point, height: Float): LeapAnimation
 	{
 		this.duration = duration
-		this.p1.set(p1.x.toFloat() - p2.x.toFloat(), p1.y.toFloat() - p2.y.toFloat())
+		this.p1.set(p1.xFloat - p2.xFloat, p1.yFloat - p2.yFloat)
 		this.p2.set(0f, 0f)
 		this.height = height
 		this.time = 0f
@@ -73,8 +73,8 @@ class LeapAnimation : AbstractMoveAnimation
 	fun setAbsolute(duration: Float, p1: Point, p2: Point, height: Float): LeapAnimation
 	{
 		this.duration = duration
-		this.p1.set(p1.x.toFloat(), p1.y.toFloat())
-		this.p2.set(p2.x.toFloat(), p2.y.toFloat())
+		this.p1.set(p1.xFloat, p1.yFloat)
+		this.p2.set(p2.xFloat, p2.yFloat)
 		this.p2.set(0f, 0f)
 		this.height = height
 		this.time = 0f

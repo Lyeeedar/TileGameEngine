@@ -90,7 +90,7 @@ class MoveAnimation : AbstractMoveAnimation
 			point.x -= path.last().x
 			point.y -= path.last().y
 
-			vectorPath.add(Vector2(point.x.toFloat(), point.y.toFloat()))
+			vectorPath.add(Vector2(point.xFloat, point.yFloat))
 		}
 
 		val asArray = Array<Vector2>(vectorPath.size) { i -> vectorPath[i] }

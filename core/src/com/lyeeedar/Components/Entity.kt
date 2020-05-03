@@ -79,6 +79,8 @@ class Entity
 		signature.setBit(component.type)
 
 		component.onAddedToEntity(this)
+
+		world?.entityListsDirty = true
 	}
 
 	fun addComponent(componentType: ComponentType): AbstractComponent
@@ -96,6 +98,8 @@ class Entity
 		signature.clearBit(componentType)
 
 		component?.onRemovedFromEntity(this)
+
+		world?.entityListsDirty = true
 
 		return component
 	}

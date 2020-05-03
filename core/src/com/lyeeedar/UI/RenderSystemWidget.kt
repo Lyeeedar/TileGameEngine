@@ -76,7 +76,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 	fun pointToScreenspace(point: Point): Vector2
 	{
-		return pointToScreenspace(point.x.toFloat(), point.y.toFloat())
+		return pointToScreenspace(point.xFloat, point.yFloat)
 	}
 
 	fun pointToScreenspace(x: Float, y: Float): Vector2

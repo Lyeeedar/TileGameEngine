@@ -22,7 +22,7 @@ class BloodSplatter
 		fun splatter(attackSource: Point, bloodSource: Point, emitDist: Float, world: World<*>, colour: Colour = Colour.RED)
 		{
 			var vector = bloodSource.toVec()
-			vector.sub(attackSource.x.toFloat(), attackSource.y.toFloat())
+			vector.sub(attackSource.xFloat, attackSource.yFloat)
 			vector.nor()
 
 			val angle = Random.random(Random.sharedRandom, -45f, 45f)

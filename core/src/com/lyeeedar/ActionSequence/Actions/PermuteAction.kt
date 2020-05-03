@@ -45,7 +45,7 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 		{
 			for (point in hitPoints)
 			{
-				vec.set(point.x.toFloat(), point.y.toFloat(), 0f)
+				vec.set(point.xFloat, point.yFloat, 0f)
 				vec.mul(mat)
 
 				val dx = vec.x.roundToInt()

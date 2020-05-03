@@ -619,8 +619,8 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 		fun layoutCards(cardWidgets: Array<CardWidget>, enterFrom: Direction, dstWidget: Table? = null, animate: Boolean = true, flip: Boolean = false, startScale: Float = 1f)
 		{
 			val areapos = dstWidget?.localToStageCoordinates(Vector2()) ?: Vector2()
-			val areaWidth = dstWidget?.width ?: Statics.resolution.x.toFloat()
-			val areaHeight = dstWidget?.height ?: Statics.resolution.y.toFloat()
+			val areaWidth = dstWidget?.width ?: Statics.resolution.xFloat
+			val areaHeight = dstWidget?.height ?: Statics.resolution.yFloat
 
 			val cardWidth: Float
 			val cardHeight: Float

@@ -47,8 +47,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		playerOffsetX = playerOffset.x
 		playerOffsetY = playerOffset.y
 
-		val screenTileWidth = (Statics.resolution.x.toFloat() / tileSize).toInt() + 4
-		val screenTileHeight = (Statics.resolution.y.toFloat() / tileSize).toInt() + 4
+		val screenTileWidth = (Statics.resolution.xFloat / tileSize).toInt() + 4
+		val screenTileHeight = (Statics.resolution.yFloat / tileSize).toInt() + 4
 
 		offsetx = (Statics.resolution.x * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f)
 		offsety = (Statics.resolution.y * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f)
@@ -149,15 +149,23 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	{
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
-		val px = pos.position.x.toFloat() + pos.offset.x
-		val py = pos.position.y.toFloat() + pos.offset.y
+		val px = pos.position.xFloat + pos.offset.x
+		val py = pos.position.yFloat + pos.offset.y
 
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 
 		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 15
 		if (tile.skipRender || tile.skipRenderEntities || outOfRange)
 		{
-			renderable.animation = null
+			if (renderable.animation != null)
+			{
+				renderable.animation = null
+				if (renderable is ParticleEffect && renderable.killOnAnimComplete)
+				{
+					renderable.stop()
+				}
+			}
+
 			if (entity.components.containsKey(ComponentType.Transient))
 			{
 				entity.markForDeletion(0f, "Out of Sight")
