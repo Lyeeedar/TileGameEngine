@@ -44,17 +44,41 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 	private val currentShadowCast = com.badlogic.gdx.utils.Array<Point>()
 	private val invCurrentShadowCast = com.badlogic.gdx.utils.Array<Point>()
 
-	val opaqueRegions = com.badlogic.gdx.utils.Array<PointRect>()
+	private val opaqueRegions = com.badlogic.gdx.utils.Array<PointRect>()
 	var regionsVisible = false
-	val currentCastRegions = com.badlogic.gdx.utils.Array<PointRect>()
+	private val currentCastRegions = com.badlogic.gdx.utils.Array<PointRect>()
 
 	fun anyOpaque() = opaqueTiles.size > 0
 	fun anyClear() = clearTiles.size > 0
 
+	private var rawOutput: Array<DoubleArray>? = null
+
 	val numCastRegions: Int
-		get() = currentCastRegions.size
+		get() = getCurrentCastRegions().size
 	val numOpaqueRegions: Int
-		get() = opaqueRegions.size
+		get() = getOpaqueRegions().size
+
+	var opaqueRegionsDirty = true
+	fun getOpaqueRegions(): com.badlogic.gdx.utils.Array<PointRect>
+	{
+		if (!opaqueRegionsDirty) return opaqueRegions
+		opaqueRegionsDirty = false
+
+		updateOpaqueRegions()
+
+		return opaqueRegions
+	}
+
+	var castRegionsDirty = true
+	fun getCurrentCastRegions(): com.badlogic.gdx.utils.Array<PointRect>
+	{
+		if (!castRegionsDirty) return currentCastRegions
+		castRegionsDirty = false
+
+		if (rawOutput != null) updateCurrentCastRegions(rawOutput!!)
+
+		return currentCastRegions
+	}
 
 	private fun updateCurrentCastRegions(rawOutput: Array<DoubleArray>)
 	{
@@ -313,7 +337,6 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 			return currentShadowCast
 		}
 
-
 		var recalculate = false
 
 		if (x != lastx || y != lasty)
@@ -379,7 +402,6 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 				}
 			}
 
-			var rawOutput: Array<DoubleArray>? = null
 			if (anySolid)
 			{
 				rawOutput = fov.calculateFOV(resistanceGrid, range, range, range.toDouble() + 1, Radius.SQUARE)
@@ -432,10 +454,11 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 			lasty = y
 			lastrange = range
 
-			updateOpaqueRegions()
+			opaqueRegionsDirty = true
 
 			if (anySolid)
 			{
+				castRegionsDirty = true
 				updateCurrentCastRegions(rawOutput!!)
 			}
 		}

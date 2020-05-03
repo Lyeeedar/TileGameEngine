@@ -69,7 +69,7 @@ class BehaviourTreeState
 
 		if (value is Entity || value is Point)
 		{
-			updateResolvedVariables()
+			variablesDirty = true
 		}
 	}
 	fun removeData(key: String, guid: Int)
@@ -78,6 +78,7 @@ class BehaviourTreeState
 		data.remove(dataKey)
 	}
 
+	var variablesDirty = true
 	private val resolvedVariables = ObjectFloatMap<String>()
 	fun updateResolvedVariables()
 	{
@@ -113,6 +114,12 @@ class BehaviourTreeState
 	val map = ObjectFloatMap<String>()
 	fun getVariables(): ObjectFloatMap<String>
 	{
+		if (variablesDirty)
+		{
+			variablesDirty = false
+			updateResolvedVariables()
+		}
+
 		map.clear()
 		map.putAll(resolvedVariables)
 
@@ -150,7 +157,7 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 
 		state.lastEvaluationID = state.evaluationID
 		state.evaluationID++
-		state.updateResolvedVariables()
+		state.variablesDirty = true
 
 		root.evaluate(state)
 	}

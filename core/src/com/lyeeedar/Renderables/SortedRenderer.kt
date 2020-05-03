@@ -480,7 +480,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			val regionsToSet: com.badlogic.gdx.utils.Array<PointRect>
 			if (shadowMode == ShadowMode.TILE)
 			{
-				regionsToSet = light.cache.currentCastRegions
+				regionsToSet = light.cache.getCurrentCastRegions()
 
 				lightShadowPosRange[(i * 4) + 0] = light.pos.x * tileSize + offsetx
 				lightShadowPosRange[(i * 4) + 1] = light.pos.y * tileSize + offsety
@@ -489,7 +489,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			}
 			else
 			{
-				regionsToSet = light.cache.opaqueRegions
+				regionsToSet = light.cache.getOpaqueRegions()
 
 				lightShadowPosRange[(i * 3) + 0] = light.pos.x * tileSize + offsetx
 				lightShadowPosRange[(i * 3) + 1] = light.pos.y * tileSize + offsety
@@ -706,7 +706,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 		// Begin prerender work
 		// sort
-		spriteArray.sortWith(compareBy{ it?.comparisonVal ?: 0 }, 0, queuedSprites)
+		spriteArray.sort(0, queuedSprites)
 
 		// do screen shake
 		if ( screenShakeRadius > 2 )
