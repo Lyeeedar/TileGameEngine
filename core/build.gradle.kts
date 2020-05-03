@@ -51,6 +51,15 @@ tasks.compileKotlin {
 	dependsOn(tasks.rewriteSources)
 }
 
+tasks.test {
+	useJUnit()
+
+	maxHeapSize = "1G"
+
+	testLogging.showStandardStreams = true
+	testLogging.setEvents(listOf("standardOut", "passed", "skipped", "failed"))
+}
+
 project.apply {
 	from("../../game/core/build.gradle.kts")
 }
