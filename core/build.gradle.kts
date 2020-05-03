@@ -25,6 +25,8 @@ dependencies {
 	implementation("com.squidpony:squidlib-util:$squidlibVersion")
 
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
+
+	testImplementation("junit:junit:4.13")
 }
 
 java {
@@ -34,7 +36,10 @@ java {
 
 sourceSets {
 	main {
-		java.srcDirs("src/", "exp4j/src/main/java/", "../../game/core/src/")
+		java.srcDirs("src/", "../../game/core/src/")
+	}
+	test {
+		java.srcDirs("test/")
 	}
 }
 

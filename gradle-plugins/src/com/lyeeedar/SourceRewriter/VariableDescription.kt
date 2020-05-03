@@ -295,15 +295,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        }
 		        else
 		        {
-			        val knownVariables = annotation.paramMap["knownVariables"] ?: ""
 			        if (variableType == VariableType.LATEINIT || !nullable)
 			        {
-				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"), \"$knownVariables\")")
+				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"))")
 			        }
 			        else
 			        {
 				        builder.appendln(indentation, "val ${name}String = xmlData.${get}(\"$dataName\", null)")
-				        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String, \"$knownVariables\") else null")
+				        builder.appendln(indentation, "$name = if (${name}String != null) CompiledExpression(${name}String) else null")
 			        }
 		        }
 	        }

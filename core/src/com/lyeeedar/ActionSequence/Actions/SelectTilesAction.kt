@@ -2,7 +2,6 @@ package com.lyeeedar.ActionSequence.Actions
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
-import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.position
 import com.lyeeedar.Systems.AbstractTile
@@ -82,7 +81,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		coverage = CompiledExpression(xmlData.get("Coverage"), "count")
+		coverage = CompiledExpression(xmlData.get("Coverage"))
 		radius = xmlData.getInt("Radius", 1)
 		emptyOnly = xmlData.getBoolean("EmptyOnly", false)
 	}

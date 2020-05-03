@@ -2,12 +2,11 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
-import com.exp4j.Helpers.CompiledExpression
-import com.exp4j.Helpers.unescapeCharacters
 import com.lyeeedar.Direction
 import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.Util.CompiledExpression
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
@@ -33,8 +32,8 @@ class ScaleAction : AbstractMapGenerationAction()
 
 	fun createExpression(raw: String): CompiledExpression
 	{
-		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "#size").unescapeCharacters()
-		return CompiledExpression(cond, Area.defaultVariables)
+		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "%size")
+		return CompiledExpression(cond)
 	}
 
 	lateinit var snap: Direction

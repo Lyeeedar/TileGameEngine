@@ -2,7 +2,6 @@ package com.lyeeedar.AI.BehaviourTree.Actions
 
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
-import com.exp4j.Helpers.CompiledExpression
 import com.lyeeedar.AI.BehaviourTree.BehaviourTreeState
 import com.lyeeedar.AI.BehaviourTree.EvaluationState
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
@@ -20,7 +19,7 @@ class BranchBehaviourAction : AbstractBehaviourAction()
 		for (i in 0 until branches.size)
 		{
 			val branch = branches[i]
-			if (branch.condition.evaluate(state.getVariables(), state.rng.nextLong()).round() != 0)
+			if (branch.condition.evaluate(state.getVariables(), state.rng).round() != 0)
 			{
 				return branch.node.evaluate(state)
 			}
@@ -69,7 +68,7 @@ class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		condition = CompiledExpression(xmlData.get("Condition"), "else")
+		condition = CompiledExpression(xmlData.get("Condition"))
 		nodeGUID = xmlData.get("Node")
 	}
 	private lateinit var nodeGUID: String
