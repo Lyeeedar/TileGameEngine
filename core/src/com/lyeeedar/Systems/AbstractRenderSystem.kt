@@ -1,7 +1,9 @@
 package com.lyeeedar.Systems
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.IntSet
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Components.*
@@ -9,11 +11,19 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.ShadowCastCache
 import com.lyeeedar.Renderables.SortedRenderer
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.SpaceSlotType
 import com.lyeeedar.Util.*
 import java.awt.Color
 
 abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
 {
+	val shape: ShapeRenderer by lazy { ShapeRenderer() }
+	var drawParticleDebug = false
+	var drawEmitters = true
+	var drawParticles = true
+	var drawEffectors = false
+	val particles = Array<ParticleEffect>()
+
 	val tileSize: Float
 		get() = world.tileSize
 
@@ -28,7 +38,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	private var renderedStaticOffsetX: Float = -10000f
 	private var renderedStaticOffsetY: Float = -10000f
 
-	private val nonVisibleColour = Colour(0.25f, 0.25f, 0.25f, 1f, true)
+	private val nonVisibleBrightness = 0.2f
+	private val nonVisibleColour = Colour(nonVisibleBrightness, nonVisibleBrightness, nonVisibleBrightness, 1f, true)
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
@@ -127,6 +138,11 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				}
 			}
 		}
+
+		if (drawParticleDebug)
+		{
+			particles.clear()
+		}
 	}
 
 	override fun updateEntity(entity: Entity, deltaTime: Float)
@@ -138,7 +154,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 
-		if (tile.skipRender || tile.skipRenderEntities || pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 50)
+		val outOfRange = pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 20
+		if (tile.skipRender || tile.skipRenderEntities || outOfRange)
 		{
 			renderable.animation = null
 			if (entity.components.containsKey(ComponentType.Transient))
@@ -146,7 +163,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				entity.markForDeletion(0f, "Out of Sight")
 			}
 
-			return
+			if (tile.skipRender || outOfRange || pos.slot.type != SpaceSlotType.MAP) return
 		}
 
 		if (renderable is ParticleEffect)
@@ -154,6 +171,11 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			if (renderable.completed && entity.components.containsKey(ComponentType.Transient) && renderable.complete())
 			{
 				entity.markForDeletion(0f, "completed")
+			}
+
+			if (drawParticleDebug)
+			{
+				particles.add(renderable)
 			}
 		}
 		renderable.size[0] = pos.size
@@ -178,11 +200,21 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			for (below in additional.below.values())
 			{
 				renderer.queue(below, ax, ay, pos.slot.ordinal, 0, colour = tile.renderCol)
+
+				if (drawParticleDebug && below is ParticleEffect)
+				{
+					particles.add(below)
+				}
 			}
 
 			for (above in additional.above.values())
 			{
 				renderer.queue(above, ax, ay, pos.slot.ordinal, 2, colour = tile.renderCol)
+
+				if (drawParticleDebug && above is ParticleEffect)
+				{
+					particles.add(above)
+				}
 			}
 		}
 
@@ -192,6 +224,26 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	override fun afterUpdate(deltaTime: Float)
 	{
 		renderer.end(Statics.stage.batch)
+
+		if (drawParticleDebug)
+		{
+			Statics.stage.batch.begin()
+
+			shape.projectionMatrix = Statics.stage.camera.combined
+			shape.setAutoShapeType(true)
+			shape.begin()
+
+			for (particle in particles)
+			{
+				particle.debug(shape, offsetx, offsety, tileSize, drawEmitters, drawParticles, drawEffectors)
+			}
+
+			shape.end()
+
+			particles.clear()
+
+			Statics.stage.batch.end()
+		}
 	}
 
 	abstract fun drawExtraEntity(entity: Entity, deltaTime: Float)

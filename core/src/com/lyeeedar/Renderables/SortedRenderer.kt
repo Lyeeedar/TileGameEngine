@@ -73,8 +73,8 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	private val BLEND_BLOCK_SIZE = 1
 	private val INDEX_BLOCK_SIZE = BLEND_BLOCK_SIZE * NUM_BLENDS
 	private val LAYER_BLOCK_SIZE = INDEX_BLOCK_SIZE * MAX_INDEX
-	private val X_BLOCK_SIZE = LAYER_BLOCK_SIZE * MAX_LAYER * 10
-	private val Y_BLOCK_SIZE = X_BLOCK_SIZE * width.toInt() * 10
+	private val X_BLOCK_SIZE = LAYER_BLOCK_SIZE * MAX_LAYER
+	private val Y_BLOCK_SIZE = X_BLOCK_SIZE * width.toInt()
 
 	private var delta: Float = 0f
 
@@ -760,8 +760,8 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		if (index > MAX_INDEX-1) throw RuntimeException("Index too high! $index >= $MAX_INDEX!")
 		if (layer > MAX_LAYER-1) throw RuntimeException("Layer too high! $layer >= $MAX_LAYER!")
 
-		val yBlock = (y*10).toInt() * Y_BLOCK_SIZE * -1
-		val xBlock = (x*10).toInt() * X_BLOCK_SIZE * -1
+		val yBlock = y.floor() * Y_BLOCK_SIZE * -1
+		val xBlock = x.floor() * X_BLOCK_SIZE * -1
 		val lBlock = layer * LAYER_BLOCK_SIZE
 		val iBlock = index * INDEX_BLOCK_SIZE
 		val bBlock = blend.ordinal * BLEND_BLOCK_SIZE

@@ -5,6 +5,7 @@ import com.lyeeedar.Components.*
 import com.lyeeedar.Pathfinding.BresenhamLine
 import com.lyeeedar.Renderables.Animation.LeapAnimation
 import com.lyeeedar.Renderables.Sprite.Sprite
+import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Systems.World
 import ktx.math.times
 
@@ -43,6 +44,7 @@ class BloodSplatter
 			entity.renderable()?.set(sprite)
 
 			val pos = entity.position()!!
+			pos.slot = SpaceSlot.FLOORDETAIL
 			pos.position = bloodSource
 			pos.offset.set(vector)
 
