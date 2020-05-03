@@ -28,7 +28,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		get() = world.tileSize
 
 	protected val ambientLight = Colour.WHITE
-	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, true) }
+	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, false) }
 
 	protected var playerOffsetX: Float = 0f
 	protected var playerOffsetY: Float = 0f
@@ -154,7 +154,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 
-		val outOfRange = pos.position.taxiDist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 20
+		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 15
 		if (tile.skipRender || tile.skipRenderEntities || outOfRange)
 		{
 			renderable.animation = null

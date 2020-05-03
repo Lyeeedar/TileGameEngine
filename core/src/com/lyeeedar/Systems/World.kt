@@ -17,6 +17,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	var tileSize: Float = 40f
 
+	var entityListsDirty = true
 	val entities = Array<Entity>(false, 128)
 	private val toBeAdded = Array<Entity>(false, 128)
 	private val toBeRemoved = ObjectSet<Entity>()
@@ -38,15 +39,22 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 		if (entity.world != null) throw RuntimeException("Tried to add entity to world more than once!")
 
 		toBeAdded.add(entity)
+
+		entityListsDirty = true
 	}
 
 	fun removeEntity(entity: Entity)
 	{
 		toBeRemoved.add(entity)
+
+		entityListsDirty = true
 	}
 
 	private fun updateEntityList()
 	{
+		if (!entityListsDirty) return
+		entityListsDirty = false
+
 		var i = 0
 		while (i < entities.size)
 		{
@@ -68,6 +76,8 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 		toBeAdded.clear()
 		toBeRemoved.clear()
+
+		updateEntitySignatures()
 	}
 
 	private fun updateEntitySignatures()
@@ -93,7 +103,6 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 	fun update(delta: Float)
 	{
 		updateEntityList()
-		updateEntitySignatures()
 
 		if (!doneFirstUpdate)
 		{
