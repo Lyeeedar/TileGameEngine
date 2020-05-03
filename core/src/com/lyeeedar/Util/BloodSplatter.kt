@@ -16,6 +16,7 @@ class BloodSplatter
 		val bloodArchetype = EntityArchetypeBuilder()
 			.add(ComponentType.Renderable)
 			.add(ComponentType.Position)
+			.add(ComponentType.Blood)
 
 		val splatters = AssetManager.loadSprite("Oryx/Custom/terrain/bloodsplatter")
 
@@ -40,6 +41,9 @@ class BloodSplatter
 			sprite.colour = colour.copy().a(0.4f + Random.random(Random.sharedRandom, 0.2f))
 
 			val entity = bloodArchetype.build()
+
+			entity.blood()!!.originalA = sprite.colour.a
+			entity.blood()!!.originalScale = sprite.baseScale[0]
 
 			entity.renderable()?.set(sprite)
 
