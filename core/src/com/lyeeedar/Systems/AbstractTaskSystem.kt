@@ -3,6 +3,7 @@ package com.lyeeedar.Systems
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 import com.lyeeedar.Components.*
+import com.lyeeedar.Renderables.Particle.ParticleEffect
 
 abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 {
@@ -27,11 +28,23 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 			if (renderable.renderable.animation?.isBlocking == true)
 			{
+				if (turnTimeAccumulator > 2f)
+				{
+					// kill long running animations
+					renderable.renderable.animation = null
+				}
+
 				canUpdate = false
 				break
 			}
 			else if (entity.transient()?.blocksTurns == true && renderable.renderable.isBlocking)
 			{
+				if (turnTimeAccumulator > 2f && renderable.renderable is ParticleEffect)
+				{
+					// kill long running effects
+					(renderable.renderable as ParticleEffect).stop()
+				}
+
 				canUpdate = false
 				break
 			}

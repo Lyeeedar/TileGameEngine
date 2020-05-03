@@ -2,6 +2,7 @@ package com.lyeeedar.AI.BehaviourTree
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
+import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityReference
@@ -37,11 +38,16 @@ class BehaviourTreeState
 		evaluationID = 0
 
 		data.clear()
+		variables.clear()
+		dynamicVariables.clear()
 	}
 
 	inline fun buildKey(key: String, scope: Int, guid: Int): String = "$guid$scope|$key"
 
 	private val data = ObjectMap<String, Any>()
+	private val variables = ObjectFloatMap<String>()
+	private val dynamicVariables = ObjectMap<String, String>()
+
 	fun <T> getData(key: String, guid: Int, fallback: T? = null): T?
 	{
 		var currentScope = dataScope
@@ -60,6 +66,7 @@ class BehaviourTreeState
 
 		return fallback
 	}
+
 	fun setData(key: String, guid: Int, value: Any)
 	{
 		if (value is Entity) throw RuntimeException("Use entityreference!")
@@ -67,29 +74,49 @@ class BehaviourTreeState
 		val dataKey = buildKey(key, dataScope, guid)
 		data[dataKey] = value
 
-		if (value is Entity || value is Point)
+		if (guid == 0)
 		{
-			variablesDirty = true
+			variables[key] = when (value)
+			{
+				is Float -> value
+				is Int -> value.toFloat()
+				is Boolean -> if (value) 1.0f else 0.0f
+				is EntityReference -> if (value.isValid()) 1.0f else 0.0f
+				else -> 1.0f
+			}
+
+			if (value is Entity || value is Point)
+			{
+				dynamicVariables[dataKey] = key
+			}
 		}
 	}
+
 	fun removeData(key: String, guid: Int)
 	{
 		val dataKey = buildKey(key, dataScope, guid)
-		data.remove(dataKey)
+		val data = data.remove(dataKey)
+
+		if (guid == 0)
+		{
+			variables.remove(dataKey, 0f)
+			if (data is EntityReference || data is Point)
+			{
+				variables.remove("$key.dist", 0f)
+				dynamicVariables.remove(dataKey)
+			}
+		}
 	}
 
-	var variablesDirty = true
-	private val resolvedVariables = ObjectFloatMap<String>()
-	fun updateResolvedVariables()
+	fun getVariables(): ObjectFloatMap<String>
 	{
+		// update dynamic
 		val srcPos = entity.entity.position()!!
-
-		resolvedVariables.clear()
-		for (entry in data)
+		for (dynamic in dynamicVariables)
 		{
-			val key = entry.key.split("|")[1]
+			val value = data[dynamic.key]
+			val key = dynamic.value
 
-			val value = entry.value
 			if (value is EntityReference)
 			{
 				if (value.isValid())
@@ -98,47 +125,27 @@ class BehaviourTreeState
 					if (epos != null)
 					{
 						val dist = srcPos.position.dist(epos.position)
-						resolvedVariables["$key.dist"] = dist.toFloat()
+						variables["$key.dist"] = dist.toFloat()
 					}
+				}
+				else
+				{
+					variables[key] = 0f
+					variables["$key.dist"] = 0f
 				}
 			}
 			else if (value is Point)
 			{
 				val dist = srcPos.position.dist(value)
-				resolvedVariables["$key.dist"] = dist.toFloat()
+				variables["$key.dist"] = dist.toFloat()
 			}
-		}
-		resolvedVariables["else"] = 1.0f
-	}
-
-	val map = ObjectFloatMap<String>()
-	fun getVariables(): ObjectFloatMap<String>
-	{
-		if (variablesDirty)
-		{
-			variablesDirty = false
-			updateResolvedVariables()
-		}
-
-		map.clear()
-		map.putAll(resolvedVariables)
-
-		for (entry in data)
-		{
-			val key = entry.key.split("|")[1]
-
-			val value = entry.value
-			map[key] = when(value)
+			else
 			{
-				is Float -> value
-				is Int -> value.toFloat()
-				is Boolean -> if (value) 1.0f else 0.0f
-				is EntityReference -> if (value.isValid()) 1.0f else 0.0f
-				else -> 1.0f
+				throw RuntimeException("Unhandled dynamic variable type '${value.javaClass.name}'")
 			}
 		}
 
-		return map
+		return variables
 	}
 }
 
@@ -157,7 +164,6 @@ class BehaviourTree : GraphXmlDataClass<AbstractBehaviourNode>()
 
 		state.lastEvaluationID = state.evaluationID
 		state.evaluationID++
-		state.variablesDirty = true
 
 		root.evaluate(state)
 	}

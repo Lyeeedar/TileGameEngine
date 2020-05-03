@@ -12,9 +12,10 @@ class CompiledExpression(val expression: String)
 	val variableNames = ObjectSet<String>()
 	val functionNames = ObjectSet<String>()
 
-	val root: AbstractExpressionPart
+	private val root: AbstractExpressionPart
 
-	val cachedValue: Float?
+	private val cachedValue: Float?
+	private val sharedData = ExpressionData.get()
 
 	init
 	{
@@ -43,13 +44,8 @@ class CompiledExpression(val expression: String)
 		return root.evaluate(data)
 	}
 
-	fun evaluate(variables: ObjectFloatMap<String>, rng: LightRNG) = evaluate(ExpressionData.get(variables, rng))
+	fun evaluate(variables: ObjectFloatMap<String>, rng: LightRNG) = evaluate(sharedData.set(variables, rng))
 	fun evaluate(variables: ObjectFloatMap<String>, seed: Long) = evaluate(variables, LightRNG(seed))
-
-	companion object
-	{
-		val sharedData = ExpressionData.get()
-	}
 }
 
 fun String.evaluate(variables: ObjectFloatMap<String> = ObjectFloatMap(), rng: LightRNG = LightRNG()): Float
