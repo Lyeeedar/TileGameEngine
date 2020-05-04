@@ -99,7 +99,7 @@ class BehaviourTreeState
 
 		if (guid == 0)
 		{
-			variables.remove(dataKey, 0f)
+			variables.remove(key, 0f)
 			if (data is EntityReference || data is Point)
 			{
 				variables.remove("$key.dist", 0f)
