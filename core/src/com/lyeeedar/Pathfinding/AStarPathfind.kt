@@ -141,7 +141,7 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>, startx: I
 
 	private inline fun isColliding(x: Int, y: Int): Boolean
 	{
-		return x < 0 || y < 0 || x >= width || y >= height || !grid[x, y].getPassable(travelType, self)
+		return grid.tryGet(x, y, null)?.getPassable(travelType, self) != true
 	}
 
 	val path: Array<Point>?
