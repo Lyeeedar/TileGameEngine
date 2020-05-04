@@ -8,8 +8,8 @@ class Pathfinder<T: IPathfindingTile>(private val grid: Array2D<T>, private val 
 {
 	fun getPath(travelType: SpaceSlot): com.badlogic.gdx.utils.Array<Point>?
 	{
-		val astar = AStarPathfind(grid, startx, starty, endx, endy, false, size, travelType, self)
-		var path: com.badlogic.gdx.utils.Array<Point>? = astar.path
+		val astar = AStarPathfind(grid)
+		var path: com.badlogic.gdx.utils.Array<Point>? = astar.getPath(startx, starty, endx, endy, false, size, travelType, self)
 
 		if (path == null)
 		{

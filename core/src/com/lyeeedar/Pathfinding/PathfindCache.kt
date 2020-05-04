@@ -5,7 +5,7 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
 
-class PathfindCache<T: IPathfindingTile>
+class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 {
 	private var reuseCount = 0
 	private var cachedGrid: Array2D<T>? = null
@@ -15,18 +15,27 @@ class PathfindCache<T: IPathfindingTile>
 	private var cachedSelf: Any? = null
 	private var cachedTravelType: SpaceSlot? = null
 
+	private var pathfinder: AStarPathfind<T>? = null
 	private var cachedPath: Array<Point>? = null
 
 	private val tempArray = Array<Point>(false, 8)
 
-	fun getPath(grid: Array2D<T>, start: Point, end: Point, size: Int, self: Any, travelType: SpaceSlot): Array<Point>?
+	fun invalidatePath()
 	{
-		var recalculate = false
+		if (cachedPath != null)
+		{
+			Point.freeAll(cachedPath!!)
+			cachedPath = null
+		}
+	}
+
+	fun getPath(grid: Array2D<T>, start: Point, end: Point, size: Int, self: Any, travelType: SpaceSlot, forceRefresh: Boolean = false): Array<Point>?
+	{
+		var recalculate = forceRefresh
 
 		reuseCount++
-		if (reuseCount > 5)
+		if (reuseCount >= maxUses)
 		{
-			reuseCount = 0
 			recalculate = true
 		}
 
@@ -42,7 +51,7 @@ class PathfindCache<T: IPathfindingTile>
 
 			if (path.first() != start)
 			{
-				for (i in 0 until path.size)
+				for (i in 1 until path.size-1)
 				{
 					val p = path[i]
 					if (p == start)
@@ -57,21 +66,27 @@ class PathfindCache<T: IPathfindingTile>
 				startI = 0
 			}
 
-			if (path.last() != end)
+			if (startI != -1)
 			{
-				for (i in path.size-1 downTo 0)
+				if (path.last() != end)
 				{
-					val p = path[i]
-					if (p == end)
+					if (startI < path.size - 1 && path.size > 3)
 					{
-						endI = i
-						break
+						for (i in path.size - 2 downTo startI)
+						{
+							val p = path[i]
+							if (p == end)
+							{
+								endI = i
+								break
+							}
+						}
 					}
 				}
-			}
-			else
-			{
-				endI = path.size-1
+				else
+				{
+					endI = path.size - 1
+				}
 			}
 
 			if (startI == -1 || endI == -1)
@@ -120,6 +135,7 @@ class PathfindCache<T: IPathfindingTile>
 		// recalculate if neccesssary
 		if (recalculate)
 		{
+			reuseCount = 0
 			cachedGrid = grid
 			cachedStart = start
 			cachedEnd = end
@@ -127,14 +143,13 @@ class PathfindCache<T: IPathfindingTile>
 			cachedSelf = self
 			cachedTravelType = travelType
 
-			if (cachedPath != null)
-			{
-				Point.freeAll(cachedPath!!)
-				cachedPath = null
-			}
+			invalidatePath()
 
-			val astar = AStarPathfind(grid, start.x, start.y, end.x, end.y, false, size, travelType, self)
-			cachedPath = astar.path
+			if (pathfinder == null)
+			{
+				pathfinder = AStarPathfind(grid)
+			}
+			cachedPath = pathfinder!!.getPath(start.x, start.y, end.x, end.y, false, size, travelType, self)
 
 			if (cachedPath == null)
 			{

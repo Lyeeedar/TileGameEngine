@@ -18,36 +18,34 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
 
-class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>, startx: Int, starty: Int, endx: Int, endy: Int, val findOptimal: Boolean, private val actorSize: Int, private val travelType: SpaceSlot, private val self: Any)
+class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 {
 	private val width: Int
 	private val height: Int
+	private val nodes: Array2D<Node?>
 
-	private val startx: Int
-	private val starty: Int
-	private val endx: Int
-	private val endy: Int
+	private var startx: Int = 0
+	private var starty: Int = 0
+	private var endx: Int = 0
+	private var endy: Int = 0
 	private var currentx: Int = 0
 	private var currenty: Int = 0
-	private lateinit var nodes: Array2D<Node?>
 
-	var debug = false
+	private var findOptimal: Boolean = false
+	private var actorSize: Int = 1
+	private lateinit var travelType: SpaceSlot
+	private lateinit var self: Any
 
 	private val openList = BinaryHeap<Node>()
+
+	private val path = Array<Point>()
 
 	init
 	{
 		this.width = grid.xSize
 		this.height = grid.ySize
 
-		this.startx = MathUtils.clamp(startx, 0, width - 1)
-		this.starty = MathUtils.clamp(starty, 0, height - 1)
-
-		this.endx = MathUtils.clamp(endx, 0, width - 1)
-		this.endy = MathUtils.clamp(endy, 0, height - 1)
-
-		this.currentx = this.startx
-		this.currenty = this.starty
+		this.nodes = Array2D<Node?>(width, height)
 	}
 
 	private fun path()
@@ -144,44 +142,55 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>, startx: I
 		return grid.tryGet(x, y, null)?.getPassable(travelType, self) != true
 	}
 
-	val path: Array<Point>?
-		get()
+	fun getPath(startx: Int, starty: Int, endx: Int, endy: Int, findOptimal: Boolean, actorSize: Int, travelType: SpaceSlot, self: Any): Array<Point>?
+	{
+		this.startx = MathUtils.clamp(startx, 0, width - 1)
+		this.starty = MathUtils.clamp(starty, 0, height - 1)
+
+		this.endx = MathUtils.clamp(endx, 0, width - 1)
+		this.endy = MathUtils.clamp(endy, 0, height - 1)
+
+		this.currentx = this.startx
+		this.currenty = this.starty
+
+		this.findOptimal = findOptimal
+		this.actorSize = actorSize
+		this.travelType = travelType
+		this.self = self
+
+		addNodeToOpenList(startx, starty, null)
+
+		while ((findOptimal || !isEnd(currentx, currenty)) && openList.size > 0)
 		{
-			nodes = Array2D<Node?>(width, height)
-
-			addNodeToOpenList(startx, starty, null)
-
-			while ((findOptimal || !isEnd(currentx, currenty)) && openList.size > 0)
-			{
-				path()
-			}
-
-			if (nodes[endx, endy] == null)
-			{
-				free()
-				return null
-			}
-			else
-			{
-				val path = Array<Point>()
-
-				path.add(Point.obtain().set(endx, endy))
-
-				var node = nodes[endx, endy]
-
-				while (node != null)
-				{
-					path.add(Point.obtain().set(node.x, node.y))
-
-					node = node.parent
-				}
-
-				path.reverse()
-
-				free()
-				return path
-			}
+			path()
 		}
+
+		if (nodes[endx, endy] == null)
+		{
+			free()
+			return null
+		}
+		else
+		{
+			path.clear()
+
+			path.add(Point.obtain().set(endx, endy))
+
+			var node = nodes[endx, endy]
+
+			while (node != null)
+			{
+				path.add(Point.obtain().set(node.x, node.y))
+
+				node = node.parent
+			}
+
+			path.reverse()
+
+			free()
+			return path
+		}
+	}
 
 	private fun free()
 	{
@@ -193,9 +202,11 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>, startx: I
 				if (node != null)
 				{
 					pool.free(node)
+					nodes[x, y] = null
 				}
 			}
 		}
+		openList.clear()
 	}
 
 	class Node : BinaryHeap.Node(0f)
