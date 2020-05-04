@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
+import java.lang.RuntimeException
 
 class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 {
@@ -31,6 +32,15 @@ class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 
 	fun getPath(grid: Array2D<T>, start: Point, end: Point, size: Int, self: Any, travelType: SpaceSlot, forceRefresh: Boolean = false): Array<Point>?
 	{
+		if (grid.tryGet(start, null) == null)
+		{
+			throw RuntimeException("Start is an invalid position: $start")
+		}
+		else if (grid.tryGet(end, null) == null)
+		{
+			throw RuntimeException("End is an invalid position: $end")
+		}
+
 		var recalculate = forceRefresh
 
 		reuseCount++

@@ -39,7 +39,7 @@ sourceSets {
 		java.srcDirs("src/", "../../game/core/src/")
 	}
 	test {
-		java.srcDirs("test/")
+		java.srcDirs("test/", "../../game/core/test/")
 	}
 }
 
