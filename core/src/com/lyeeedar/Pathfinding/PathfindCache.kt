@@ -7,7 +7,7 @@ import com.lyeeedar.Util.Point
 
 class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 {
-	private var reuseCount = 0
+	internal var reuseCount = 0
 	private var cachedGrid: Array2D<T>? = null
 	private var cachedStart: Point? = null
 	private var cachedEnd: Point? = null
