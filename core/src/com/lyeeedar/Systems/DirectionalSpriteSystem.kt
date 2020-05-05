@@ -3,6 +3,7 @@ package com.lyeeedar.Systems
 import com.lyeeedar.Components.*
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Sprite.DirectionalSprite
+import com.lyeeedar.Renderables.Sprite.Sprite
 
 class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.DirectionalSprite).get())
 {
@@ -22,6 +23,7 @@ class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, worl
 			renderable = entity.addComponent(ComponentType.Renderable) as RenderableComponent
 			renderable.renderable = dirSprite.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
 		}
+		val sprite = renderable.renderable as Sprite
 
 		if (pos.facing == Direction.SOUTH)
 		{
@@ -42,10 +44,12 @@ class DirectionalSpriteSystem(world: World<*>): AbstractEntitySystem(world, worl
 
 		val chosen = dirSprite.directionalSprite.getSprite(dirSprite.currentAnim, dirSprite.lastV, dirSprite.lastH)
 
-		if (chosen != renderable.renderable)
+		if (chosen != sprite)
 		{
-			chosen.animation = renderable.renderable.animation
-			renderable.renderable.animation = null
+			chosen.animation = sprite.animation
+			chosen.removeAmount = sprite.removeAmount
+			sprite.animation = null
+
 			renderable.renderable = chosen
 		}
 	}
