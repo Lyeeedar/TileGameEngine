@@ -146,9 +146,13 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 		if (keycode == Input.Keys.GRAVE && !Statics.release)
 		{
 			debugConsole.isVisible = !debugConsole.isVisible
-			debugConsole.text.setKeyboardFocus(true)
 
-			debugConsoleTable.toFront()
+			if (debugConsole.isVisible)
+			{
+				debugConsole.text.setKeyboardFocus(true)
+
+				debugConsoleTable.toFront()
+			}
 
 			return true
 		}
@@ -211,9 +215,13 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 		if (!Statics.release)
 		{
 			debugConsole.isVisible = !debugConsole.isVisible
-			debugConsole.text.setKeyboardFocus(true)
 
-			debugConsoleTable.toFront()
+			if (debugConsole.isVisible)
+			{
+				debugConsole.text.setKeyboardFocus(true)
+
+				debugConsoleTable.toFront()
+			}
 
 			return true
 		}

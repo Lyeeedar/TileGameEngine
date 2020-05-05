@@ -33,6 +33,11 @@ class DebugConsole(val historyKey: String) : Table()
 	{
 		log = Table()
 
+		val closeButton = Button(Statics.skin, "closecard")
+		closeButton.addClickListener { this@DebugConsole.isVisible = false }
+		log.add(closeButton).size(24f).expandX().right()
+		log.row()
+
 		log.add(Table()).grow()
 		log.row()
 
