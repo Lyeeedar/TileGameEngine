@@ -994,6 +994,8 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	{
 		light.pos.set(ix, iy)
 
+		if (!isLightOnscreen(light)) return
+
 		if (Statics.lightCollisionGrid != null && light.hasShadows && shadowMode != ShadowMode.NONE)
 		{
 			shadowLights.add(light)
@@ -1258,6 +1260,18 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		val localh = height * tileSize
 
 		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return false
+
+		return true
+	}
+
+	// ----------------------------------------------------------------------
+	private fun isLightOnscreen(light: Light): Boolean
+	{
+		val x = light.pos.x * tileSize + offsetx
+		val y = light.pos.y * tileSize + offsety
+		val range = light.range * tileSize
+
+		if (x + range <= 0 || x - range >= Statics.stage.width || y + range <= 0 || y - range >= Statics.stage.height) return false
 
 		return true
 	}
