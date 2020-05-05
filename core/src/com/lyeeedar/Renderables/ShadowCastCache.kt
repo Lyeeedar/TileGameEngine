@@ -459,7 +459,6 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 			if (anySolid)
 			{
 				castRegionsDirty = true
-				updateCurrentCastRegions(rawOutput!!)
 			}
 		}
 
