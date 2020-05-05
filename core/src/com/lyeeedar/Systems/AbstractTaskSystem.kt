@@ -126,6 +126,11 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 			val processState = processEntity(entity)
 			if (processState != ProcessEntityState.SUCCESS || task.actionAccumulator <= 0f)
 			{
+				if (task.actionAccumulator > 0f)
+				{
+					task.actionAccumulator = 0f
+				}
+
 				itr.remove()
 			}
 		}
@@ -145,7 +150,6 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 
 		if (task.tasks.size == 0)
 		{
-			task.actionAccumulator = 0f
 			return ProcessEntityState.NO_TASK
 		}
 
