@@ -1,6 +1,7 @@
 package com.lyeeedar.Renderables
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Random
 import squidpony.squidgrid.FOV
@@ -59,6 +60,9 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 		return packBytesToInt(byter, byteg, byteb, bytea)
 	}
 
+	private val pointArray = Array<Point>(false, 16)
+	private var last: String = ""
+
 	fun update(delta: Float)
 	{
 		if (hasShadows)
@@ -67,6 +71,37 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 		}
 
 		anim?.update(delta, this)
+	}
+
+	fun getLightPoints(): Array<Point>
+	{
+		if (hasShadows)
+		{
+			return cache.getShadowCast(pos.x.toInt(), pos.y.toInt(), range.ciel())
+		}
+		else
+		{
+			val key = "${pos.x}$range"
+			if (last == key) return pointArray
+			last = key
+
+			val cx = pos.x.toInt()
+			val cy = pos.y.toInt()
+			val range = range.ciel()
+
+			Point.freeAll(pointArray)
+			pointArray.clear()
+
+			for (x in cx - range until cx + range)
+			{
+				for (y in cy - range until cy + range)
+				{
+					pointArray.add(Point.obtain().set(x, y))
+				}
+			}
+
+			return pointArray
+		}
 	}
 
 	fun copy(): Light

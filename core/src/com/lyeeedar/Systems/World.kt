@@ -7,6 +7,7 @@ import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityPool
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
+import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Statics
 import squidpony.squidmath.LightRNG
@@ -16,6 +17,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 	lateinit var rng: LightRNG
 
 	var tileSize: Float = 40f
+	var ambientLight: Colour = Colour.WHITE.copy()
 
 	var entityListsDirty = true
 	val entities = Array<Entity>(false, 128)

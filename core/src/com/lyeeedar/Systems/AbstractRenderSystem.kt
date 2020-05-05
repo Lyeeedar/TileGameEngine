@@ -27,7 +27,6 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	val tileSize: Float
 		get() = world.tileSize
 
-	protected val ambientLight = Colour.WHITE
 	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, false) }
 
 	protected var playerOffsetX: Float = 0f
@@ -40,6 +39,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	private val nonVisibleBrightness = 0.2f
 	private val nonVisibleColour = Colour(nonVisibleBrightness, nonVisibleBrightness, nonVisibleBrightness, 1f, true)
+
+	val lights = world.getEntitiesFor().all(ComponentType.Position, ComponentType.Light).get()
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
@@ -77,7 +78,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			renderedStaticOffsetX = offsetx
 			renderedStaticOffsetY = offsety
 
-			renderer.beginStatic(offsetx, offsety, ambientLight)
+			renderer.beginStatic(offsetx, offsety, world.ambientLight)
 
 			for (x in xs until xe)
 			{
@@ -112,7 +113,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			renderer.endStatic()
 		}
 
-		renderer.begin(deltaTime, offsetx, offsety, ambientLight)
+		renderer.begin(deltaTime, offsetx, offsety, world.ambientLight)
 
 		for (x in xs until xe)
 		{
@@ -142,6 +143,24 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		if (drawParticleDebug)
 		{
 			particles.clear()
+		}
+
+		for (entity in lights.entities)
+		{
+			val light = entity.light()!!
+
+			val pos = entity.position()!!.position
+			var lx = pos.xFloat
+			var ly = pos.yFloat
+
+			val renderOffset = entity.renderOffset()
+			if (renderOffset != null)
+			{
+				lx += renderOffset[0]
+				ly += renderOffset[1]
+			}
+
+			renderer.addLight(light.light, lx, ly)
 		}
 	}
 

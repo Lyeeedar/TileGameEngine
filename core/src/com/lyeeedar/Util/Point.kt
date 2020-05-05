@@ -476,3 +476,9 @@ class PointIterator(val start: Point, val end: Point): Iterator<Point>
 }
 
 data class MinMax(val min: Int, val max: Int)
+
+fun Vector2.set(point: Point)
+{
+	this.x = point.xFloat
+	this.y = point.yFloat
+}
