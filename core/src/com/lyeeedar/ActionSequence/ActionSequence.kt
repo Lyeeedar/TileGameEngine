@@ -15,6 +15,7 @@ import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
 import ktx.collections.set
+import squidpony.squidmath.LightRNG
 
 class ActionSequenceState
 {
@@ -27,7 +28,7 @@ class ActionSequenceState
 	val lockedEntityTargets: Array<EntityReference> = Array(1)
 	var facing: Direction = Direction.NORTH
 
-	var seed: Long = 0
+	var rng = LightRNG()
 
 	var blocked = false
 	var currentTime: Float = 0f
@@ -36,7 +37,7 @@ class ActionSequenceState
 	var data = ObjectMap<String, Any?>()
 	var uid = 0
 
-	fun set(source: EntityReference, world: World<*>): ActionSequenceState
+	fun set(source: EntityReference, world: World<*>, seed: Long): ActionSequenceState
 	{
 		uid = Random.sharedRandom.nextInt()
 
@@ -48,6 +49,8 @@ class ActionSequenceState
 		targets.clear()
 		targets.add(source.entity.position()!!.position)
 
+		rng.setSeed(seed)
+
 		return this
 	}
 
@@ -58,7 +61,6 @@ class ActionSequenceState
 		lockedEntityTargets.clear()
 		facing = Direction.NORTH
 
-		seed = 0
 		blocked = false
 		currentTime = 0f
 		index = 0

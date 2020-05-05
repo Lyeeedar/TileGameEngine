@@ -58,22 +58,20 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 		variables.clear()
 		variables["count"] = tiles.size.toFloat()
 
-		val numTiles = coverage.evaluate(variables, state.seed++).round()
+		val numTiles = coverage.evaluate(variables, state.rng).round()
 		if (numTiles == tiles.size)
 		{
 			state.targets.addAll(tiles)
 		}
 		else
 		{
-			val rng = Random.obtainTS(state.seed++)
 			for (i in 0 until numTiles)
 			{
 				if (tiles.size == 0) break
 
-				val tile = tiles.removeRandom(rng)
+				val tile = tiles.removeRandom(state.rng)
 				state.targets.add(tile)
 			}
-			rng.freeTS()
 		}
 	}
 

@@ -1,9 +1,11 @@
 package com.lyeeedar.Utils
 
+import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.Util.CompiledExpression
 import com.lyeeedar.Util.ExpressionData
 import com.lyeeedar.Util.set
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Test
 
 class CompiledExpressionTests
@@ -132,5 +134,52 @@ class CompiledExpressionTests
 		data.variables["source.damage"] = 4f
 		val expression = CompiledExpression("source.damage * 2")
 		assertEquals(8f, expression.evaluate(data))
+	}
+
+	@Test
+	fun booleanEquals()
+	{
+		val expression = CompiledExpression("cheese == null")
+		assertEquals(1f, expression.evaluate(ExpressionData.get()))
+	}
+
+	@Test
+	fun booleanNotEquals()
+	{
+		val expression = CompiledExpression("cheese != null")
+		assertEquals(0f, expression.evaluate(ExpressionData.get()))
+	}
+
+	@Test
+	fun elseVariable()
+	{
+		val expression = CompiledExpression("else")
+		assertEquals(1f, expression.evaluate(ExpressionData.get()))
+	}
+
+	@Test
+	fun randomVariable()
+	{
+		val expression = CompiledExpression("random")
+		assertNotEquals(0f, expression.evaluate(ObjectFloatMap(), seed = 0))
+	}
+
+	@Test
+	fun booleanOr()
+	{
+		val data = ExpressionData.get()
+		assertEquals(0f, CompiledExpression("cheese || pie").evaluate(data))
+		data.variables["cheese"] = 1f
+		assertEquals(1f, CompiledExpression("cheese || pie").evaluate(data))
+	}
+
+	@Test
+	fun booleanAnd()
+	{
+		val data = ExpressionData.get()
+		data.variables["pie"] = 1f
+		assertEquals(0f, CompiledExpression("cheese && pie").evaluate(data))
+		data.variables["cheese"] = 1f
+		assertEquals(1f, CompiledExpression("cheese && (pie)").evaluate(data))
 	}
 }

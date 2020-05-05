@@ -106,6 +106,7 @@ class VariableExpressionPart(val variable: String, rawPart: String) : AbstractEx
 	{
 		if (variable == "null") return 0f
 		else if (variable == "else") return 1f
+		else if (variable == "random") return data.rng.nextFloat()
 
 		return data.variables[variable, 0f]
 	}

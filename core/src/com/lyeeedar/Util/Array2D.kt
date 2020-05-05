@@ -74,6 +74,10 @@ class Array2D<T> (val xSize: Int, val ySize: Int, val array: Array<Array<T>>): S
 
 	operator fun get(x: Int, y: Int, fallback:T?): T? = tryGet(x, y, fallback)
 
+	fun getClamped(point: Point): T {
+		return getClamped(point.x, point.y)
+	}
+
 	fun getClamped(x: Int, y: Int): T {
 		val x = clamp(x, 0, width-1)
 		val y = clamp(y, 0, height-1)
