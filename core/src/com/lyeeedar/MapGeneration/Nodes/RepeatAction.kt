@@ -29,6 +29,7 @@ class RepeatAction : AbstractMapGenerationAction()
 	@DataGraphReference
 	lateinit var child: MapGeneratorNode
 
+	@DataValue(visibleIf = "remainderMode == NODE")
 	@DataGraphReference
 	var remainder: MapGeneratorNode? = null
 

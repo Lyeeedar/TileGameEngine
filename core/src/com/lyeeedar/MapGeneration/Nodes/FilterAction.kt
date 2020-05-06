@@ -7,6 +7,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
+import com.lyeeedar.Util.DataValue
 import com.lyeeedar.Util.XmlData
 import java.util.*
 import ktx.collections.toGdxArray
@@ -16,7 +17,7 @@ class FilterAction : AbstractMapGenerationAction()
 {
 	enum class Mode
 	{
-		NOCONTENT,
+		EMPTY,
 		CHARACTER,
 		CORNER,
 		EDGE,
@@ -25,7 +26,10 @@ class FilterAction : AbstractMapGenerationAction()
 
 	lateinit var mode: Mode
 
+	@DataValue(visibleIf = "mode == CHARACTER")
 	var char: Char = ' '
+
+	@DataValue(visibleIf = "mode == CENTER")
 	var centerDist: Int = 2
 
 	@DataGraphReference
@@ -48,7 +52,7 @@ class FilterAction : AbstractMapGenerationAction()
 
 		val condition: (symbol: IMapGeneratorSymbol, pos: Pos) -> Boolean = when (mode)
 		{
-			Mode.NOCONTENT -> fun (symbol, pos) = symbol.isEmpty()
+			Mode.EMPTY -> fun (symbol, pos) = symbol.isEmpty()
 			Mode.CHARACTER -> fun (symbol, pos) = symbol.char == char
 			Mode.CORNER -> fun (symbol, pos): Boolean {
 				if (!symbol.getPassable(SpaceSlot.ENTITY, null)) return false // cant be a corner if this isnt a floor
