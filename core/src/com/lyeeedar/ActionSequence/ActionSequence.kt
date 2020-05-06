@@ -11,9 +11,11 @@ import com.lyeeedar.Direction
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Point
+import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
+import java.util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
@@ -75,7 +77,7 @@ class ActionSequenceState
 		for (entry in data)
 		{
 			val value = entry.value
-			map[entry.key] = when (value)
+			map[entry.key.toLowerCase(Locale.ENGLISH)] = when (value)
 			{
 				is Float -> value
 				is Int -> value.toFloat()
