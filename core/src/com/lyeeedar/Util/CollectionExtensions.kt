@@ -12,7 +12,7 @@ fun <T> List<T>.Array(ran: LightRNG = Random.sharedRandom): T? = if (this.isEmpt
 fun <T> List<T>.random(ran: LightRNG = Random.sharedRandom): T = this[ran.nextInt(this.size)]
 fun <T> List<T>.randomOrNull(ran: LightRNG = Random.sharedRandom): T? = if (this.isEmpty()) null else this[ran.nextInt(this.size)]
 
-fun <T> com.badlogic.gdx.utils.Array<T>.tryGet(i: Int): T = this[MathUtils.clamp(i, 0, this.size-1)]
+fun <T> com.badlogic.gdx.utils.Array<T>.getClamped(i: Int): T = this[MathUtils.clamp(i, 0, this.size-1)]
 fun <T> com.badlogic.gdx.utils.Array<T>.random(ran: LightRNG = Random.sharedRandom): T = this[ran.nextInt(this.size)]
 fun <T> com.badlogic.gdx.utils.Array<T>.randomOrNull(ran: LightRNG = Random.sharedRandom): T? = if (this.size == 0) null else this[ran.nextInt(this.size)]
 

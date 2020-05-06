@@ -26,10 +26,10 @@ class FilterAction : AbstractMapGenerationAction()
 
 	lateinit var mode: Mode
 
-	@DataValue(visibleIf = "mode == CHARACTER")
+	@DataValue(visibleIf = "Mode == Character")
 	var char: Char = ' '
 
-	@DataValue(visibleIf = "mode == CENTER")
+	@DataValue(visibleIf = "Mode == Center")
 	var centerDist: Int = 2
 
 	@DataGraphReference

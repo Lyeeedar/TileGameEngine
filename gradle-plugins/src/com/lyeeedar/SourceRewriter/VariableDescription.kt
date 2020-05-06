@@ -30,9 +30,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		{
 			dataName = dataValueAnnotation.paramMap["dataName"]?.replace("\"", "") ?: name.capitalize()
 
-			val visibleIfRaw = dataValueAnnotation.paramMap["visibleIf"]
+			var visibleIfRaw = dataValueAnnotation.paramMap["visibleIf"]
 			if (visibleIfRaw != null)
 			{
+				visibleIfRaw = visibleIfRaw.replace("&", "&amp;")
+				visibleIfRaw = visibleIfRaw.replace("<", "&lt;")
+				visibleIfRaw = visibleIfRaw.replace(">", "&gt;")
 				visibleIfStr = """VisibleIf="$visibleIfRaw""""
 			}
 		}
