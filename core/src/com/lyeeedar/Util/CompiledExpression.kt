@@ -126,7 +126,7 @@ class VariableExpressionPart(val variable: String, rawPart: String) : AbstractEx
 	{
 		fun tryParse(rawPart: String, compiledExpression: CompiledExpression): VariableExpressionPart?
 		{
-			if (rawPart.any { !it.isLetterOrDigit() && it != '.' })
+			if (rawPart.any { !it.isLetterOrDigit() && it != '.' && it != '_' })
 			{
 				return null
 			}

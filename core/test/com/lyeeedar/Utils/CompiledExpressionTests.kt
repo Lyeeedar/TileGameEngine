@@ -137,6 +137,15 @@ class CompiledExpressionTests
 	}
 
 	@Test
+	fun underscore()
+	{
+		val data = ExpressionData.get()
+		data.variables["source.max_hp"] = 4f
+		val expression = CompiledExpression("source.max_hp * 2")
+		assertEquals(8f, expression.evaluate(data))
+	}
+
+	@Test
 	fun booleanEquals()
 	{
 		val expression = CompiledExpression("cheese == null")

@@ -11,6 +11,7 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectories
 import org.gradle.api.tasks.TaskAction
 import java.io.File
+import java.lang.RuntimeException
 
 //gradlew :core:build  --stacktrace -Dorg.gradle.daemon=false   -Dorg.gradle.debug=true
 class SourceRewriterPlugin : Plugin<Project>
@@ -62,7 +63,14 @@ open class SourceRewriterTask : DefaultTask()
 			println("Writing changes")
 			for (rewriter in dataClassFiles)
 			{
-				rewriter.write(loaderBuilder)
+				try
+				{
+					rewriter.write(loaderBuilder)
+				}
+				catch (ex: Exception)
+				{
+					throw RuntimeException("Failed to write " + rewriter.file.canonicalPath, ex)
+				}
 			}
 
 			writeXmlLoader(loaderBuilder)

@@ -344,6 +344,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
 			if (variableType == VariableType.LATEINIT)
 			{
+				if (visibleIfStr.isNotBlank()) throw RuntimeException("Lateinit with visibleif enum not supported!")
 				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\").toUpperCase(Locale.ENGLISH))")
 			}
 			else if (sourceElName != null)
