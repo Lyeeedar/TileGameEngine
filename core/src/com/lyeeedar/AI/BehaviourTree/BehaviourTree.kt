@@ -12,6 +12,7 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import java.lang.RuntimeException
+import java.util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
@@ -76,7 +77,7 @@ class BehaviourTreeState
 
 		if (guid == 0)
 		{
-			variables[key] = when (value)
+			variables[key.toLowerCase(Locale.ENGLISH)] = when (value)
 			{
 				is Float -> value
 				is Int -> value.toFloat()
@@ -87,7 +88,7 @@ class BehaviourTreeState
 
 			if (value is Entity || value is Point)
 			{
-				dynamicVariables[dataKey] = key
+				dynamicVariables[dataKey] = key.toLowerCase(Locale.ENGLISH)
 			}
 		}
 	}
@@ -99,10 +100,10 @@ class BehaviourTreeState
 
 		if (guid == 0)
 		{
-			variables.remove(key, 0f)
+			variables.remove(key.toLowerCase(Locale.ENGLISH), 0f)
 			if (data is EntityReference || data is Point)
 			{
-				variables.remove("$key.dist", 0f)
+				variables.remove("${key.toLowerCase(Locale.ENGLISH)}.dist", 0f)
 				dynamicVariables.remove(dataKey)
 			}
 		}

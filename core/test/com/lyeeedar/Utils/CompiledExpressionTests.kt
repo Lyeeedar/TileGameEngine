@@ -4,9 +4,9 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.Util.CompiledExpression
 import com.lyeeedar.Util.ExpressionData
 import com.lyeeedar.Util.set
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
+import org.junit.Assert.*
 import org.junit.Test
+import java.lang.RuntimeException
 
 class CompiledExpressionTests
 {
@@ -122,7 +122,7 @@ class CompiledExpressionTests
 	fun operatorGTE()
 	{
 		val data = ExpressionData.get()
-		data.variables["attackCount"] = 4f
+		data.variables["attackcount"] = 4f
 		val expression = CompiledExpression("attackCount>=2")
 		assertEquals(1f, expression.evaluate(data))
 	}
@@ -181,5 +181,15 @@ class CompiledExpressionTests
 		assertEquals(0f, CompiledExpression("cheese && pie").evaluate(data))
 		data.variables["cheese"] = 1f
 		assertEquals(1f, CompiledExpression("cheese && (pie)").evaluate(data))
+	}
+
+	@Test
+	fun uppercaseVariable()
+	{
+		val data = ExpressionData.get()
+		data.variables["Pie"] = 1f
+		assertThrows(RuntimeException::class.java) {
+			CompiledExpression("cheese && pie").evaluate(data)
+		}
 	}
 }

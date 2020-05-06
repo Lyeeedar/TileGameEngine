@@ -41,6 +41,14 @@ class CompiledExpression(val expression: String)
 
 	fun evaluate(data: ExpressionData): Float
 	{
+		if (Statics.debug)
+		{
+			for (key in data.variables.keys())
+			{
+				if (key.any { it.isUpperCase() }) throw RuntimeException("Variable $key contained an uppercase character!")
+			}
+		}
+
 		if (cachedValue != null) return cachedValue
 		return root.evaluate(data)
 	}
