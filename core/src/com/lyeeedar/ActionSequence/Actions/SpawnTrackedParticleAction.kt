@@ -19,6 +19,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 	lateinit var particle: ParticleEffectDescription
 	var spawnSingleParticle: Boolean = false
+	var alignToVector: Boolean = true
 
 	override fun onTurn(state: ActionSequenceState): ActionState
 	{
@@ -43,9 +44,27 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 			pos.max = max
 			pos.slot = SpaceSlot.EFFECT
 
+			if (alignToVector)
+			{
+				pos.facing = state.facing
+			}
+
 			val r = particle.getParticleEffect()
 			r.size[0] = (pos.max.x - pos.min.x) + 1
 			r.size[1] = (pos.max.y - pos.min.y) + 1
+
+			if (alignToVector && r.useFacing)
+			{
+				r.rotation = pos.facing.angle
+				r.facing = pos.facing
+
+				if (pos.facing.x != 0)
+				{
+					val temp = r.size[0]
+					r.size[0] = r.size[1]
+					r.size[1] = temp
+				}
+			}
 
 			entity.renderable()?.set(r)
 
@@ -60,7 +79,13 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 				val pos = entity.position()!!
 
+				pos.position = target
 				pos.slot = SpaceSlot.EFFECT
+
+				if (alignToVector)
+				{
+					pos.facing = state.facing
+				}
 
 				val r = particle.getParticleEffect()
 				entity.renderable()?.set(r)
@@ -93,6 +118,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 		super.load(xmlData)
 		particle = AssetManager.loadParticleEffect(xmlData.getChildByName("Particle")!!)
 		spawnSingleParticle = xmlData.getBoolean("SpawnSingleParticle", false)
+		alignToVector = xmlData.getBoolean("AlignToVector", true)
 	}
 	override val classID: String = "SpawnTrackedParticle"
 	//endregion

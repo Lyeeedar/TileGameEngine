@@ -4,9 +4,8 @@ import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.SpaceSlot
+import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.DataClass
-import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
 import java.util.*
@@ -25,7 +24,13 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 	lateinit var particle: ParticleEffectDescription
 
 	var alignToVector: Boolean = true
+
+	var spawnSingleParticle: Boolean = false
+
+	@DataValue(visibleIf = "SpawnSingleParticle == false")
 	var spawnBehaviour: SpawnBehaviour = SpawnBehaviour.IMMEDIATE
+
+	@DataValue(visibleIf = "SpawnSingleParticle == false && SpawnBehaviour != Immediate")
 	var spawnDuration: Float = 0f
 	var makeParticleNonBlocking: Boolean = false
 
@@ -37,12 +42,9 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 		val min = state.targets.minBy(Point::hashCode)!!
 		val max = state.targets.maxBy(Point::hashCode)!!
-		val furthest = state.targets.maxBy { it.dist(sourceTile) }!!
 
-		for (point in state.targets)
+		if (spawnSingleParticle)
 		{
-			val tile = state.world.grid.tryGet(point, null) ?: continue
-
 			val entity = transientParticleArchetype.build()
 
 			if (makeParticleNonBlocking)
@@ -50,49 +52,10 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 				entity.transient()!!.blocksTurns = false
 			}
 
-			val r = particle.getParticleEffect()
-			entity.renderable()?.set(r)
-
-			val renderDelay: Float
-			if (spawnBehaviour == SpawnBehaviour.IMMEDIATE)
-			{
-				renderDelay = 0f
-			}
-			else if (spawnBehaviour == SpawnBehaviour.FROM_SOURCE)
-			{
-				val maxDist = furthest.euclideanDist(sourceTile)
-				val dist = tile.euclideanDist(sourceTile)
-				val alpha = dist / maxDist
-				val delay = spawnDuration * alpha
-
-				renderDelay = delay
-			}
-			else if (spawnBehaviour == SpawnBehaviour.FROM_CENTER)
-			{
-				val center = min.lerp(max, 0.5f)
-				val maxDist = center.euclideanDist(max)
-				val dist = center.euclideanDist(tile)
-				val alpha = dist / maxDist
-				val delay = spawnDuration * alpha
-
-				renderDelay = delay
-			}
-			else if (spawnBehaviour == SpawnBehaviour.RANDOM)
-			{
-				val alpha = Random.random(Random.sharedRandom)
-				val delay = spawnDuration * alpha
-
-				renderDelay = delay
-			}
-			else
-			{
-				throw Exception("Unhandled spawn behaviour")
-			}
-			r.renderDelay = renderDelay
-
 			val pos = entity.position()!!
 
-			pos.position = tile
+			pos.min = min
+			pos.max = max
 			pos.slot = SpaceSlot.EFFECT
 
 			if (alignToVector)
@@ -100,7 +63,94 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 				pos.facing = state.facing
 			}
 
+			val r = particle.getParticleEffect()
+			r.size[0] = (pos.max.x - pos.min.x) + 1
+			r.size[1] = (pos.max.y - pos.min.y) + 1
+
+			if (alignToVector && r.useFacing)
+			{
+				r.rotation = pos.facing.angle
+				r.facing = pos.facing
+
+				if (pos.facing.x != 0)
+				{
+					val temp = r.size[0]
+					r.size[0] = r.size[1]
+					r.size[1] = temp
+				}
+			}
+
+			entity.renderable()?.set(r)
+
 			state.world.addEntity(entity)
+		}
+		else
+		{
+			val furthest = state.targets.maxBy { it.dist(sourceTile) }!!
+
+			for (point in state.targets)
+			{
+				val tile = state.world.grid.tryGet(point, null) ?: continue
+
+				val entity = transientParticleArchetype.build()
+
+				if (makeParticleNonBlocking)
+				{
+					entity.transient()!!.blocksTurns = false
+				}
+
+				val r = particle.getParticleEffect()
+				entity.renderable()?.set(r)
+
+				val renderDelay: Float
+				if (spawnBehaviour == SpawnBehaviour.IMMEDIATE)
+				{
+					renderDelay = 0f
+				}
+				else if (spawnBehaviour == SpawnBehaviour.FROM_SOURCE)
+				{
+					val maxDist = furthest.euclideanDist(sourceTile)
+					val dist = tile.euclideanDist(sourceTile)
+					val alpha = dist / maxDist
+					val delay = spawnDuration * alpha
+
+					renderDelay = delay
+				}
+				else if (spawnBehaviour == SpawnBehaviour.FROM_CENTER)
+				{
+					val center = min.lerp(max, 0.5f)
+					val maxDist = center.euclideanDist(max)
+					val dist = center.euclideanDist(tile)
+					val alpha = dist / maxDist
+					val delay = spawnDuration * alpha
+
+					renderDelay = delay
+				}
+				else if (spawnBehaviour == SpawnBehaviour.RANDOM)
+				{
+					val alpha = Random.random(Random.sharedRandom)
+					val delay = spawnDuration * alpha
+
+					renderDelay = delay
+				}
+				else
+				{
+					throw Exception("Unhandled spawn behaviour")
+				}
+				r.renderDelay = renderDelay
+
+				val pos = entity.position()!!
+
+				pos.position = tile
+				pos.slot = SpaceSlot.EFFECT
+
+				if (alignToVector)
+				{
+					pos.facing = state.facing
+				}
+
+				state.world.addEntity(entity)
+			}
 		}
 	}
 
@@ -110,6 +160,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 		super.load(xmlData)
 		particle = AssetManager.loadParticleEffect(xmlData.getChildByName("Particle")!!)
 		alignToVector = xmlData.getBoolean("AlignToVector", true)
+		spawnSingleParticle = xmlData.getBoolean("SpawnSingleParticle", false)
 		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
 		makeParticleNonBlocking = xmlData.getBoolean("MakeParticleNonBlocking", false)

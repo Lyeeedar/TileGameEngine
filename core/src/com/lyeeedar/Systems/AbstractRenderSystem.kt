@@ -205,8 +205,11 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				particles.add(renderable)
 			}
 		}
-		renderable.size[0] = pos.size
-		renderable.size[1] = pos.size
+		else
+		{
+			renderable.size[0] = pos.size
+			renderable.size[1] = pos.size
+		}
 
 		renderer.queue(renderable, px, py, pos.slot.ordinal, 1, colour = tile.renderCol)
 

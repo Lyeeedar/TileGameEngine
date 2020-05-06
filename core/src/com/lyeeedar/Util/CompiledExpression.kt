@@ -6,6 +6,7 @@ import squidpony.squidmath.LightRNG
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.lang.StringBuilder
+import java.util.*
 
 class CompiledExpression(val expression: String)
 {
@@ -21,7 +22,7 @@ class CompiledExpression(val expression: String)
 	{
 		try
 		{
-			root = parseExpressionPart(expression, this)
+			root = parseExpressionPart(expression.toLowerCase(Locale.ENGLISH), this)
 		}
 		catch (ex: Exception)
 		{
@@ -106,6 +107,8 @@ class VariableExpressionPart(val variable: String, rawPart: String) : AbstractEx
 	{
 		if (variable == "null") return 0f
 		else if (variable == "else") return 1f
+		else if (variable == "true") return 1f
+		else if (variable == "false") return 0f
 		else if (variable == "random") return data.rng.nextFloat()
 
 		return data.variables[variable, 0f]

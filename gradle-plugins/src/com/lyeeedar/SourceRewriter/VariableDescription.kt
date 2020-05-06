@@ -313,7 +313,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        {
 		        if (variableType == VariableType.LATEINIT || !nullable)
 		        {
-			        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"))")
+			        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\", \"1\")!!)")
 		        }
 		        else
 		        {

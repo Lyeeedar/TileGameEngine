@@ -25,7 +25,7 @@ class SetValueBehaviourAction : AbstractBehaviourAction()
 	{
 		super.load(xmlData)
 		key = xmlData.get("Key")
-		value = CompiledExpression(xmlData.get("Value"))
+		value = CompiledExpression(xmlData.get("Value", "1")!!)
 	}
 	override val classID: String = "SetValue"
 	override fun resolve(nodes: ObjectMap<String, AbstractBehaviourNode>)
