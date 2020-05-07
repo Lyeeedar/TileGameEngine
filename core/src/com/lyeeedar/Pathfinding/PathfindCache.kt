@@ -163,7 +163,7 @@ class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 
 			if (cachedPath == null)
 			{
-				cachedPath = BresenhamLine.lineNoDiag(start.x, start.y, end.x, end.y, grid, true, Integer.MAX_VALUE, travelType, self)
+				cachedPath = BresenhamLine.lineNoDiag(start.x, start.y, end.x, end.y, grid, true, travelType, self)
 			}
 		}
 

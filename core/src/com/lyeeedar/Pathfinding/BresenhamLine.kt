@@ -11,7 +11,7 @@ import kotlin.math.abs
 object BresenhamLine
 {
 
-	@JvmOverloads fun <T: IPathfindingTile>lineNoDiag(x0: Int, y0: Int, x1: Int, y1: Int, grid: Array2D<T>, checkPassable: Boolean = false, range: Int = 0, travelType: SpaceSlot? = null, self: Any? = null): Array<Point>
+	@JvmOverloads fun <T: IPathfindingTile>lineNoDiag(x0: Int, y0: Int, x1: Int, y1: Int, grid: Array2D<T>, checkPassable: Boolean = false, travelType: SpaceSlot = SpaceSlot.LIGHT, self: Any? = null): Array<Point>
 	{
 		var x0 = x0
 		var y0 = y0
@@ -40,7 +40,7 @@ object BresenhamLine
 				y0 += yStep
 			}
 
-			if (x0 < 0 || y0 < 0 || x0 >= grid.xSize - 1 || y0 >= grid.ySize - 1 || checkPassable && !grid[x0, y0].getPassable(travelType!!, self))
+			if (x0 < 0 || y0 < 0 || x0 >= grid.xSize - 1 || y0 >= grid.ySize - 1 || (checkPassable && !grid[x0, y0].getPassable(travelType, self)))
 			{
 				break
 			}

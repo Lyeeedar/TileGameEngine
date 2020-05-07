@@ -13,7 +13,7 @@ class Pathfinder<T: IPathfindingTile>(private val grid: Array2D<T>, private val 
 
 		if (path == null)
 		{
-			path = BresenhamLine.lineNoDiag(startx, starty, endx, endy, grid, true, Integer.MAX_VALUE, travelType, self)
+			path = BresenhamLine.lineNoDiag(startx, starty, endx, endy, grid, true, travelType, self)
 		}
 
 		return path
