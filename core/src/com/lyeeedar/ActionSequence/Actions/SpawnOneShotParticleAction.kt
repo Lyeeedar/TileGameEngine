@@ -10,7 +10,7 @@ import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "OneShotFX")
 class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 {
 	enum class SpawnBehaviour

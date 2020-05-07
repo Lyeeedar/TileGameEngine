@@ -8,7 +8,7 @@ import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 
-@DataClass(category = "Permute", colour = "242,154,33")
+@DataClass(category = "Permute", colour = "242,154,33", name = "PickTiles")
 class SelectTilesAction : AbstractOneShotActionSequenceAction()
 {
 	@DataCompiledExpression(knownVariables = "count", default = "count")

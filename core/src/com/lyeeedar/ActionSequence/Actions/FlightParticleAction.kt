@@ -17,7 +17,7 @@ import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "FlightFX")
 class FlightParticleAction : AbstractDurationActionSequenceAction()
 {
 	enum class SpawnBehaviour

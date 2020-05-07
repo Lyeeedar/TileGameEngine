@@ -11,7 +11,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "AttachFX")
 class AttachParticleAction : AbstractDurationActionSequenceAction()
 {
 	val dataKey = "attachedParticles"

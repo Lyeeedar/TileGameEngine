@@ -13,7 +13,7 @@ import com.lyeeedar.Util.DataValue
 import com.lyeeedar.Util.XmlData
 import java.util.*
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "Anim")
 class AnimationAction : AbstractDurationActionSequenceAction()
 {
 	enum class Animation

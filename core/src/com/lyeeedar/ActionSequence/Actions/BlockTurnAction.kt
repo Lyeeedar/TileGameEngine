@@ -5,7 +5,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-@DataClass(category = "Meta", colour = "199,18,117")
+@DataClass(category = "Meta", colour = "199,18,117", name = "Block")
 class BlockTurnAction : AbstractOneShotActionSequenceAction()
 {
 	val key = "blocked"

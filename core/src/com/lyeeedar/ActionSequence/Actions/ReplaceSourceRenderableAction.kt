@@ -12,7 +12,7 @@ import com.lyeeedar.Util.Future
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "ReplaceSprite")
 class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 {
 	lateinit var renderable: Renderable

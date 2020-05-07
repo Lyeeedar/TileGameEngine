@@ -12,7 +12,7 @@ import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
-@DataClass(category = "Renderable")
+@DataClass(category = "Renderable", name = "TrackedFX")
 class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 {
 	val key = "spawnedParticles"

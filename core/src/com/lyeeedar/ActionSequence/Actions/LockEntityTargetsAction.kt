@@ -5,7 +5,7 @@ import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
-@DataClass(category = "Permute", colour = "252,102,9")
+@DataClass(category = "Permute", colour = "252,102,9", name = "LockTargets")
 class LockEntityTargetsAction : AbstractOneShotActionSequenceAction()
 {
 	override fun enter(state: ActionSequenceState)

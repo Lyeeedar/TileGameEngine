@@ -5,7 +5,7 @@ import com.lyeeedar.Components.position
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
-@DataClass(category = "Permute", colour = "252,102,9")
+@DataClass(category = "Permute", colour = "252,102,9", name = "PickSelf")
 class SelectSelfAction : AbstractOneShotActionSequenceAction()
 {
 	override fun enter(state: ActionSequenceState)

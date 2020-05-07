@@ -4,7 +4,7 @@ import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 
-@DataClass(category = "Permute", colour = "247,176,78")
+@DataClass(category = "Permute", colour = "247,176,78", name = "SetSource")
 class SetSourcePointAction : AbstractOneShotActionSequenceAction()
 {
 	override fun enter(state: ActionSequenceState)
