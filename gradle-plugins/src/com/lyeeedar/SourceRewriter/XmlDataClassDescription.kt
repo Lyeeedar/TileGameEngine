@@ -12,6 +12,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	val dataClassCategory: String
 	val forceGlobal: Boolean
 	var colour: String? = null
+	val implementsStaticLoad: Boolean
 
     init
     {
@@ -27,12 +28,14 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 			dataClassCategory = dataClassAnnotation.paramMap["category"] ?: ""
 			forceGlobal = dataClassAnnotation.paramMap["global"] == "true"
 			colour = dataClassAnnotation.paramMap["colour"]
+			implementsStaticLoad = dataClassAnnotation.paramMap["implementsStaticLoad"] == "true"
 		}
 		else
 		{
 			dataClassName = classIDName ?: name.capitalize()
 			dataClassCategory = ""
 			forceGlobal = false
+			implementsStaticLoad = false
 		}
 
 	    if (colour == null)

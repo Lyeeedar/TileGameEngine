@@ -88,7 +88,8 @@ class ActionSequenceState
 }
 
 @DataFile(colour="228,78,255", icon="Sprites/EffectSprites/Explosion/Explosion_2.png")
-class ActionSequence : XmlDataClass()
+@DataClass(implementsStaticLoad = true)
+class ActionSequence(val xml: XmlData) : XmlDataClass()
 {
 	var cancellable = true
 
@@ -196,36 +197,35 @@ class ActionSequence : XmlDataClass()
 		state.enteredActions.clear()
 	}
 
+	fun loadDuplicate(): ActionSequence
+	{
+		val sequence = ActionSequence(xml)
+		sequence.load(xml)
+
+		return sequence
+	}
+
 	companion object
 	{
 		val loadedSequences = IntMap<ActionSequence>()
-		fun load(path: String, forceDuplicate: Boolean = false): ActionSequence
+		fun load(path: String): ActionSequence
 		{
 			val xml = getXml(path)
-			return load(xml, forceDuplicate)
+			return load(xml)
 		}
 
-		fun load(xmlData: XmlData, forceDuplicate: Boolean = false): ActionSequence
+		fun load(xmlData: XmlData): ActionSequence
 		{
-			if (forceDuplicate)
-			{
-				val sequence = ActionSequence()
-				sequence.load(xmlData)
-				return sequence
-			}
-			else
-			{
-				val hash = xmlData.hashCode()
-				val existing = loadedSequences[hash]
-				if (existing != null) return existing
+			val hash = xmlData.hashCode()
+			val existing = loadedSequences[hash]
+			if (existing != null) return existing
 
-				val sequence = ActionSequence()
-				sequence.load(xmlData)
+			val sequence = ActionSequence(xmlData)
+			sequence.load(xmlData)
 
-				loadedSequences[hash] = sequence
+			loadedSequences[hash] = sequence
 
-				return sequence
-			}
+			return sequence
 		}
 	}
 

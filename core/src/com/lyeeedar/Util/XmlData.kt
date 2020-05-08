@@ -671,7 +671,7 @@ abstract class GraphXmlDataClass<T> : XmlDataClass()
 }
 
 annotation class DataFile(val colour: String = "", val icon: String = "")
-annotation class DataClass(val name: String = "", val category: String = "", val colour: String = "", val global: Boolean = false)
+annotation class DataClass(val name: String = "", val category: String = "", val colour: String = "", val global: Boolean = false, val implementsStaticLoad: Boolean = false)
 annotation class DataNumericRange(val min: Float = -9999999f, val max: Float = 9999999f)
 annotation class DataValue(val dataName: String = "", val visibleIf: String = "")
 annotation class DataVector(val name1: String = "", val name2: String = "", val name3: String = "", val name4: String = "")

@@ -573,16 +573,23 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
 			        }
 
-			        if (classDef.isAbstract)
+			        if (classDef.classDef!!.implementsStaticLoad)
 			        {
-				        builder.appendln(indentation, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
+				        builder.appendln(indentation, "$name = $type.load($el)")
 			        }
 			        else
 			        {
-				        builder.appendln(indentation, "$name = $type()")
-			        }
+				        if (classDef.isAbstract)
+				        {
+					        builder.appendln(indentation, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
+				        }
+				        else
+				        {
+					        builder.appendln(indentation, "$name = $type()")
+				        }
 
-			        builder.appendln(indentation, "$name.load($el)")
+				        builder.appendln(indentation, "$name.load($el)")
+			        }
 		        }
 		        else if (variableType == VariableType.VAR)
 		        {
@@ -597,16 +604,24 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			        builder.appendln(indentation, "if ($el != null)")
 			        builder.appendln(indentation, "{")
 
-			        if (classDef.isAbstract)
+			        if (classDef.classDef!!.implementsStaticLoad)
 			        {
-				        builder.appendln(indentation + 1, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
+				        builder.appendln(indentation + 1, "$name = $type.load($el)")
 			        }
 			        else
 			        {
-				        builder.appendln(indentation + 1, "$name = $type()")
+				        if (classDef.isAbstract)
+				        {
+					        builder.appendln(indentation + 1, "$name = XmlDataClassLoader.load$type(${el}.get(\"classID\", ${el}.name)!!)")
+				        }
+				        else
+				        {
+					        builder.appendln(indentation + 1, "$name = $type()")
+				        }
+
+				        builder.appendln(indentation + 1, "$name!!.load($el)")
 			        }
 
-			        builder.appendln(indentation + 1, "$name!!.load($el)")
 			        builder.appendln(indentation, "}")
 		        }
 		        else
@@ -619,6 +634,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			        {
 				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
 			        }
+
 			        builder.appendln(indentation, "$name.load($el)")
 		        }
 	        }
