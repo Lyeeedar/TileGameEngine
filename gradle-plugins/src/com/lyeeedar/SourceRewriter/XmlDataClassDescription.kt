@@ -243,22 +243,23 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 		val extends = if (classDefinition.superClass?.classDef?.name?.endsWith("XmlDataClass") == false) "Extends=\"${classDefinition.superClass!!.classDef!!.dataClassName}\"" else ""
 
 	    val nodeMapVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphNodes" } }
+	    val nodeRefVariable = variables.firstOrNull { it.annotations.any { it.name == "DataGraphReference" } }
 
 	    var colour = """TextColour="$colour" """
 	    val global = if (needsGlobalScope || forceGlobal) "IsGlobal=\"True\"" else ""
+
+	    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
+	    if (dataGraphNode != null)
+	    {
+		    colour = """Background="${this.colour}" """
+	    }
 
 	    val collectionAnnotation = annotations.firstOrNull { it.name == "DataClassCollection" }
 	    if (collectionAnnotation != null)
 	    {
 		    if (classDefinition.isAbstract) return
 
-		    val dataGraphNode = annotations.firstOrNull { it.name == "DataGraphNode" }
 		    val type = if (dataGraphNode != null) "GraphCollectionDef" else "CollectionDef"
-
-		    if (dataGraphNode != null)
-		    {
-			    colour = """Background="${this.colour}" """
-		    }
 
 		    val collectionVariable = variables.firstOrNull { it.type.startsWith("Array<") } ?: throw RuntimeException("Unable to find collection container!")
 		    val nonCollectionVariables = variables.filter { it != collectionVariable }.toList()
@@ -306,6 +307,10 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 			    if (nodeMapVariable != null)
 			    {
 				    builder.appendlnFix(1, """<Definition Name="$dataClassName" AllowCircularLinks="True" FlattenData="True" NodeStoreName="${nodeMapVariable.dataName}" Nullable="False" $colour $extends meta:RefKey="GraphStruct">""")
+			    }
+			    else if (nodeRefVariable != null)
+			    {
+				    builder.appendlnFix(1, """<Definition Name="$dataClassName" Nullable="False" $colour $extends meta:RefKey="GraphStruct">""")
 			    }
 			    else
 			    {

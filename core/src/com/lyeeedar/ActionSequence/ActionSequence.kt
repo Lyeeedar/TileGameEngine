@@ -199,24 +199,33 @@ class ActionSequence : XmlDataClass()
 	companion object
 	{
 		val loadedSequences = IntMap<ActionSequence>()
-		fun load(path: String): ActionSequence
+		fun load(path: String, forceDuplicate: Boolean = false): ActionSequence
 		{
 			val xml = getXml(path)
-			return load(xml)
+			return load(xml, forceDuplicate)
 		}
 
-		fun load(xmlData: XmlData): ActionSequence
+		fun load(xmlData: XmlData, forceDuplicate: Boolean = false): ActionSequence
 		{
-			val hash = xmlData.hashCode()
-			val existing = loadedSequences[hash]
-			if (existing != null) return existing
+			if (forceDuplicate)
+			{
+				val sequence = ActionSequence()
+				sequence.load(xmlData)
+				return sequence
+			}
+			else
+			{
+				val hash = xmlData.hashCode()
+				val existing = loadedSequences[hash]
+				if (existing != null) return existing
 
-			val sequence = ActionSequence()
-			sequence.load(xmlData)
+				val sequence = ActionSequence()
+				sequence.load(xmlData)
 
-			loadedSequences[hash] = sequence
+				loadedSequences[hash] = sequence
 
-			return sequence
+				return sequence
+			}
 		}
 	}
 

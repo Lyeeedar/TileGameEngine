@@ -682,7 +682,7 @@ annotation class DataCompiledExpression(val createExpressionMethod: String = "",
 annotation class DataGraphNodes()
 annotation class DataGraphNode()
 annotation class DataClassCollection()
-annotation class DataGraphReference(val useParentDescription: Boolean = false)
+annotation class DataGraphReference(val useParentDescription: Boolean = false, val elementIsChild: Boolean = false)
 annotation class DataXml(val actualClass: String = "")
 annotation class DataAsciiGrid
 annotation class DataTimeline(val timelineGroup: Boolean = false)

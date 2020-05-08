@@ -546,7 +546,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             classDefinition.referencedClasses.add(classDef)
 
 	        val graphAnnotation = annotations.firstOrNull { it.name == "DataGraphReference" }
-	        if (graphAnnotation != null)
+	        if (graphAnnotation != null && graphAnnotation.paramMap["elementIsChild"] != "true")
 	        {
 				if (variableType == VariableType.LATEINIT)
 				{
@@ -636,7 +636,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
 
 		val annotation = annotations.firstOrNull { it.name == "DataGraphReference" }
-		if (annotation != null)
+		if (annotation != null && annotation.paramMap["elementIsChild"] != "true")
 		{
 			if (variableType == VariableType.LATEINIT || !nullable)
 			{
@@ -977,13 +977,31 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				{
 					val uniqueChildren = if (dataArrayAnnotation?.paramMap?.get("childrenAreUnique") != null) """ChildrenAreUnique="True" """ else ""
 
-					if (classDef.isAbstract)
+					if (annotations.any { it.name == "DataGraphReference" })
 					{
-						builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+						if (classDef.isAbstract)
+						{
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr  $visibleIfStr meta:RefKey="Collection" />""")
+							builder.appendlnFix(indentation+1, """<Data Name="Node" DefKey="${classDef.classDef!!.dataClassName}Defs" meta:RefKey="GraphReference"/>""")
+							builder.appendlnFix(indentation, """</Data>""")
+						}
+						else
+						{
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr $visibleIfStr meta:RefKey="Collection">""")
+							builder.appendlnFix(indentation+1, """<Data Name="Node" Keys="${classDef.classDef!!.dataClassName}" meta:RefKey="GraphReference"/>""")
+							builder.appendlnFix(indentation, """</Data>""")
+						}
 					}
 					else
 					{
-						builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+						if (classDef.isAbstract)
+						{
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr DefKey="${classDef.classDef!!.dataClassName}Defs" $visibleIfStr meta:RefKey="Collection" />""")
+						}
+						else
+						{
+							builder.appendlnFix(indentation, """<Data Name="$dataName" $minCountStr $uniqueChildren $maxCountStr Keys="${classDef.classDef!!.dataClassName}" $visibleIfStr meta:RefKey="Collection" />""")
+						}
 					}
 				}
 			}
@@ -1030,7 +1048,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        val dataGraphAnnotation = annotations.firstOrNull { it.name == "DataGraphReference" }
 	        if (dataGraphAnnotation != null)
 	        {
-		        val useParentDesc = if (dataGraphAnnotation.paramMap["useParentDescription"] != null) "UseParentDescription=\"True\"" else ""
+		        val useParentDesc = if (dataGraphAnnotation.paramMap["useParentDescription"] == "true") "UseParentDescription=\"True\"" else ""
 
 		        if (classDef.isAbstract)
 		        {
