@@ -2,6 +2,7 @@ package com.lyeeedar.UI
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Scaling
@@ -46,6 +47,11 @@ class SpriteWidget(val drawable: Sprite, val originalWidth: Float, val originalH
 			imageY = 0f
 		else
 			imageY = (height / 2 - imageHeight / 2).toInt().toFloat()
+	}
+
+	fun getBounds(): Rectangle
+	{
+		return Rectangle(x + imageX, y + imageY, imageWidth * scaleX, imageHeight * scaleY)
 	}
 
 	override fun draw(batch: Batch?, parentAlpha: Float)

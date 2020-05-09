@@ -4,7 +4,7 @@ import java.io.File
 
 class SourceRewriter(val file: File, val classRegister: ClassRegister)
 {
-	val variableRegex = "(override )?(?<VariableType>var|val|lateinit var) (?<Name>[a-zA-Z0-9]*)(: (?<Type>[a-zA-Z0-9<>, ?]*))?(= (?<DefaultValue>.*))?".toRegex()
+	val variableRegex = "(override )?(?<VariableType>var|val|lateinit var) (?<Name>[a-zA-Z0-9]*)(: (?<Type>[a-zA-Z0-9<>, ?*]*))?(= (?<DefaultValue>.*))?".toRegex()
 
 	lateinit var originalContents: String
 	val dataClasses = ArrayList<XmlDataClassDescription>()

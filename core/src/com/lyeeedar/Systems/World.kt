@@ -6,10 +6,7 @@ import com.lyeeedar.Components.ComponentType
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityPool
 import com.lyeeedar.SpaceSlot
-import com.lyeeedar.Util.Array2D
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.EnumBitflag
-import com.lyeeedar.Util.Statics
+import com.lyeeedar.Util.*
 import squidpony.squidmath.LightRNG
 
 class World<T: AbstractTile>(var grid: Array2D<T>)
@@ -30,6 +27,8 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 	private val registeredSignatures = Array<EntitySignature>()
 
 	private var doneFirstUpdate = false
+
+	val onTurnEvent = Event0Arg()
 
 	fun getEntitiesFor(): EntitySignatureBuilder
 	{
@@ -128,6 +127,8 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 		{
 			systems[i].onTurn()
 		}
+
+		onTurnEvent.invoke()
 	}
 
 	fun updateCollisionGrid()

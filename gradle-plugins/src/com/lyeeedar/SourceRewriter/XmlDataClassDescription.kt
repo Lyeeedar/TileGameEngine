@@ -206,7 +206,13 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    // write loadpolymorphic
         if (classDefinition.isAbstract)
         {
-	        loaderBuilder.appendln(classIndentation+2, "fun load$name(classID: String): ${classDefinition.fullName}")
+	        var className = classDefinition.namespace + "." + classDefinition.name
+	        if (defLine.contains("<T:"))
+	        {
+		        className += "<*>"
+	        }
+
+	        loaderBuilder.appendln(classIndentation+2, "fun load$name(classID: String): $className")
 	        loaderBuilder.appendln(classIndentation+2, "{")
 
 	        loaderBuilder.appendln(classIndentation+3, "return when (classID)")

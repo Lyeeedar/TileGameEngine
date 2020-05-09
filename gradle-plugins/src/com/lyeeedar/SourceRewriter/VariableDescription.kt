@@ -541,6 +541,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
         else
         {
+	        var type = type
+	        if (type.endsWith("<*>"))
+	        {
+		        type = type.replace("<*>", "")
+	        }
+
             val classDef = classRegister.getClass(type, classDefinition) ?: throw RuntimeException("writeLoad: Unknown type '$type'!")
 
             classDefinition.referencedClasses.add(classDef)
@@ -1059,6 +1065,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		}
         else
         {
+	        var type = type
+	        if (type.endsWith("<*>"))
+	        {
+		        type = type.replace("<*>", "")
+	        }
+
             val classDef = classRegister.getClass(type, classDefinition) ?: throw RuntimeException("createDefEntry: Unknown type '$type'!")
 
 	        val dataGraphAnnotation = annotations.firstOrNull { it.name == "DataGraphReference" }
