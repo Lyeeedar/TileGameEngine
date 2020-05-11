@@ -103,6 +103,8 @@ fun Actor.addTapToolTip(content: String): Actor
 
 		tooltip.toFront()
 		tooltip.show(event, x, y)
+
+		event?.handle()
 	}
 
 	return this

@@ -91,7 +91,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 						val floor = tile.floor ?: continue
 
-						renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.renderCol)
+						renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.getRenderCol())
 					}
 					else
 					{
@@ -126,7 +126,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 					if (!tile.skipRender)
 					{
 						val wall = tile.wall ?: continue
-						renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.renderCol)
+						renderer.queueSpriteWrapper(wall, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = tile.getRenderCol())
 					}
 					else
 					{
@@ -172,6 +172,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val py = pos.position.yFloat + pos.offset.y
 
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
+		val tileCol = tile.getRenderCol()
 
 		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 15
 		if (tile.skipRender || tile.skipRenderEntities || outOfRange)
@@ -211,7 +212,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			renderable.size[1] = pos.size
 		}
 
-		renderer.queue(renderable, px, py, pos.slot.ordinal, 1, colour = tile.renderCol)
+		renderer.queue(renderable, px, py, pos.slot.ordinal, 1, colour = tileCol)
 
 		val offset = renderable.animation?.renderOffset(false)
 
@@ -229,7 +230,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		{
 			for (below in additional.below.values())
 			{
-				renderer.queue(below, ax, ay, pos.slot.ordinal, 0, colour = tile.renderCol)
+				renderer.queue(below, ax, ay, pos.slot.ordinal, 0, colour = tileCol)
 
 				if (drawParticleDebug && below is ParticleEffect)
 				{
@@ -239,7 +240,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 			for (above in additional.above.values())
 			{
-				renderer.queue(above, ax, ay, pos.slot.ordinal, 2, colour = tile.renderCol)
+				renderer.queue(above, ax, ay, pos.slot.ordinal, 2, colour = tileCol)
 
 				if (drawParticleDebug && above is ParticleEffect)
 				{

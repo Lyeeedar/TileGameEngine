@@ -23,7 +23,6 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 
 	var bakedLighting: Colour = Colour.WHITE.copy()
 	var tileCol: Colour = Colour.WHITE.copy()
-	var renderCol: Colour = Colour.WHITE.copy()
 
 	var skipRender: Boolean = false
 	var skipRenderEntities: Boolean = true
@@ -33,6 +32,8 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 	{
 		queuedActions.add(DelayedAction.obtain().set(function, delay, this))
 	}
+
+	abstract fun getRenderCol(): Colour
 }
 
 class DelayedAction() : Comparable<DelayedAction>
