@@ -19,3 +19,7 @@ Thumbs.db
 
 ## Lyeeedar
 android/google-services.json
+
+bin
+obj
+.vs
