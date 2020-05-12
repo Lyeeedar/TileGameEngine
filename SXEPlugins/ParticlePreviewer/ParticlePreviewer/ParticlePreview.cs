@@ -64,8 +64,12 @@ namespace ParticlePreviewer
 			if (!File.Exists(viewerPath))
 			{
 				CurrentStep = "Building Viewer";
-				RunProcess(gradle, new string[] { ":desktop:particlePreviewDist" }, rootFolder, (message) => { });
-				File.Copy(Path.Combine(rootFolder, "engine", "desktop", "build", "libs", "desktop.jar"), viewerPath);
+
+				var srcPath = Path.Combine(rootFolder, "engine", "desktop", "build", "libs", "desktop.jar");
+				if (File.Exists(srcPath)) File.Delete(srcPath);
+
+				RunProcess(gradle, new string[] { ":desktop:particlePreviewDist" }, rootFolder);
+				File.Copy(srcPath, viewerPath);
 			}
 			CurrentStep = "Viewer Found";
 
@@ -74,8 +78,11 @@ namespace ParticlePreviewer
 			{
 				CurrentStep = "Building Compiler";
 
-				RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder, (message) => { });
-				File.Copy(Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar"), compilerPath);
+				var srcPath = Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar");
+				if (File.Exists(srcPath)) File.Delete(srcPath);
+
+				RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder);
+				File.Copy(srcPath, compilerPath);
 			}
 			CurrentStep = "Compiler Found";
 
@@ -108,21 +115,12 @@ namespace ParticlePreviewer
 			});
 		}
 
-		public static int RunProcess(
-			string programPath,
-			string[] cliArgs,
-			string workingDirectory,
-			Action<string> log,
-			Action<string> stdOutHandler = null,
-			Action<string> stdErrHandler = null)
+		public static int RunProcess(string programPath, string[] cliArgs,string workingDirectory)
 		{
-			log($"Running process at path: {programPath} with args: {string.Join(" ", cliArgs)}");
 			var startInfo = new ProcessStartInfo
 			{
 				FileName = programPath,
 				CreateNoWindow = true,
-				RedirectStandardOutput = true,
-				RedirectStandardError = true,
 				UseShellExecute = false,
 				WorkingDirectory = workingDirectory
 			};
@@ -134,24 +132,6 @@ namespace ParticlePreviewer
 
 			using var process = new Process { StartInfo = startInfo };
 
-			process.OutputDataReceived += (sender, args) =>
-			{
-				if (args.Data != null)
-				{
-					stdOutHandler?.Invoke(args.Data);
-					log(args.Data);
-				}
-			};
-
-			process.ErrorDataReceived += (sender, args) =>
-			{
-				if (args.Data != null)
-				{
-					stdErrHandler?.Invoke(args.Data);
-					log(args.Data);
-				}
-			};
-
 			process.EnableRaisingEvents = true;
 			process.Start();
 
@@ -159,8 +139,6 @@ namespace ParticlePreviewer
 			process.BeginErrorReadLine();
 
 			process.WaitForExit();
-
-			log($"exited with code {process.ExitCode}");
 
 			return process.ExitCode;
 		}
