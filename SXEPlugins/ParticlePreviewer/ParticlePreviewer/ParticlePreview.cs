@@ -135,9 +135,6 @@ namespace ParticlePreviewer
 			process.EnableRaisingEvents = true;
 			process.Start();
 
-			process.BeginOutputReadLine();
-			process.BeginErrorReadLine();
-
 			process.WaitForExit();
 
 			return process.ExitCode;

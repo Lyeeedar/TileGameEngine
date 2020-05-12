@@ -29,7 +29,7 @@ namespace ParticlePreviewer
 			timer.Interval = 200;
 			timer.Elapsed += (e, args) => 
 			{
-				Application.Current.Dispatcher.Invoke(() =>
+				Application.Current?.Dispatcher?.Invoke(() =>
 				{
 					InvalidateVisual();
 				});
