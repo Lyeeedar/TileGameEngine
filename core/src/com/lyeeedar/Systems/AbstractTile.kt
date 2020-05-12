@@ -1,7 +1,10 @@
 package com.lyeeedar.Systems
 
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.ObjectSet
 import com.badlogic.gdx.utils.Pool
+import com.lyeeedar.ActionSequence.ActionSequenceReference
+import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Pathfinding.IPathfindingTile
@@ -27,10 +30,41 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 	var skipRender: Boolean = false
 	var skipRenderEntities: Boolean = true
 
+	val runningSequences = ObjectSet<ActionSequenceReference>()
+
 	val queuedActions = Array<DelayedAction>(false, 4)
 	fun addDelayedAction(function: () -> Unit, delay: Float)
 	{
 		queuedActions.add(DelayedAction.obtain().set(function, delay, this))
+	}
+
+	fun tileContainsDelayedAction(): Boolean
+	{
+		if (queuedActions.size > 0) return true
+
+		if (runningSequences.size > 0)
+		{
+			var hasSequence = false
+
+			val itr = runningSequences.iterator()
+			while (itr.hasNext())
+			{
+				val stateRef = itr.next()
+				val state = stateRef.get()
+				if (state == null || state.blocked || state.completed)
+				{
+					itr.remove()
+				}
+				else
+				{
+					hasSequence = true
+				}
+			}
+
+			return hasSequence
+		}
+
+		return false
 	}
 
 	abstract fun getRenderCol(): Colour

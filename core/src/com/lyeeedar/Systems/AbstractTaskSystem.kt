@@ -124,14 +124,25 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 			val task = entity.task()!!
 
 			val processState = processEntity(entity)
-			if (processState != ProcessEntityState.SUCCESS || task.actionAccumulator <= 0f)
+			when (processState)
 			{
-				if (task.actionAccumulator > 0f)
+				ProcessEntityState.DELAYED -> {}
+				ProcessEntityState.SUCCESS ->
 				{
-					task.actionAccumulator = 0f
+					if (task.actionAccumulator <= 0f)
+					{
+						itr.remove()
+					}
 				}
+				ProcessEntityState.NO_TASK, ProcessEntityState.SKIPPED ->
+				{
+					if (task.actionAccumulator > 0f)
+					{
+						task.actionAccumulator = 0f
+					}
 
-				itr.remove()
+					itr.remove()
+				}
 			}
 		}
 	}
@@ -153,7 +164,13 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 			return ProcessEntityState.NO_TASK
 		}
 
-		val t = task.tasks.removeIndex(0)
+		val t = task.tasks[0]
+		if (!canEntityExecuteTask(entity, t))
+		{
+			return ProcessEntityState.DELAYED
+		}
+
+		task.tasks.removeIndex(0)
 		t.execute(entity, world, world.rng)
 		entity.event()?.onTurn?.invoke()
 
@@ -164,6 +181,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 		return ProcessEntityState.SUCCESS
 	}
 
+	protected abstract fun canEntityExecuteTask(entity: Entity, task: AbstractTask): Boolean
 	protected abstract fun getTaskCost(entity: Entity, task: AbstractTask): Float
 	protected abstract fun getPlayerActionAmount(): Float
 	protected abstract fun doEntityAI(entity: Entity)
@@ -173,5 +191,6 @@ enum class ProcessEntityState
 {
 	SKIPPED,
 	NO_TASK,
+	DELAYED,
 	SUCCESS
 }

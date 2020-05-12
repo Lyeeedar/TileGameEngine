@@ -19,8 +19,58 @@ import java.util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
+class ActionSequenceReference private constructor(val state: ActionSequenceState)
+{
+	val id = state.usageID
+
+	fun isValid(): Boolean
+	{
+		if (state.usageID != id) return false
+
+		return true
+	}
+
+	fun get(): ActionSequenceState?
+	{
+		if (isValid()) return state
+
+		return null
+	}
+
+	override fun hashCode(): Int
+	{
+		return state.hashCode() + id
+	}
+
+	override fun equals(other: Any?): Boolean
+	{
+		if (other is ActionSequenceState)
+		{
+			return other == state && other.usageID == id
+		}
+		else if (other is ActionSequenceReference)
+		{
+			return other.hashCode() == hashCode()
+		}
+		else
+		{
+			return false
+		}
+	}
+
+	companion object
+	{
+		fun create(state: ActionSequenceState): ActionSequenceReference
+		{
+			return ActionSequenceReference(state)
+		}
+	}
+}
+
 class ActionSequenceState
 {
+	var usageID = 0
+
 	lateinit var source: EntityReference
 	lateinit var sourcePoint: Point
 	lateinit var world: World<*>
@@ -35,6 +85,7 @@ class ActionSequenceState
 	var blocked = false
 	var currentTime: Float = 0f
 	var index = 0
+	var completed = false
 
 	var data = ObjectMap<String, Any?>()
 	var uid = 0
@@ -53,6 +104,8 @@ class ActionSequenceState
 
 		rng.setSeed(seed)
 
+		usageID++
+
 		return this
 	}
 
@@ -64,12 +117,15 @@ class ActionSequenceState
 		facing = Direction.NORTH
 
 		blocked = false
+		completed = false
 		currentTime = 0f
 		index = 0
 
 		data.clear()
 
 		uid = Random.sharedRandom.nextInt()
+
+		usageID++
 	}
 
 	fun writeVariables(map: ObjectFloatMap<String>)
@@ -84,6 +140,16 @@ class ActionSequenceState
 				else -> 1f
 			}
 		}
+	}
+
+	private var currentRef: ActionSequenceReference? = null
+	fun getRef(): ActionSequenceReference
+	{
+		if (currentRef != null && currentRef!!.isValid()) return currentRef!!
+
+		currentRef = ActionSequenceReference.create(this)
+
+		return currentRef!!
 	}
 }
 
@@ -125,6 +191,24 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		state.blocked = anyBlocked
 	}
 
+	fun removeFromTiles(state: ActionSequenceState)
+	{
+		for (point in state.targets)
+		{
+			val tile = state.world.grid.tryGet(point, null) ?: continue
+			tile.runningSequences.remove(state.getRef())
+		}
+	}
+
+	fun addToTiles(state: ActionSequenceState)
+	{
+		for (point in state.targets)
+		{
+			val tile = state.world.grid.tryGet(point, null) ?: continue
+			tile.runningSequences.add(state.getRef())
+		}
+	}
+
 	fun update(delta: Float, state: ActionSequenceState): Boolean
 	{
 		if (state.blocked)
@@ -137,6 +221,8 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 			cancel(state)
 			return true
 		}
+
+		removeFromTiles(state)
 
 		if (state.lockedEntityTargets.size > 0)
 		{
@@ -182,8 +268,11 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 		if (state.index >= triggers.size)
 		{
+			state.completed = true
 			return true
 		}
+
+		addToTiles(state)
 
 		return false
 	}
@@ -195,6 +284,8 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 			action.exit(state)
 		}
 		state.enteredActions.clear()
+		state.completed = true
+		removeFromTiles(state)
 	}
 
 	fun loadDuplicate(): ActionSequence
