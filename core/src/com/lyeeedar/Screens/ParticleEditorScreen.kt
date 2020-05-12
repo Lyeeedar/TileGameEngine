@@ -96,7 +96,10 @@ class ParticleEditorScreen : AbstractScreen()
 
 			fc.isVisible = true
 
-			val file = fc.file ?: return@addClickListener
+			var file = fc.file ?: return@addClickListener
+
+			val dir = fc.directory.split("Particles")[1]
+			if (dir.isNotBlank()) file = "$dir/$file"
 
 			currentPath = File("../assetsraw/Particles/$file").absolutePath
 
