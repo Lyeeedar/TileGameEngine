@@ -36,6 +36,15 @@ tasks.register<Jar>("dist") {
     }
 }
 
+tasks.register<Jar>("particlePreviewDist") {
+	from(files(sourceSets.main.get().output.classesDirs))
+	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+
+	manifest {
+		attributes["Main-Class"] = "com.lyeeedar.desktop.ParticlePreviewLauncher"
+	}
+}
+
 tasks.register<JavaExec>("run") {
 	main = "com.lyeeedar.desktop.DesktopLauncher"
 	classpath = sourceSets.main.get().runtimeClasspath

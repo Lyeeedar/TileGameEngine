@@ -11,7 +11,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import javax.swing.JOptionPane
 
-class MainGame : Game()
+class MainGame(val debugScreenOverride: ScreenEnum? = null) : Game()
 {
 	private val screens = HashMap<ScreenEnum, AbstractScreen>()
 	private val debugScreens = HashMap<ScreenEnum, AbstractScreen>()
@@ -72,9 +72,9 @@ class MainGame : Game()
 		}
 		screens.putAll(registerGameScreens())
 
-		if (DEBUG_SCREEN_OVERRIDE != null)
+		if (debugScreenOverride != null)
 		{
-			switchScreen(DEBUG_SCREEN_OVERRIDE)
+			switchScreen(debugScreenOverride)
 		}
 		else
 		{

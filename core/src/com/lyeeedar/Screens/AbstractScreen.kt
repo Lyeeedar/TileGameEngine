@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Scaling
 import com.badlogic.gdx.utils.viewport.ScalingViewport
-import com.lyeeedar.DEBUG_SCREEN_OVERRIDE
 import com.lyeeedar.Game.save
 import com.lyeeedar.UI.DebugConsole
 import com.lyeeedar.UI.Tutorial
@@ -57,7 +56,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 
 		Gdx.input.inputProcessor = inputMultiplexer
 
-		if (DEBUG_SCREEN_OVERRIDE == null)
+		if (Statics.game.debugScreenOverride == null)
 		{
 			save()
 		}

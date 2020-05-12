@@ -84,6 +84,27 @@ tasks.register<JavaExec>("autoLocalise") {
 	workingDir = file("../../game/assets")
 }
 
+tasks.register<Jar>("compilerDist") {
+	from(files(sourceSets.main.get().output.classesDirs))
+	from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+		.exclude("META-INF/MANIFEST.MF", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+		.exclude("en-*.bin")
+		.exclude("**/akka/**")
+		.exclude("**/opennlp/**")
+		.exclude("**/android/**")
+		.exclude("**/carrotsearch/**")
+		.exclude("**/fasterxml/**")
+		.exclude("**/google/**")
+		.exclude("**/apache/**")
+		.exclude("**/bridj/**")
+		.exclude("**/languagetool/**")
+		.exclude("**/scala/**")
+
+	manifest {
+		attributes["Main-Class"] = "com.lyeeedar.headless.CompilerRunner"
+	}
+}
+
 project.apply {
 	from("../../game/headless/build.gradle.kts")
 }
