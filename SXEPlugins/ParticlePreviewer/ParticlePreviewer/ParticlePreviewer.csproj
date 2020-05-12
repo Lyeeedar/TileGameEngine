@@ -11,6 +11,7 @@
     <OutputPath>..\..\..\..\game\assetsraw\SXEPlugins\</OutputPath>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	<PreserveCompilationContext>false</PreserveCompilationContext>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <ItemGroup>

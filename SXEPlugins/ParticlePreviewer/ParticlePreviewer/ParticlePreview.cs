@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -23,6 +24,8 @@ namespace ParticlePreviewer
 			}
 		}
 		private string m_currentStep;
+
+		public ExternalWindowHost WindowHost { get; set; }
 
 		FrameworkElement view;
 
@@ -79,12 +82,29 @@ namespace ParticlePreviewer
 			CurrentStep = "Setup done";
 			Task.Run(() =>
 			{
-				var messages = new List<string>();
-				var exit = RunProcess("java", new string[] { "-jar", viewerPath }, assetsFolder, (message) => { messages.Add(message); });
-				if (exit != 0)
+				var startInfo = new ProcessStartInfo
 				{
-					CurrentStep = String.Join("\n", messages);
-				}
+					FileName = "javaw",
+					UseShellExecute = false,
+					WorkingDirectory = assetsFolder
+				};
+				startInfo.ArgumentList.Add("-jar");
+				startInfo.ArgumentList.Add(viewerPath);
+
+				using var process = new Process { StartInfo = startInfo };
+				process.Start();
+				process.WaitForInputIdle();
+				var id = process.Id;
+
+				Thread.Sleep(2000);
+
+				process.Refresh();
+
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					WindowHost = new ExternalWindowHost(id);
+					RaisePropertyChangedEvent(nameof(WindowHost));
+				});
 			});
 		}
 
