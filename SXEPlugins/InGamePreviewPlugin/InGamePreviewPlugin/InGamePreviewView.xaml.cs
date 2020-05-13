@@ -1,5 +1,4 @@
-﻿using StructuredXmlEditor.Plugin.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,12 +8,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Xml.Linq;
 
-namespace ParticlePreviewer
+namespace InGamePreviewPlugin
 {
-	public class ParticlePreview : INotifyPropertyChanged, IResourceViewProvider
+	/// <summary>
+	/// Interaction logic for ParticlePreviewView.xaml
+	/// </summary>
+	public partial class InGamePreviewView : UserControl, INotifyPropertyChanged
 	{
+		//--------------------------------------------------------------------------
 		public string CurrentStep
 		{
 			get { return m_currentStep; }
@@ -26,32 +36,31 @@ namespace ParticlePreviewer
 		}
 		private string m_currentStep;
 
+		//--------------------------------------------------------------------------
+		dynamic Workspace { get; }
+
+		//--------------------------------------------------------------------------
 		public ExternalWindowHost WindowHost { get; set; }
 
-		FrameworkElement view;
+		//--------------------------------------------------------------------------
+		public ViewerDef ViewerDef { get;}
 
-		dynamic Workspace;
-		public ParticlePreview(object workspace)
+		//--------------------------------------------------------------------------
+		public InGamePreviewView(object workspace, ViewerDef viewerDef)
 		{
 			Workspace = workspace;
-		}
+			ViewerDef = viewerDef;
 
-		public FrameworkElement GetView()
-		{
-			if (view == null)
+			DataContext = this;
+			InitializeComponent();
+
+			Task.Run(() =>
 			{
-				view = new ParticlePreviewView();
-				view.DataContext = this;
-
-				Task.Run(() => 
-				{
-					CompileViewer();
-				});
-			}
-
-			return view;
+				CompileViewer();
+			});
 		}
 
+		//--------------------------------------------------------------------------
 		public void CompileViewer()
 		{
 			var projectRoot = (string)Workspace.ProjectFolder;
@@ -61,7 +70,7 @@ namespace ParticlePreviewer
 
 			var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
 
-			var viewerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/particleViewer.jar"));
+			var viewerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/" + ViewerDef.ViewerName + ".jar"));
 			if (!File.Exists(viewerPath))
 			{
 				CurrentStep = "Building Viewer";
@@ -69,7 +78,7 @@ namespace ParticlePreviewer
 				var srcPath = Path.Combine(rootFolder, "engine", "desktop", "build", "libs", "desktop.jar");
 				if (File.Exists(srcPath)) File.Delete(srcPath);
 
-				RunProcess(gradle, new string[] { ":desktop:particlePreviewDist" }, rootFolder);
+				RunProcess(gradle, new string[] { ":desktop:" + ViewerDef.BuildTask }, rootFolder);
 				File.Copy(srcPath, viewerPath);
 			}
 			CurrentStep = "Viewer Found";
@@ -121,17 +130,18 @@ namespace ParticlePreviewer
 			});
 		}
 
+		//--------------------------------------------------------------------------
 		string lastWrittenDoc = "";
 		public void ListenForChanges()
 		{
 			var timer = new System.Timers.Timer();
 			timer.Interval = 500;
-			timer.Elapsed += (e, args) => 
+			timer.Elapsed += (e, args) =>
 			{
 				var viewVisible = false;
 				Application.Current?.Dispatcher?.Invoke(() =>
 				{
-					viewVisible = view?.IsVisible ?? false;
+					viewVisible = IsVisible;
 				});
 
 				if (viewVisible)
@@ -146,7 +156,7 @@ namespace ParticlePreviewer
 
 							var projectRoot = (string)Workspace.ProjectFolder;
 							var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
-							var outPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/editor/particle.xml"));
+							var outPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/editor/" + ViewerDef.TempResourceName));
 
 							if (File.Exists(outPath))
 							{
@@ -166,7 +176,8 @@ namespace ParticlePreviewer
 			timer.Start();
 		}
 
-		public static int RunProcess(string programPath, string[] cliArgs,string workingDirectory)
+		//--------------------------------------------------------------------------
+		public static int RunProcess(string programPath, string[] cliArgs, string workingDirectory)
 		{
 			var startInfo = new ProcessStartInfo
 			{
@@ -189,11 +200,6 @@ namespace ParticlePreviewer
 			process.WaitForExit();
 
 			return process.ExitCode;
-		}
-
-		public bool ShowForResourceType(string resourceType)
-		{
-			return resourceType == "Effect";
 		}
 
 		//--------------------------------------------------------------------------

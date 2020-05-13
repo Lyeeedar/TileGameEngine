@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticlePreviewer", "ParticlePreviewer\ParticlePreviewer.csproj", "{7801ECC5-FFFC-45B5-9E2E-8B1B95FCF29A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InGamePreviewPlugin", "InGamePreviewPlugin\InGamePreviewPlugin.csproj", "{7801ECC5-FFFC-45B5-9E2E-8B1B95FCF29A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

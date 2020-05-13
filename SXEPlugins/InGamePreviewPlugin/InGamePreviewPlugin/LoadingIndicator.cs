@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ParticlePreviewer
+namespace InGamePreviewPlugin
 {
 	public class LoadingIndicator : FrameworkElement
 	{
@@ -31,7 +31,7 @@ namespace ParticlePreviewer
 			{
 				Application.Current?.Dispatcher?.Invoke(() =>
 				{
-					InvalidateVisual();
+					if (IsVisible) InvalidateVisual();
 				});
 			};
 			timer.Start();

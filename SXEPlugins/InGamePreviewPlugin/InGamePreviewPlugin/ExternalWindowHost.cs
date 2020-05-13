@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Interop;
 
-namespace ParticlePreviewer
+namespace InGamePreviewPlugin
 {
 	public class ExternalWindowHost : HwndHostEx
 	{
