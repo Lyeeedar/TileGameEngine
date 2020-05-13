@@ -201,7 +201,7 @@ class ParticleEffect(val description: ParticleEffectDescription) : Renderable()
 			}
 		}
 
-		particleLight?.update(time, max(sx, sy))
+		particleLight?.update(time, max(sx, sy), colour)
 
 		return complete
 	}
@@ -541,7 +541,7 @@ class ParticleLight
 
 	var hasShadows = false
 
-	fun update(time: Float, size: Float)
+	fun update(time: Float, size: Float, tint: Colour)
 	{
 		var keyframeIndex = keyframeIndex
 		while (keyframeIndex < keyframes.size-1)
@@ -576,7 +576,7 @@ class ParticleLight
 		light.colour.set(col)
 
 		val brightness = keyframe1.brightness.lerp(keyframe2.brightness, keyframeAlpha)
-		light.colour.mul(brightness, brightness, brightness, 1f)
+		light.colour.mul(brightness, brightness, brightness, 1f).mul(tint)
 
 		val range = (keyframe1.range.lerp(keyframe2.range, keyframeAlpha))
 		light.range = range * size

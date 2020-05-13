@@ -10,10 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
@@ -28,6 +25,7 @@ import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.UI.addClickListener
 import com.lyeeedar.Util.*
 import ktx.collections.set
+import ktx.collections.toGdxArray
 import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
@@ -39,6 +37,24 @@ import javax.swing.JColorChooser
 
 class ParticleEditorScreen : AbstractScreen()
 {
+	enum class BackgroundType
+	{
+		MAP,
+		WHITE,
+		BLACK,
+		GRASS,
+		DIRT,
+		WOOD,
+		WATER
+	}
+
+	val white = AssetManager.loadSprite("white")
+	val grass = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/ground_grass_1")
+	val dirt = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/ground_dirt_brown_1")
+	val wood = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/wall_stone_10")
+	val water = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/water_blue_1")
+
+	var backgroundType = BackgroundType.MAP
 	lateinit var particle: ParticleEffect
 	val batch = SpriteBatch()
 	lateinit var background: Array2D<Symbol>
@@ -55,6 +71,8 @@ class ParticleEditorScreen : AbstractScreen()
 	var deltaMultiplier = 1f
 	var size = 1
 
+	val options = Table()
+
 	override fun show()
 	{
 		if ( !created )
@@ -69,6 +87,17 @@ class ParticleEditorScreen : AbstractScreen()
 	override fun create()
 	{
 		drawFPS = false
+
+		val backgroundTypeBox = SelectBox<BackgroundType>(Statics.skin)
+		backgroundTypeBox.setItems(BackgroundType.values().toGdxArray())
+		backgroundTypeBox.selected = backgroundType
+		backgroundTypeBox.addListener(object : ChangeListener()
+		                              {
+			                              override fun changed(event: ChangeEvent?, actor: Actor?)
+			                              {
+				                              backgroundType = backgroundTypeBox.selected
+			                              }
+		                              })
 
 		val playbackSpeedBox = SelectBox<Float>(Statics.skin)
 		playbackSpeedBox.setItems(0.01f, 0.05f, 0.1f, 0.25f, 0.5f, 0.75f, 1f, 1.5f, 2f, 3f, 4f, 5f)
@@ -90,9 +119,9 @@ class ParticleEditorScreen : AbstractScreen()
 			colourButton.color = particle.colour.color()
 		}
 
-		debugButton = CheckBox("Debug", Statics.skin)
-		alignUpButton = CheckBox("AlignUp", Statics.skin)
-		flyRandomlyButton = CheckBox("FlyRandomly", Statics.skin)
+		debugButton = CheckBox("", Statics.skin)
+		alignUpButton = CheckBox("", Statics.skin)
+		flyRandomlyButton = CheckBox("", Statics.skin)
 
 		val sizeBox = SelectBox<Int>(Statics.skin)
 		sizeBox.setItems(1, 2, 3, 4, 5)
@@ -107,16 +136,46 @@ class ParticleEditorScreen : AbstractScreen()
 
 									 })
 
-		val buttonsTable = Table()
-		buttonsTable.add(playbackSpeedBox).expandY().top()
-		buttonsTable.add(colourButton).expandY().top()
-		buttonsTable.row()
-		buttonsTable.add(debugButton).expandY().top()
-		buttonsTable.add(alignUpButton).expandY().top()
-		buttonsTable.add(flyRandomlyButton).expandY().top()
-		buttonsTable.add(sizeBox).expandY().top()
+		options.defaults().pad(5f).growX()
 
-		mainTable.add(buttonsTable).growX()
+		options.add(Label("Playback Speed", Statics.skin))
+		options.add(playbackSpeedBox)
+		options.row()
+
+		options.add(Label("Colour", Statics.skin))
+		options.add(colourButton)
+		options.row()
+
+		options.add(Label("Debug", Statics.skin))
+		options.add(debugButton)
+		options.row()
+
+		options.add(Label("Align Up", Statics.skin))
+		options.add(alignUpButton)
+		options.row()
+
+		options.add(Label("Fly Randomly", Statics.skin))
+		options.add(flyRandomlyButton)
+		options.row()
+
+		options.add(Label("Size", Statics.skin))
+		options.add(sizeBox)
+		options.row()
+
+		options.add(Label("Background", Statics.skin))
+		options.add(backgroundTypeBox)
+		options.row()
+
+		val optionsToggle = TextButton("Options", Statics.skin)
+		optionsToggle.addClickListener {
+			options.isVisible = !options.isVisible
+		}
+
+		options.isVisible = false
+
+		mainTable.add(optionsToggle).expandX().right().pad(5f)
+		mainTable.row()
+		mainTable.add(options).expandX().right().pad(5f)
 		mainTable.row()
 
 		particle = ParticleEffect(ParticleEffectDescription(""))
@@ -284,20 +343,44 @@ class ParticleEditorScreen : AbstractScreen()
 		{
 			for (y in 0..background.ySize-1)
 			{
-				val symbol = background[x, y]
-				var i = 0
-				for (renderable in symbol.sprites)
-				{
-					tempPoint.set(x, y)
-					val col = if (crossedTiles.contains(tempPoint)) Color.GOLD else Color.WHITE
+				tempPoint.set(x, y)
+				val col = if (crossedTiles.contains(tempPoint)) Colour.GOLD else Colour.WHITE
 
-					if (renderable is Sprite)
-					{
-						spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, Colour(col))
+				when (backgroundType)
+				{
+					BackgroundType.MAP -> {
+						val symbol = background[x, y]
+						var i = 0
+						for (renderable in symbol.sprites)
+						{
+							if (renderable is Sprite)
+							{
+								spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, col)
+							}
+							else if (renderable is TilingSprite)
+							{
+								spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, col)
+							}
+						}
 					}
-					else if (renderable is TilingSprite)
-					{
-						spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, Colour(col))
+					BackgroundType.WHITE -> {
+						spriteRender.queueSprite(white, x.toFloat(), y.toFloat(), 0, 0, col)
+					}
+					BackgroundType.BLACK -> {
+						val col = if (crossedTiles.contains(tempPoint)) Colour.GOLD else Colour.BLACK
+						spriteRender.queueSprite(white, x.toFloat(), y.toFloat(), 0, 0, col)
+					}
+					BackgroundType.GRASS -> {
+						spriteRender.queueSprite(grass, x.toFloat(), y.toFloat(), 0, 0, col)
+					}
+					BackgroundType.DIRT -> {
+						spriteRender.queueSprite(dirt, x.toFloat(), y.toFloat(), 0, 0, col)
+					}
+					BackgroundType.WATER -> {
+						spriteRender.queueSprite(water, x.toFloat(), y.toFloat(), 0, 0, col)
+					}
+					BackgroundType.WOOD -> {
+						spriteRender.queueSprite(wood, x.toFloat(), y.toFloat(), 0, 0, col)
 					}
 				}
 			}
