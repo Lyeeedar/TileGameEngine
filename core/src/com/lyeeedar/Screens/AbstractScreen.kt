@@ -211,7 +211,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 	 */
 	override fun fling(velocityX: Float, velocityY: Float, button: Int): Boolean
 	{
-		if (!Statics.release)
+		if (!Statics.release && Statics.android)
 		{
 			debugConsole.isVisible = !debugConsole.isVisible
 

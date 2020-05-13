@@ -27,7 +27,18 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	val tileSize: Float
 		get() = world.tileSize
 
-	val renderer: SortedRenderer by lazy { SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, false) }
+	val renderer: SortedRenderer
+		get()
+		{
+			val cached = cachedRenderer
+			if (cached == null || cached.tileSize != world.tileSize || cached.width.toInt() != world.grid.width || cached.height.toInt() != world.grid.height)
+			{
+				cachedRenderer = SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, false)
+			}
+
+			return cachedRenderer!!
+		}
+	private var cachedRenderer: SortedRenderer? = null
 
 	protected var playerOffsetX: Float = 0f
 	protected var playerOffsetY: Float = 0f
@@ -44,6 +55,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
+		val renderer = renderer
+
 		val playerOffset = getPlayerPosition(deltaTime)
 		playerOffsetX = playerOffset.x
 		playerOffsetY = playerOffset.y
@@ -166,6 +179,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	override fun updateEntity(entity: Entity, deltaTime: Float)
 	{
+		val renderer = renderer
+
 		val renderable = entity.renderable()!!.renderable
 		val pos = entity.position()!!
 		val px = pos.position.xFloat + pos.offset.x
