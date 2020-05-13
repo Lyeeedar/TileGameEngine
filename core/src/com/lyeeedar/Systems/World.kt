@@ -149,6 +149,24 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 		}
 	}
 
+	fun free()
+	{
+		onTurnEvent.clear()
+		for (entity in entities)
+		{
+			entity.free()
+		}
+		entities.clear()
+
+		for (system in systems)
+		{
+			system.free()
+		}
+		systems.clear()
+
+		EntityPool.flushFreedEntities()
+	}
+
 	class EntitySignatureBuilder(val world: World<*>)
 	{
 		private val all = EnumBitflag<ComponentType>()

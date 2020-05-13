@@ -47,6 +47,7 @@ class EntityPool
 			entity.signature.clear()
 
 			entity.obtained = false
+			entity.world = null
 			pool.free(entity)
 
 			entity.usageID++

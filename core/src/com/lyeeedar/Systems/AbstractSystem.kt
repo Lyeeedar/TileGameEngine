@@ -37,4 +37,9 @@ abstract class AbstractSystem(val world: World<*>)
 	{
 
 	}
+
+	open fun free()
+	{
+
+	}
 }

@@ -123,6 +123,21 @@ class Entity
 
 		return currentRef!!
 	}
+
+	override fun toString(): String
+	{
+		val name = name()?.name ?: "Entity"
+
+		val output = StringBuilder()
+		output.append(name, ":")
+
+		for (component in components)
+		{
+			output.append(component.type).append(",")
+		}
+
+		return output.toString()
+	}
 }
 
 @DataFile(colour = "84,186,214", icon = "Sprites/player_1.png")

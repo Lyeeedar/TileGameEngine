@@ -33,6 +33,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			val cached = cachedRenderer
 			if (cached == null || cached.tileSize != world.tileSize || cached.width.toInt() != world.grid.width || cached.height.toInt() != world.grid.height)
 			{
+				cachedRenderer?.dispose()
 				cachedRenderer = SortedRenderer(tileSize, world.grid.width.toFloat(), world.grid.height.toFloat(), SpaceSlot.Values.size, false)
 			}
 
@@ -308,5 +309,10 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	override fun onTurnEntity(entity: Entity)
 	{
 
+	}
+
+	override fun free()
+	{
+		cachedRenderer?.dispose()
 	}
 }
