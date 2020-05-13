@@ -655,17 +655,6 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	}
 
 	// ----------------------------------------------------------------------
-	private fun queueRenderJobs()
-	{
-		for (i in 0 until queuedSprites)
-		{
-			val rs = spriteArray[i]!!
-
-			requestRender(rs)
-		}
-	}
-
-	// ----------------------------------------------------------------------
 	private fun cleanup(updateBatchID: Boolean)
 	{
 		// clean up
@@ -738,8 +727,20 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 			light.update(delta)
 		}
 
+		if (batch != null) combinedMatrix.set(batch.projectionMatrix).mul(batch.transformMatrix)
+
 		// begin rendering
-		queueRenderJobs()
+		for (i in 0 until queuedSprites)
+		{
+			val rs = spriteArray[i]!!
+
+			requestRender(rs)
+
+			if (!inStaticBegin && currentVertexCount+verticesASprite >= maxVertices)
+			{
+				waitOnRender()
+			}
+		}
 
 		if (inStaticBegin)
 		{
@@ -748,7 +749,6 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		}
 		else
 		{
-			combinedMatrix.set(batch!!.projectionMatrix).mul(batch!!.transformMatrix)
 			waitOnRender()
 			cleanup(true)
 		}

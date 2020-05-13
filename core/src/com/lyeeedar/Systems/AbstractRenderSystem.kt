@@ -53,6 +53,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	val lights = world.getEntitiesFor().all(ComponentType.Position, ComponentType.Light).get()
 
+	var doStaticRender = true
+
 	override fun beforeUpdate(deltaTime: Float)
 	{
 		val renderer = renderer
@@ -86,7 +88,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			}
 		}
 
-		if (isMapDirty || renderedStaticOffsetX != offsetx || renderedStaticOffsetY != offsety)
+		if (doStaticRender && (isMapDirty || renderedStaticOffsetX != offsetx || renderedStaticOffsetY != offsety))
 		{
 			renderedStaticOffsetX = offsetx
 			renderedStaticOffsetY = offsety
@@ -136,6 +138,12 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 				if (tile != null)
 				{
+					if (!doStaticRender)
+					{
+						val floor = tile.floor
+						if (floor != null) renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.getRenderCol())
+					}
+
 					if (!tile.skipRender)
 					{
 						val wall = tile.wall ?: continue
@@ -189,7 +197,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
 		val tileCol = tile.getRenderCol()
 
-		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > 15
+		val tilesHeight = Statics.resolution[1] / tileSize
+		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > tilesHeight
 		if (tile.skipRender || tile.skipRenderEntities || outOfRange)
 		{
 			if (renderable.animation != null)
