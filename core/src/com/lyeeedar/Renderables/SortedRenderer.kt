@@ -860,7 +860,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 		if (effect.light != null)
 		{
-			addLight(effect.light!!, lx + 0.5f, ly + 0.5f)
+			addLight(effect.light!!, lx, ly)
 		}
 
 		//val scale = effect.animation?.renderScale()?.get(0) ?: 1f

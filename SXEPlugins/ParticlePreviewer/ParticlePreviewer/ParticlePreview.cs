@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Linq;
 
 namespace ParticlePreviewer
 {
@@ -60,7 +61,7 @@ namespace ParticlePreviewer
 
 			var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
 
-			var viewerPath = Path.Combine(assetsFolder, "particleViewer.jar");
+			var viewerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/particleViewer.jar"));
 			if (!File.Exists(viewerPath))
 			{
 				CurrentStep = "Building Viewer";
@@ -73,7 +74,7 @@ namespace ParticlePreviewer
 			}
 			CurrentStep = "Viewer Found";
 
-			var compilerPath = Path.Combine(assetsFolder, "compiler.jar");
+			var compilerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/compiler.jar"));
 			if (!File.Exists(compilerPath))
 			{
 				CurrentStep = "Building Compiler";
@@ -86,9 +87,11 @@ namespace ParticlePreviewer
 			}
 			CurrentStep = "Compiler Found";
 
-			CurrentStep = "Setup done";
+			CurrentStep = "Setup Done";
 			Task.Run(() =>
 			{
+				CurrentStep = "Launching Viewer";
+
 				var startInfo = new ProcessStartInfo
 				{
 					FileName = "javaw",
@@ -111,8 +114,56 @@ namespace ParticlePreviewer
 				{
 					WindowHost = new ExternalWindowHost(id);
 					RaisePropertyChangedEvent(nameof(WindowHost));
+					CurrentStep = "Viewer Launched";
+
+					ListenForChanges();
 				});
 			});
+		}
+
+		string lastWrittenDoc = "";
+		public void ListenForChanges()
+		{
+			var timer = new System.Timers.Timer();
+			timer.Interval = 500;
+			timer.Elapsed += (e, args) => 
+			{
+				var viewVisible = false;
+				Application.Current?.Dispatcher?.Invoke(() =>
+				{
+					viewVisible = view?.IsVisible ?? false;
+				});
+
+				if (viewVisible)
+				{
+					XDocument doc = Workspace.Current?.Data?.WriteToDocument();
+					if (doc != null)
+					{
+						var asString = doc.ToString();
+						if (asString != lastWrittenDoc)
+						{
+							lastWrittenDoc = asString;
+
+							var projectRoot = (string)Workspace.ProjectFolder;
+							var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
+							var outPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/editor/particle.xml"));
+
+							if (File.Exists(outPath))
+							{
+								File.Delete(outPath);
+							}
+							var dir = Path.GetDirectoryName(outPath);
+							if (!Directory.Exists(dir))
+							{
+								Directory.CreateDirectory(dir);
+							}
+
+							File.WriteAllText(outPath, asString);
+						}
+					}
+				}
+			};
+			timer.Start();
 		}
 
 		public static int RunProcess(string programPath, string[] cliArgs,string workingDirectory)

@@ -39,7 +39,6 @@ import javax.swing.JColorChooser
 
 class ParticleEditorScreen : AbstractScreen()
 {
-	var currentPath: String? = null
 	lateinit var particle: ParticleEffect
 	val batch = SpriteBatch()
 	lateinit var background: Array2D<Symbol>
@@ -52,6 +51,7 @@ class ParticleEditorScreen : AbstractScreen()
 	val particlePos = Point()
 	lateinit var debugButton: CheckBox
 	lateinit var alignUpButton: CheckBox
+	lateinit var flyRandomlyButton: CheckBox
 	var deltaMultiplier = 1f
 	var size = 1
 
@@ -68,8 +68,8 @@ class ParticleEditorScreen : AbstractScreen()
 
 	override fun create()
 	{
-		val browseButton = TextButton("...", Statics.skin)
-		val updateButton = TextButton("Update", Statics.skin)
+		drawFPS = false
+
 		val playbackSpeedBox = SelectBox<Float>(Statics.skin)
 		playbackSpeedBox.setItems(0.01f, 0.05f, 0.1f, 0.25f, 0.5f, 0.75f, 1f, 1.5f, 2f, 3f, 4f, 5f)
 		playbackSpeedBox.selected = 1f
@@ -85,53 +85,14 @@ class ParticleEditorScreen : AbstractScreen()
 
 		val colourButton = TextButton("Colour", Statics.skin)
 		colourButton.addClickListener {
-			colour = JColorChooser.showDialog(null, "Particle Colour", colour)
+			colour = JColorChooser.showDialog(null, "Particle Colour", colour) ?: java.awt.Color.WHITE
 			particle.colour.set(colour.red / 255f, colour.green / 255f, colour.blue / 255f, colour.alpha / 255f)
 			colourButton.color = particle.colour.color()
 		}
 
-		browseButton.addClickListener {
-			val fc = java.awt.FileDialog(Frame(), "Load", FileDialog.LOAD)
-			fc.directory = Gdx.files.internal("../assetsraw/Particles").file().absoluteFile.path
-
-			fc.isVisible = true
-
-			var file = fc.file ?: return@addClickListener
-
-			val dir = fc.directory.split("Particles")[1]
-			if (dir.isNotBlank()) file = "$dir/$file"
-
-			currentPath = File("../assetsraw/Particles/$file").absolutePath
-
-			val rawxml = getRawXml(currentPath!!)
-			val xmlData = XmlData.loadFromElement(rawxml)
-
-			val nparticle = ParticleEffect.Companion.load(xmlData, ParticleEffectDescription(currentPath!!))
-			nparticle.killOnAnimComplete = false
-			nparticle.setPosition(particle.position.x, particle.position.y)
-			nparticle.rotation = particle.rotation
-			//nparticle.speedMultiplier = playbackSpeedBox.selected
-			nparticle.colour.set(colour.red / 255f, colour.green / 255f, colour.blue / 255f, colour.alpha / 255f)
-			particle = nparticle
-		}
-
-		updateButton.addClickListener {
-
-			val rawxml = getRawXml(currentPath!!)
-			val xmlData = XmlData.loadFromElement(rawxml)
-
-			val nparticle = ParticleEffect.Companion.load(xmlData, ParticleEffectDescription(currentPath!!))
-
-			nparticle.killOnAnimComplete = false
-			nparticle.setPosition(particle.position.x, particle.position.y)
-			nparticle.rotation = particle.rotation
-			//nparticle.speedMultiplier = playbackSpeedBox.selected
-			nparticle.colour.set(colour.red / 255f, colour.green / 255f, colour.blue / 255f, colour.alpha / 255f)
-			particle = nparticle
-		}
-
 		debugButton = CheckBox("Debug", Statics.skin)
 		alignUpButton = CheckBox("AlignUp", Statics.skin)
+		flyRandomlyButton = CheckBox("FlyRandomly", Statics.skin)
 
 		val sizeBox = SelectBox<Int>(Statics.skin)
 		sizeBox.setItems(1, 2, 3, 4, 5)
@@ -147,13 +108,12 @@ class ParticleEditorScreen : AbstractScreen()
 									 })
 
 		val buttonsTable = Table()
-		buttonsTable.add(browseButton).expandY().top()
-		buttonsTable.add(updateButton).expandY().top()
 		buttonsTable.add(playbackSpeedBox).expandY().top()
 		buttonsTable.add(colourButton).expandY().top()
 		buttonsTable.row()
 		buttonsTable.add(debugButton).expandY().top()
 		buttonsTable.add(alignUpButton).expandY().top()
+		buttonsTable.add(flyRandomlyButton).expandY().top()
 		buttonsTable.add(sizeBox).expandY().top()
 
 		mainTable.add(buttonsTable).growX()
@@ -163,8 +123,9 @@ class ParticleEditorScreen : AbstractScreen()
 
 		loadLevel()
 
+		particlePos.set(background.width / 2, background.height / 2)
+
 		val clickTable = Table()
-		clickTable.debug()
 		clickTable.touchable = Touchable.enabled
 
 		clickTable.addListener(object : InputListener()
@@ -227,9 +188,84 @@ class ParticleEditorScreen : AbstractScreen()
 		spriteRender = SortedRenderer(tileSize, width.toFloat(), height.toFloat(), 2, true)
 	}
 
+	fun flyRandomly()
+	{
+		if (particle.animation == null && flyRandomlyButton.isChecked)
+		{
+			val randomPos = Point(Random.random(Random.sharedRandom, background.width), Random.random(Random.sharedRandom, background.height))
+
+			val p1 = Vector2(particle.position)
+			val p2 = randomPos.toVec()
+
+			particlePos.set(randomPos)
+
+			val dist = p1.dst(p2) * 0.6f
+
+			particle.animation = null
+			particle.animation = MoveAnimation.obtain().set(dist, arrayOf(p1, p2), Interpolation.linear)
+			particle.rotation = getRotation(p1, p2)
+
+			if (debugButton.isChecked)
+			{
+				Point.freeAll(crossedTiles)
+				crossedTiles.clear()
+				particle.collisionFun = fun(x: Int, y: Int)
+				{
+					crossedTiles.add(Point.obtain().set(x, y))
+				}
+			}
+
+			particle.start()
+		}
+	}
+
+	var lastModified = 0L
+	fun tryLoadParticle()
+	{
+		try
+		{
+			val tempParticleFile = File("../caches/editor/particle.xml")
+			if (tempParticleFile.exists())
+			{
+				val modified = tempParticleFile.lastModified()
+
+				if (lastModified != modified)
+				{
+					lastModified = modified
+
+					val rawxml = getRawXml(tempParticleFile.absolutePath)
+					val xmlData = XmlData.loadFromElement(rawxml)
+
+					val nparticle = ParticleEffect.load(xmlData, ParticleEffectDescription(tempParticleFile.absolutePath))
+					nparticle.killOnAnimComplete = false
+					nparticle.setPosition(particle.position.x, particle.position.y)
+					nparticle.rotation = particle.rotation
+					nparticle.colour.set(colour.red / 255f, colour.green / 255f, colour.blue / 255f, colour.alpha / 255f)
+					particle = nparticle
+					particle.start()
+				}
+			}
+		} catch (ex: Exception) {}
+	}
+
+	var stoppedTimer = 0f
 	val tempPoint = Point()
 	override fun doRender(delta: Float)
 	{
+		tryLoadParticle()
+		flyRandomly()
+
+		if (particle.completed && particle.complete())
+		{
+			stoppedTimer += delta
+
+			if (stoppedTimer > 1f)
+			{
+				particle.start()
+				stoppedTimer = 0f
+			}
+		}
+
 		particle.size[0] = size
 		particle.size[1] = size
 
