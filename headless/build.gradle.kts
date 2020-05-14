@@ -32,6 +32,8 @@ dependencies {
 
 	implementation("com.google.cloud:google-cloud-translate:1.94.2")
 	implementation("org.languagetool:language-en:4.8")
+
+	implementation("junit:junit:4.13")
 }
 
 java {

@@ -23,6 +23,8 @@ class Statics
 {
 	companion object
 	{
+		val gameTitle: String by lazy { Localisation.getText("title", "UI") }
+
 		val skin: Skin by lazy { loadSkin() }
 		var fps = 60
 		var android = false

@@ -119,3 +119,39 @@ class Event2Arg<T1, T2> {
 		handlers.clear()
 	}
 }
+
+class Event3Arg<T1, T2, T3> {
+	private val handlers = Array<((T1, T2, T3) -> HandlerAction)>(false, 4)
+
+	operator fun plusAssign(handler: (T1, T2, T3) -> HandlerAction)
+	{
+		if (invoking) throw Exception("Cannot add handlers during invoke!")
+		handlers.add(handler)
+	}
+
+	operator fun minusAssign(handler: (T1, T2, T3) -> HandlerAction)
+	{
+		if (invoking) throw Exception("Cannot remove handlers during invoke!")
+		handlers.removeValue(handler, true)
+	}
+
+	var invoking = false
+	operator fun invoke(value1: T1, value2: T2, value3: T3)
+	{
+		invoking = true
+
+		val itr = handlers.iterator()
+		while (itr.hasNext())
+		{
+			val handler = itr.next()
+			if (handler.invoke(value1, value2, value3) == HandlerAction.Detach) itr.remove()
+		}
+
+		invoking = false
+	}
+
+	fun clear()
+	{
+		handlers.clear()
+	}
+}

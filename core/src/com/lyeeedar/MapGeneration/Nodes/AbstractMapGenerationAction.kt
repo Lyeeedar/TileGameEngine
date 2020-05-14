@@ -41,4 +41,9 @@ class NodeArguments(val area: Area, val variables: ObjectFloatMap<String>, val s
 
 		return NodeArguments(area, variables, symbols)
 	}
+
+	fun toStringFull(): String
+	{
+		return area.toStringFull() + variables.joinToString { "${it.key}${it.value}" } + symbolTable.joinToString { it.key.toString() }
+	}
 }

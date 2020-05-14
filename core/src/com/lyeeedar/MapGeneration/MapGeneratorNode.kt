@@ -18,9 +18,13 @@ class MapGeneratorNode : GraphXmlDataClass<MapGeneratorNode>()
 
 	fun execute(generator: MapGenerator, args: NodeArguments)
 	{
+		if (Statics.debug) generator.debugExecuteNode.invoke(this, args)
+
 		for (action in actions)
 		{
 			action.execute(generator, args)
+
+			if (Statics.debug) generator.debugExecuteAction.invoke(this, action, args)
 		}
 	}
 

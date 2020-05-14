@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
+import java.lang.StringBuilder
 
 class Area()
 {
@@ -276,6 +277,25 @@ class Area()
 		}
 
 		return newArea
+	}
+
+	fun toStringFull(): String
+	{
+		val builder = StringBuilder()
+		if (isPoints)
+		{
+			builder.append("points:")
+				.append(points.size).append(points.joinToString(",") { "(${it.x},${it.y})" })
+		}
+		else
+		{
+			builder.append("box:")
+				.append(x).append(",").append(y)
+				.append(":")
+				.append(width).append(",").append(height)
+		}
+
+		return builder.toString()
 	}
 
 	companion object

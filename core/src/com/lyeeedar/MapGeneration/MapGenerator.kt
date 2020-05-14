@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.MapGeneration.Nodes.AbstractMapGenerationAction
 import com.lyeeedar.MapGeneration.Nodes.DeferredNode
 import com.lyeeedar.MapGeneration.Nodes.NodeArguments
 import com.lyeeedar.Util.*
@@ -26,10 +27,17 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	val deferredNodes = Array<DeferredNode>()
 	val namedAreas = ObjectMap<String, Array<Area>>()
 	private val executingArray = Array<DeferredNode>()
+	val debugExecuteNode = Event2Arg<MapGeneratorNode, NodeArguments>()
+	val debugExecuteAction = Event3Arg<MapGeneratorNode, AbstractMapGenerationAction, NodeArguments>()
+	lateinit var rootArea: Area
 	//endregion
 
 	fun execute(seed: Long, createSymbolFunc: (Int,Int)->IMapGeneratorSymbol): Array2D<IMapGeneratorSymbol>
 	{
+		deferredNodes.clear()
+		namedAreas.clear()
+		executingArray.clear()
+
 		for (nodeEntry in nodeMap)
 		{
 			val node = nodeEntry.value
@@ -44,6 +52,8 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 		val grid = Array2D<IMapGeneratorSymbol>(baseSize.x, baseSize.y) { x,y -> createSymbolFunc(x,y) }
 		val area = Area(baseSize.x, baseSize.y, grid)
 		val args = NodeArguments(area, ObjectFloatMap(), ObjectMap())
+
+		rootArea = area
 
 		deferredNodes.add(DeferredNode(root, args))
 		while (deferredNodes.size > 0)
