@@ -49,9 +49,8 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		variables["count"] = areas.size.toFloat()
-		val seed = generator.ran.nextLong()
 
-		val count = countExp.evaluate(variables, seed).floor()
+		val count = countExp.evaluate(variables, rng).floor()
 
 		tempArray.addAll(areas)
 
@@ -60,7 +59,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 			Mode.RANDOM -> {
 				for (i in 0 until count)
 				{
-					val area = tempArray.removeRandom(generator.ran)
+					val area = tempArray.removeRandom(rng)
 					val newArgs = NodeArguments(area.copy(), args.variables, args.symbolTable)
 
 					node?.execute(generator, newArgs)

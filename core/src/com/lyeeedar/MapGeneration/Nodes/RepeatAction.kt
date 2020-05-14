@@ -47,7 +47,6 @@ class RepeatAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		args.area.writeVariables(variables)
-		val seed = generator.ran.nextLong()
 
 		val points = Array<RepeatDivision>()
 
@@ -56,7 +55,7 @@ class RepeatAction : AbstractMapGenerationAction()
 
 		while (current < totalSize)
 		{
-			val size = size.evaluate(variables, seed).floor()
+			val size = size.evaluate(variables, rng).floor()
 
 			if (current + size > totalSize) break
 

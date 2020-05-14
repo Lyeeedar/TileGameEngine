@@ -35,8 +35,7 @@ class DefineVariableAction : AbstractMapGenerationAction()
 		variables.putAll(args.variables)
 		args.area.writeVariables(variables)
 
-		val seed = generator.ran.nextLong()
-		val value = valueExp.evaluate(variables, seed)
+		val value = valueExp.evaluate(variables, rng)
 
 		args.variables[key] = value
 	}

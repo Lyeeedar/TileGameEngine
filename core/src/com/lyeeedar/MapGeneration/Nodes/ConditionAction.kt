@@ -34,8 +34,7 @@ class ConditionAction : AbstractMapGenerationAction()
 				variables.putAll(args.variables)
 				args.area.writeVariables(variables)
 
-				val seed = generator.ran.nextLong()
-				execute = cond.condition!!.evaluate(variables, seed) > 0
+				execute = cond.condition!!.evaluate(variables, rng) > 0
 			}
 
 			if (execute)

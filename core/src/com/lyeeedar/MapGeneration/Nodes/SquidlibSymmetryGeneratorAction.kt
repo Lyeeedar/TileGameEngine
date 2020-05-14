@@ -16,7 +16,7 @@ class SquidlibSymmetryGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = SymmetryDungeonGenerator(args.area.width, args.area.height, RNG(generator.ran))
+		val gen = SymmetryDungeonGenerator(args.area.width, args.area.height, RNG(rng))
 		gen.generate()
 
 		val map = gen.dungeon

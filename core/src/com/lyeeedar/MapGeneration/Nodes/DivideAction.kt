@@ -28,10 +28,9 @@ class DivideAction : AbstractMapGenerationAction()
 			variables.clear()
 			variables.putAll(args.variables)
 			args.area.writeVariables(variables)
-			val seed = generator.ran.nextLong()
 
 			// evaluate size
-			val size = if (division.size == null) args.area.size - current else Math.min(args.area.size - current, division.size!!.evaluate(variables, seed).floor())
+			val size = if (division.size == null) args.area.size - current else Math.min(args.area.size - current, division.size!!.evaluate(variables, rng).floor())
 
 			if (division.child != null && size > 0)
 			{

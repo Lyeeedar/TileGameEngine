@@ -38,11 +38,9 @@ class TranslateAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		args.area.writeVariables(variables)
-		val seedX = generator.ran.nextLong()
-		val seedY = generator.ran.nextLong()
 
-		val x = xEqn.evaluate(variables, seedX).floor()
-		val y = yEqn.evaluate(variables, seedY).floor()
+		val x = xEqn.evaluate(variables, rng).floor()
+		val y = yEqn.evaluate(variables, rng).floor()
 
 		if (mode == Mode.RELATIVE)
 		{

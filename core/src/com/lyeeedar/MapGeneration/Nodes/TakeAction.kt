@@ -49,9 +49,8 @@ class TakeAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		newArea.writeVariables(variables)
-		val seed = generator.ran.nextLong()
 
-		val count = countExp.evaluate(variables, seed).floor()
+		val count = countExp.evaluate(variables, rng).floor()
 
 		tempArray.clear()
 		tempArray.addAll(newArea.points)
@@ -61,7 +60,7 @@ class TakeAction : AbstractMapGenerationAction()
 		{
 			for (i in 0 until count)
 			{
-				val point = tempArray.removeRandom(generator.ran)
+				val point = tempArray.removeRandom(rng)
 				newArea.points.add(point)
 			}
 		}

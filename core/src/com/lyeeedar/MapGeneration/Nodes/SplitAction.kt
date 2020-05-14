@@ -44,9 +44,8 @@ class SplitAction : AbstractMapGenerationAction()
 				variables.clear()
 				variables.putAll(args.variables)
 				currentArea.writeVariables(variables)
-				val seed = generator.ran.nextLong()
 
-				val size = split.size.evaluate(variables, seed).floor()
+				val size = split.size.evaluate(variables, rng).floor()
 
 				newArea.x = currentArea.x
 				newArea.y = currentArea.y + currentArea.height - size
@@ -69,9 +68,8 @@ class SplitAction : AbstractMapGenerationAction()
 				variables.clear()
 				variables.putAll(args.variables)
 				currentArea.writeVariables(variables)
-				val seed = generator.ran.nextLong()
 
-				val size = split.size.evaluate(variables, seed).round()
+				val size = split.size.evaluate(variables, rng).round()
 
 				newArea.x = currentArea.x
 				newArea.y = currentArea.y
@@ -94,9 +92,8 @@ class SplitAction : AbstractMapGenerationAction()
 				variables.clear()
 				variables.putAll(args.variables)
 				currentArea.writeVariables(variables)
-				val seed = generator.ran.nextLong()
 
-				val size = split.size.evaluate(variables, seed).round()
+				val size = split.size.evaluate(variables, rng).round()
 
 				newArea.x = currentArea.x
 				newArea.y = currentArea.y
@@ -119,9 +116,8 @@ class SplitAction : AbstractMapGenerationAction()
 				variables.clear()
 				variables.putAll(args.variables)
 				currentArea.writeVariables(variables)
-				val seed = generator.ran.nextLong()
 
-				val size = split.size.evaluate(variables, seed).round()
+				val size = split.size.evaluate(variables, rng).round()
 
 				newArea.x = currentArea.x + currentArea.width - size
 				newArea.y = currentArea.y
@@ -144,9 +140,8 @@ class SplitAction : AbstractMapGenerationAction()
 				variables.clear()
 				variables.putAll(args.variables)
 				currentArea.writeVariables(variables)
-				val seed = generator.ran.nextLong()
 
-				val size = split.size.evaluate(variables, seed).round()
+				val size = split.size.evaluate(variables, rng).round()
 
 				if (!newArea.isPoints)
 				{

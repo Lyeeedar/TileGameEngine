@@ -145,8 +145,8 @@ class ChambersGeneratorAction : AbstractMapGenerationAction()
 		while (true)
 		{
 			val tree = BSPTree(0, 0, grid.width - 1, grid.height - 1)
-			tree.partition(generator.ran)
-			tree.dig(grid, generator.ran)
+			tree.partition(rng)
+			tree.dig(grid, rng)
 
 			if (isConnected(grid))
 			{

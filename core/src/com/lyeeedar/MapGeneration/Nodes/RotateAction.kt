@@ -29,9 +29,8 @@ class RotateAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		args.area.writeVariables(variables)
-		val seed = generator.ran.nextLong()
 
-		val angle = degrees.evaluate(variables, seed)
+		val angle = degrees.evaluate(variables, rng)
 		args.area.orientation += angle
 	}
 

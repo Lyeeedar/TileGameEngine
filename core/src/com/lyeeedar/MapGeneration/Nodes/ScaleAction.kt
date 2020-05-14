@@ -44,14 +44,12 @@ class ScaleAction : AbstractMapGenerationAction()
 		variables.clear()
 		variables.putAll(args.variables)
 		args.area.writeVariables(variables)
-		val seedX = generator.ran.nextLong()
-		val seedY = generator.ran.nextLong()
 
 		val oldWidth = args.area.width
 		val oldHeight = args.area.height
 
-		val x = xEqn.evaluate(variables, seedX)
-		val y = yEqn.evaluate(variables, seedY)
+		val x = xEqn.evaluate(variables, rng)
+		val y = yEqn.evaluate(variables, rng)
 
 		if (mode == Mode.ADDITIVE)
 		{

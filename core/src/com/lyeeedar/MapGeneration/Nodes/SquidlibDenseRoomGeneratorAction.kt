@@ -16,7 +16,7 @@ class SquidlibDenseRoomGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = DenseRoomMapGenerator(args.area.width, args.area.height, RNG(generator.ran))
+		val gen = DenseRoomMapGenerator(args.area.width, args.area.height, RNG(rng))
 		gen.generate()
 
 		val map = gen.dungeon

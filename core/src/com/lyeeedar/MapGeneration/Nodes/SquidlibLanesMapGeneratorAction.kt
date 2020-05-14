@@ -24,7 +24,7 @@ class SquidlibLanesMapGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = LanesMapGenerator(args.area.width, args.area.height, RNG(generator.ran), numLanes)
+		val gen = LanesMapGenerator(args.area.width, args.area.height, RNG(rng), numLanes)
 		gen.putCaveCarvers(numCaveCarvers)
 		gen.putBoxRoomCarvers(numBoxRoomCarvers)
 		gen.putWalledBoxRoomCarvers(numWalledBoxRoomCarvers)

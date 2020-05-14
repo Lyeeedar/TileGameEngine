@@ -10,9 +10,14 @@ import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.copy
 import java.util.*
+import squidpony.squidmath.LightRNG
 
 abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>()
 {
+	//region non-data
+	lateinit var rng: LightRNG
+	//endregion
+
 	abstract fun execute(generator: MapGenerator, args: NodeArguments)
 
 	//region generated

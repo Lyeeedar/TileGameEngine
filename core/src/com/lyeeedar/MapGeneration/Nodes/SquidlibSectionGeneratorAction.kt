@@ -26,7 +26,7 @@ class SquidlibSectionGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = SectionDungeonGenerator(args.area.width, args.area.height, RNG(generator.ran))
+		val gen = SectionDungeonGenerator(args.area.width, args.area.height, RNG(rng))
 		gen.addWater(SectionDungeonGenerator.ALL, water)
 		gen.addLake(lake)
 		gen.addMaze(maze)

@@ -25,13 +25,21 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 	//region non-data
 	val deferredNodes = Array<DeferredNode>()
 	val namedAreas = ObjectMap<String, Array<Area>>()
-	lateinit var ran: LightRNG
 	private val executingArray = Array<DeferredNode>()
 	//endregion
 
 	fun execute(seed: Long, createSymbolFunc: (Int,Int)->IMapGeneratorSymbol): Array2D<IMapGeneratorSymbol>
 	{
-		ran = LightRNG(seed)
+		for (nodeEntry in nodeMap)
+		{
+			val node = nodeEntry.value
+			var nodeSeed = (nodeEntry.key + seed).hashCode().toLong()
+
+			for (action in node.actions)
+			{
+				action.rng = LightRNG(nodeSeed++)
+			}
+		}
 
 		val grid = Array2D<IMapGeneratorSymbol>(baseSize.x, baseSize.y) { x,y -> createSymbolFunc(x,y) }
 		val area = Area(baseSize.x, baseSize.y, grid)

@@ -25,7 +25,7 @@ class SquidlibSerpentMapGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = SerpentMapGenerator(args.area.width, args.area.height, RNG(generator.ran), branchingChance.toDouble(), symmetrical)
+		val gen = SerpentMapGenerator(args.area.width, args.area.height, RNG(rng), branchingChance.toDouble(), symmetrical)
 		gen.putCaveCarvers(numCaveCarvers)
 		gen.putBoxRoomCarvers(numBoxRoomCarvers)
 		gen.putWalledBoxRoomCarvers(numWalledBoxRoomCarvers)

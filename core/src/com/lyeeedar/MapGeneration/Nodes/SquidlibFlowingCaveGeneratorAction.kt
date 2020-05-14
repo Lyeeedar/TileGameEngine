@@ -20,7 +20,7 @@ class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 
 	override fun execute(generator: MapGenerator, args: NodeArguments)
 	{
-		val gen = FlowingCaveGenerator(args.area.width, args.area.height, tilesetType, RNG(generator.ran))
+		val gen = FlowingCaveGenerator(args.area.width, args.area.height, tilesetType, RNG(rng))
 		gen.generate(tilesetType, roomChance.toDouble())
 
 		val map = gen.dungeon
