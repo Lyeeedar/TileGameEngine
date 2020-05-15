@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.ObjectSet
@@ -70,8 +71,6 @@ class ParticleEditorScreen : AbstractScreen()
 	lateinit var flyRandomlyButton: CheckBox
 	var deltaMultiplier = 1f
 	var size = 1
-
-	val options = Table()
 
 	override fun show()
 	{
@@ -136,6 +135,8 @@ class ParticleEditorScreen : AbstractScreen()
 
 									 })
 
+		val options = Table()
+		options.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0.4f, 0.4f, 0.4f, 0.4f))
 		options.defaults().pad(5f).growX()
 
 		options.add(Label("Playback Speed", Statics.skin))
