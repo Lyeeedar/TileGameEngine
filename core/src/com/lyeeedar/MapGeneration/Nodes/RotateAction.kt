@@ -38,7 +38,7 @@ class RotateAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		degrees = createExpression(xmlData.get("Degrees"))
+		degrees = createExpression(xmlData.get("Degrees", "1")!!)
 	}
 	override val classID: String = "Rotate"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

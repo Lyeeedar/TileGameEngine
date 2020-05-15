@@ -68,7 +68,7 @@ class ConditionAndNode : GraphXmlDataClass<AbstractBehaviourNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		condition = CompiledExpression(xmlData.get("Condition"))
+		condition = CompiledExpression(xmlData.get("Condition", "1")!!)
 		nodeGUID = xmlData.get("Node")
 	}
 	private lateinit var nodeGUID: String

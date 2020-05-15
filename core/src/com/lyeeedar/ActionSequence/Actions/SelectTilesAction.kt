@@ -79,7 +79,7 @@ class SelectTilesAction : AbstractOneShotActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		coverage = CompiledExpression(xmlData.get("Coverage"))
+		coverage = CompiledExpression(xmlData.get("Coverage", "count")!!)
 		radius = xmlData.getInt("Radius", 1)
 		emptyOnly = xmlData.getBoolean("EmptyOnly", false)
 	}

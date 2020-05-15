@@ -229,7 +229,7 @@ class SplitPart : GraphXmlDataClass<MapGeneratorNode>()
 	override fun load(xmlData: XmlData)
 	{
 		side = SplitSide.valueOf(xmlData.get("Side").toUpperCase(Locale.ENGLISH))
-		size = createExpression(xmlData.get("Size"))
+		size = createExpression(xmlData.get("Size", "1")!!)
 		childGUID = xmlData.get("Child", null)
 	}
 	private var childGUID: String? = null

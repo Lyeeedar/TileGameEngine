@@ -285,11 +285,12 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 	        if (annotation != null)
 	        {
 		        val createMethod = annotation.paramMap["createExpressionMethod"]
+		        val default = annotation.paramMap["default"] ?: "1"
 		        if (createMethod != null)
 		        {
 			        if (variableType == VariableType.LATEINIT || !nullable)
 			        {
-				        builder.appendln(indentation, "$name = $createMethod(xmlData.${get}(\"$dataName\"))")
+				        builder.appendln(indentation, "$name = $createMethod(xmlData.${get}(\"$dataName\", \"$default\")!!)")
 			        }
 			        else
 			        {
@@ -300,7 +301,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 		        {
 			        if (variableType == VariableType.LATEINIT || !nullable)
 			        {
-				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\"))")
+				        builder.appendln(indentation, "$name = CompiledExpression(xmlData.${get}(\"$dataName\", \"$default\")!!)")
 			        }
 			        else
 			        {

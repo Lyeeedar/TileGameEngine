@@ -146,6 +146,7 @@ namespace InGamePreviewPlugin
 
 				if (viewVisible)
 				{
+					Workspace.DisableFileEvents = true;
 					XDocument doc = Workspace.Current?.Data?.WriteToDocument();
 					if (doc != null)
 					{
@@ -171,6 +172,7 @@ namespace InGamePreviewPlugin
 							File.WriteAllText(outPath, asString);
 						}
 					}
+					Workspace.DisableFileEvents = false;
 				}
 			};
 			timer.Start();

@@ -140,7 +140,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 	{
 		super.load(xmlData)
 		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
-		countExp = createExpression(xmlData.get("CountExp"))
+		countExp = createExpression(xmlData.get("CountExp", "1")!!)
 		name = xmlData.get("Name")
 		nodeGUID = xmlData.get("Node", null)
 		remainderGUID = xmlData.get("Remainder", null)
