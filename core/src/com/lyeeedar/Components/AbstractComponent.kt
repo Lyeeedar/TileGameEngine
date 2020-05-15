@@ -21,6 +21,11 @@ abstract class AbstractComponent()
 	open fun onAddedToEntity(entity: Entity) { }
 	open fun onRemovedFromEntity(entity: Entity) { }
 
+	open fun toShortString(): String
+	{
+		return type.toString()
+	}
+
 	var obtained = false
 	fun free()
 	{

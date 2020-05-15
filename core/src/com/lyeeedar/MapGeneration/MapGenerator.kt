@@ -15,6 +15,8 @@ import squidpony.squidmath.LightRNG
 @DataFile(colour = "201,200,153", icon="Sprites/Icons/map.png")
 class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 {
+	val DEBUG_printMap = false
+
 	var baseSize: Point = Point(0, 0)
 
 	@DataGraphNodes
@@ -69,7 +71,7 @@ class MapGenerator : GraphXmlDataClass<MapGeneratorNode>()
 			}
 		}
 
-		if (Statics.debug)
+		if (DEBUG_printMap)
 		{
 			for (y in 0 until baseSize.y)
 			{

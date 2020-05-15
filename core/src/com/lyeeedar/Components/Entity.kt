@@ -138,7 +138,7 @@ class Entity
 
 		for (component in components)
 		{
-			output.append(component.type).append(",")
+			output.append(component.toShortString()).append(",")
 		}
 
 		return output.toString()

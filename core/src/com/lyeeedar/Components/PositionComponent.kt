@@ -68,6 +68,11 @@ class PositionComponent : DataComponent()
 		size = data.size
 		canSwap = data.canSwap
 	}
+
+	override fun toShortString(): String
+	{
+		return super.toShortString() + "(" + position.toShortString() + ")"
+	}
 }
 
 class PositionComponentData : AbstractComponentData()
