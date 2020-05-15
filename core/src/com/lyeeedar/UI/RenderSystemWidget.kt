@@ -17,6 +17,7 @@ import com.lyeeedar.Components.renderOffset
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
+import com.lyeeedar.Systems.renderSystem
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Point
@@ -81,12 +82,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 	private val offsetVec = Vector2()
 	fun getPlayerOffset(): Vector2
 	{
-		val playerPos = world.player!!.position()!!.position.toVec()
-		val renderOffset = world.player?.renderable()?.renderable?.animation?.renderOffset(true)
-		if (renderOffset != null)
-		{
-			playerPos.add(renderOffset[0], renderOffset[1])
-		}
+		val render = world.renderSystem()
+		val playerPos = render!!.getPlayerPosition(null)
 
 		val tileSize = world.tileSize
 
@@ -121,7 +118,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 		val offset = getPlayerOffset()
 		val tileSize = world.tileSize
 
-		return this.localToStageCoordinates(Vector2(offset.x + x * tileSize, offset.y + y * tileSize))
+		return Vector2(offset.x + x * tileSize, offset.y + y * tileSize)
 	}
 
 	fun addAttachedToEntityWidget(entity: EntityReference, widget: Widget)
@@ -174,7 +171,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 	companion object
 	{
-		lateinit var instance: RenderSystemWidget
+		var instance: RenderSystemWidget? = null
 	}
 }
 

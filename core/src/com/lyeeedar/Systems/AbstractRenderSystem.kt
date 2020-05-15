@@ -304,7 +304,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 	abstract fun drawExtraEntity(entity: Entity, deltaTime: Float)
 
-	abstract fun getPlayerPosition(deltaTime: Float): Vector2
+	abstract fun getPlayerPosition(deltaTime: Float?): Vector2
 
 	override fun onTurnEntity(entity: Entity)
 	{
