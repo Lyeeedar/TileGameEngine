@@ -46,6 +46,11 @@ class EntityReference private constructor(val entity: Entity)
 		}
 	}
 
+	override fun toString(): String
+	{
+		return if (isValid()) "ref:${entity}" else "ref:invalid"
+	}
+
 	companion object
 	{
 		fun create(entity: Entity): EntityReference
