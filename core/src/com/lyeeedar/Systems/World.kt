@@ -154,6 +154,7 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 		onTurnEvent.clear()
 		for (entity in entities)
 		{
+			entity.world = null
 			entity.free()
 		}
 		entities.clear()
