@@ -3,7 +3,7 @@ package com.lyeeedar.headless
 import java.io.File
 import java.util.zip.ZipFile
 
-class OryxExtractor
+class SpriteExtractor
 {
 	init
 	{
@@ -11,7 +11,7 @@ class OryxExtractor
 		println("")
 		println("-------------------------------------------------------------------------")
 		println("")
-		println("#####      Oryx Extractor      #######")
+		println("#####      Sprite Extractor      #######")
 		println("")
 		println("-------------------------------------------------------------------------")
 		println("Running in directory: " + File("").absolutePath)
@@ -26,6 +26,16 @@ class OryxExtractor
 		else
 		{
 			println("Oryx already extracted, nothing to do")
+		}
+
+		val expectedIconsDir = File("../assetsraw/GameIconsRaw")
+		if (!expectedIconsDir.exists())
+		{
+			unzip(File("../../../PrivateStuff/GameIconsRaw.zip").absolutePath, File("../assetsraw/Sprites").absolutePath)
+		}
+		else
+		{
+			println("Icons already extracted, nothing to do")
 		}
 	}
 
