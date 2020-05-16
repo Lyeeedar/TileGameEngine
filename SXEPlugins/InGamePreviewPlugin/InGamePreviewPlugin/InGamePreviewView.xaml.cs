@@ -37,6 +37,9 @@ namespace InGamePreviewPlugin
 		private string m_currentStep;
 
 		//--------------------------------------------------------------------------
+		public bool NotCompiling { get; set; } = true;
+
+		//--------------------------------------------------------------------------
 		dynamic Workspace { get; }
 
 		//--------------------------------------------------------------------------
@@ -82,19 +85,6 @@ namespace InGamePreviewPlugin
 				File.Copy(srcPath, viewerPath);
 			}
 			CurrentStep = "Viewer Found";
-
-			var compilerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/compiler.jar"));
-			if (!File.Exists(compilerPath))
-			{
-				CurrentStep = "Building Compiler";
-
-				var srcPath = Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar");
-				if (File.Exists(srcPath)) File.Delete(srcPath);
-
-				RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder);
-				File.Copy(srcPath, compilerPath);
-			}
-			CurrentStep = "Compiler Found";
 
 			CurrentStep = "Setup Done";
 			Task.Run(() =>
@@ -176,6 +166,46 @@ namespace InGamePreviewPlugin
 				}
 			};
 			timer.Start();
+		}
+
+		//-----------------------------------------------------------------------
+		private void RecompileClick(object sender, RoutedEventArgs e)
+		{
+			NotCompiling = false;
+			RaisePropertyChangedEvent(nameof(NotCompiling));
+
+			Workspace.Current?.Save();
+
+			Task.Run(() => 
+			{
+				var projectRoot = (string)Workspace.ProjectFolder;
+
+				var rootFolder = Path.GetFullPath(Path.Combine(projectRoot, "../.."));
+				var gradle = Path.Combine(rootFolder, "gradlew.bat");
+
+				var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
+
+				var compilerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/compiler.jar"));
+				if (!File.Exists(compilerPath))
+				{
+					CurrentStep = "Building Compiler";
+
+					var srcPath = Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar");
+					if (File.Exists(srcPath)) File.Delete(srcPath);
+
+					RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder);
+					File.Copy(srcPath, compilerPath);
+				}
+				CurrentStep = "Compiler Found";
+
+				RunProcess("java", new string[] { "-jar", compilerPath }, assetsFolder);
+
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					NotCompiling = true;
+					RaisePropertyChangedEvent(nameof(NotCompiling));
+				});
+			});
 		}
 
 		//--------------------------------------------------------------------------

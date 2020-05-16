@@ -5,8 +5,21 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:InGamePreviewPlugin">
 	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="Auto" />
+			<RowDefinition
+				Height="*" />
+		</Grid.RowDefinitions>
+		<Button
+			Click="RecompileClick"
+			IsEnabled="{Binding NotCompiling}"
+			Content="Recompile" />
 		<local:LoadingIndicator
+			Grid.Row="1"
 			Text="{Binding CurrentStep}" />
-		<ContentPresenter Content="{Binding WindowHost}" />
+		<ContentPresenter
+			Grid.Row="1"
+			Content="{Binding WindowHost}" />
 	</Grid>
 </UserControl>

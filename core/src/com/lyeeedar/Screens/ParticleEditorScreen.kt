@@ -25,12 +25,13 @@ import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.UI.addClickListener
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.Random
 import ktx.collections.set
 import ktx.collections.toGdxArray
-import java.awt.FileDialog
-import java.awt.Frame
 import java.io.File
+import java.util.*
 import javax.swing.JColorChooser
+import kotlin.Comparator
 
 /**
  * Created by Philip on 14-Aug-16.
@@ -279,9 +280,23 @@ class ParticleEditorScreen : AbstractScreen()
 		}
 	}
 
+	var lastDataChange = 0L
 	var lastModified = 0L
 	fun tryLoadParticle()
 	{
+		try
+		{
+			val modified = getLastModified(File("."))
+			if (modified != lastDataChange)
+			{
+				lastDataChange = modified
+
+				AssetManager.invalidate()
+
+				lastModified = 0L
+			}
+		} catch (ex: Exception) {}
+
 		try
 		{
 			val tempParticleFile = File("../caches/editor/particle.xml")
@@ -306,6 +321,13 @@ class ParticleEditorScreen : AbstractScreen()
 				}
 			}
 		} catch (ex: Exception) {}
+	}
+
+	fun getLastModified(directory: File): Long
+	{
+		val files = directory.listFiles()!!
+		if (files.isEmpty()) return directory.lastModified()
+		return files.map { it.lastModified() }.max()!!
 	}
 
 	var stoppedTimer = 0f

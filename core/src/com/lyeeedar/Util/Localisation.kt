@@ -7,13 +7,19 @@ class Localisation
 {
 	companion object
 	{
-		val localisedIds: IntMap<String> by lazy {
-			val map = IntMap<String>()
+		var loaded = false
+		val localisedIds: IntMap<IntMap<String>> = IntMap()
+
+		fun loadLocalisation()
+		{
+			loaded = true
 
 			val languagesXml = getXml("Localisation/Languages.xml")
 			for (el in languagesXml.children)
 			{
 				val code = el.get("Code")
+				val map = IntMap<String>()
+				localisedIds[code.hashCode()] = map
 
 				for (file in XmlData.enumeratePaths("Localisation/$code", "Localisation"))
 				{
@@ -22,22 +28,33 @@ class Localisation
 
 					for (el in xml.children)
 					{
-						val trueId = "$code@$fileName/${el.getAttribute("ID")}"
+						val trueId = "$fileName/${el.getAttribute("ID")}"
 						map[trueId.hashCode()] = el.value.toString()
 					}
 				}
 			}
+		}
 
-			map
+		fun invalidate()
+		{
+			localisedIds.clear()
+			loadLocalisation()
 		}
 
 		fun getText(id: String, file: String, language: String? = null): String
 		{
+			if (!loaded)
+			{
+				loadLocalisation()
+			}
+
 			val languageCode = language ?: Statics.language
-			val trueId = "$languageCode@$file/$id"
+			val languageIds = localisedIds[languageCode.hashCode()] ?: throw RuntimeException("Language $languageCode does not exist!")
+
+			val trueId = "$file/$id"
 			val hash = trueId.hashCode()
 
-			return localisedIds[hash] ?: throw RuntimeException("Id $trueId does not exist!")
+			return languageIds[hash] ?: throw RuntimeException("Id $trueId does not exist in $languageCode!")
 		}
 	}
 }

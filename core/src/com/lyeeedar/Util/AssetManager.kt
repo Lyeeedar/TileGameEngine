@@ -16,6 +16,7 @@ import com.lyeeedar.BlendMode
 import com.lyeeedar.Renderables.Animation.AbstractAnimation
 import com.lyeeedar.Renderables.Light
 import com.lyeeedar.Renderables.LightAnimation
+import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Particle.TextureOverride
 import com.lyeeedar.Renderables.Renderable
@@ -29,6 +30,23 @@ class AssetManager
 {
 	companion object
 	{
+		fun invalidate()
+		{
+			loadedFonts.clear()
+			loadedSounds.clear()
+			loadedTextureRegions.clear()
+			loadedTextures.clear()
+
+			XmlData.cachedXml.clear()
+			XmlData.existingPaths = null
+
+			ParticleEffect.storedMap.clear()
+
+			prepackedAtlas = TextureAtlas(Gdx.files.internal("CompressedData/SpriteAtlas.atlas")!!)
+
+			Localisation.invalidate()
+		}
+
 		private val loadedFonts = HashMap<String, BitmapFont>()
 
 		@JvmOverloads fun loadFont(name: String, size: Int, colour: Color = Color.WHITE, borderWidth: Int = 1, borderColour: Color = Color.BLACK, shadow: Boolean = false): BitmapFont?
@@ -92,7 +110,7 @@ class AssetManager
 			return sound
 		}
 
-		private val prepackedAtlas = TextureAtlas(Gdx.files.internal("CompressedData/SpriteAtlas.atlas")!!)
+		private var prepackedAtlas = TextureAtlas(Gdx.files.internal("CompressedData/SpriteAtlas.atlas")!!)
 
 		private val loadedTextureRegions = HashMap<String, TextureRegion?>()
 
