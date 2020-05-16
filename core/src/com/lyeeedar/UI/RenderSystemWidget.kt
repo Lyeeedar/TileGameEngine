@@ -15,6 +15,7 @@ import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderOffset
 import com.lyeeedar.Components.renderable
+import com.lyeeedar.Systems.AbstractRenderSystem
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Systems.renderSystem
@@ -82,8 +83,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 	private val offsetVec = Vector2()
 	fun getPlayerOffset(): Vector2
 	{
-		val render = world.renderSystem()
-		val playerPos = render!!.getPlayerPosition(null)
+		val render = world.systems.filterIsInstance<AbstractRenderSystem>().firstOrNull()
+		val playerPos = render?.getPlayerPosition(null) ?: Vector2()
 
 		val tileSize = world.tileSize
 
