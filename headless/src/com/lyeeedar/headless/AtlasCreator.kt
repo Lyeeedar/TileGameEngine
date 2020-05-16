@@ -1,6 +1,7 @@
 package com.lyeeedar.headless
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
@@ -11,10 +12,7 @@ import com.badlogic.gdx.utils.XmlReader
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Sprite.DirectedSprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
-import com.lyeeedar.Util.EnumBitflag
-import com.lyeeedar.Util.ImageUtils
-import com.lyeeedar.Util.children
-import com.lyeeedar.Util.getChildrenByAttributeRecursively
+import com.lyeeedar.Util.*
 import ktx.collections.set
 import java.awt.image.BufferedImage
 import java.io.File
@@ -759,7 +757,7 @@ class AtlasCreator
 
 	private fun processLayeredSprite(spriteElement: XmlReader.Element): Boolean
 	{
-		val paths = Array<Pair<String, Boolean>>()
+		val layers = Array<ImageUtils.ImageLayer>()
 
 		val layersEl = spriteElement.getChildByName("Layers")!!
 		for (el in layersEl.children())
@@ -772,11 +770,19 @@ class AtlasCreator
 				return false
 			}
 
-			paths.add(Pair(name, el.getBoolean("DrawActualSize", false)))
+			val drawActualSize = el.getBoolean("DrawActualSize", false)
+			val clip = el.getBoolean("Clip", false)
+			var colour = Color.WHITE
+			val colEl = el.getChildByName("Tint")
+			if (colEl != null)
+			{
+				colour = AssetManager.loadColour(XmlData.loadFromElement(colEl)).color()
+			}
+
+			layers.add(ImageUtils.ImageLayer(name, drawActualSize, clip, colour))
 		}
 
-		val layers = Array<Pair<Pixmap, Boolean>>()
-		val mergedName = paths.joinToString("+") { it.first }
+		val mergedName = layers.joinToString("+")
 
 		if (tryPackSprite(mergedName))
 		{
@@ -784,12 +790,11 @@ class AtlasCreator
 			return true
 		}
 
-		for (path in paths)
+		for (layer in layers)
 		{
-			val fileHandle = Gdx.files.internal("../assetsraw/Sprites/${path.first}.png")
+			val fileHandle = Gdx.files.internal("../assetsraw/Sprites/${layer.path}.png")
 
-			val pixmap = Pixmap(fileHandle)
-			layers.add(Pair(pixmap, path.second))
+			layer.pixmap = Pixmap(fileHandle)
 		}
 
 		val merged = ImageUtils.flattenImages(layers)
@@ -798,7 +803,7 @@ class AtlasCreator
 		merged.dispose()
 		for (layer in layers)
 		{
-			layer.first.dispose()
+			layer.pixmap.dispose()
 		}
 
 		localGeneratedImages[mergedName] = image

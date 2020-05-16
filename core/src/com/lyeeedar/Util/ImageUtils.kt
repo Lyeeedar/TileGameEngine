@@ -104,15 +104,25 @@ object ImageUtils
 		return pixmap
 	}
 
-	fun flattenImages(images: com.badlogic.gdx.utils.Array<Pair<Pixmap, Boolean>>): Pixmap
+	class ImageLayer(val path: String, val drawActualSize: Boolean, val clip: Boolean, val tint: Color)
+	{
+		lateinit var pixmap: Pixmap
+
+		override fun toString(): String
+		{
+			return path + drawActualSize.toString() + clip.toString() + tint.toString()
+		}
+	}
+
+	fun flattenImages(images: com.badlogic.gdx.utils.Array<ImageLayer>): Pixmap
 	{
 		var maxWidth = 0
 		var maxHeight = 0
 
 		for (image in images)
 		{
-			val drawWidth = if (image.second) image.first.width else 32
-			val drawHeight = if (image.second) image.first.height else 32
+			val drawWidth = if (image.drawActualSize) image.pixmap.width else 32
+			val drawHeight = if (image.drawActualSize) image.pixmap.height else 32
 
 			if (drawWidth > maxWidth)
 			{
@@ -135,13 +145,13 @@ object ImageUtils
 
 		for (image in images)
 		{
-			val drawWidth = if (image.second) image.first.width else 34
-			val drawHeight = if (image.second) image.first.height else 34
+			val drawWidth = if (image.drawActualSize) image.pixmap.width else 34
+			val drawHeight = if (image.drawActualSize) image.pixmap.height else 34
 
 			val startX = (maxWidth / 2) - (drawWidth / 2)
 
-			val xRatio = image.first.width.toFloat() / drawWidth
-			val yRatio = image.first.height.toFloat() / drawHeight
+			val xRatio = image.pixmap.width.toFloat() / drawWidth
+			val yRatio = image.pixmap.height.toFloat() / drawHeight
 
 			for (x in 0 until drawWidth)
 			{
@@ -151,10 +161,12 @@ object ImageUtils
 					val imgY = (y.toFloat() * yRatio).toInt()
 
 					Color.rgba8888ToColor(ca, pixmap.getPixel(startX+x, (maxHeight - drawHeight) + y))
-					Color.rgba8888ToColor(cb, image.first.getPixel(imgX, imgY))
+					Color.rgba8888ToColor(cb, image.pixmap.getPixel(imgX, imgY))
 
-					val a = ca.a + cb.a
-					ca.mul((1f - cb.a))
+					cb.mul(image.tint)
+
+					val a = if (image.clip) ca.a else ca.a + cb.a
+					ca.mul(1f - cb.a)
 					cb.mul(cb.a)
 
 					ca.add(cb)

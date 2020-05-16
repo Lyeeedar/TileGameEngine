@@ -686,3 +686,4 @@ annotation class DataGraphReference(val useParentDescription: Boolean = false, v
 annotation class DataXml(val actualClass: String = "")
 annotation class DataAsciiGrid
 annotation class DataTimeline(val timelineGroup: Boolean = false)
+annotation class DataLayeredSprite()

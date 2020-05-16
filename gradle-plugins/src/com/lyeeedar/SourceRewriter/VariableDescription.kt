@@ -238,6 +238,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				loadName = "ParticleEffect"
 			}
+			else if (type == "Sprite" && annotations.any { it.name == "DataLayeredSprite" })
+			{
+				loadName = "LayeredSprite"
+			}
 			else
 			{
 				loadName = type
@@ -887,6 +891,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			val dataType = when (type)
 			{
 				"ParticleEffectDescription" -> "ParticleEffect,ParticleEffectTemplate"
+				"Sprite" -> if (annotations.any { it.name == "DataLayeredSprite" }) "RenderedLayeredSprite" else "Sprite"
 				"Renderable" -> "Sprite,TilingSprite,ParticleEffect"
 				else -> type
 			}
