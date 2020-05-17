@@ -104,25 +104,29 @@ object ImageUtils
 		return pixmap
 	}
 
-	class ImageLayer(val path: String, val drawActualSize: Boolean, val clip: Boolean, val tint: Color)
+	class ImageLayer(val path: String, val drawActualSize: Boolean, val clip: Boolean, val tint: Color, val scale: Float)
 	{
 		lateinit var pixmap: Pixmap
 
 		override fun toString(): String
 		{
-			return path + drawActualSize.toString() + clip.toString() + tint.toString()
+			return path + drawActualSize.toString() + clip.toString() + tint.toString() + scale.toString()
 		}
 	}
 
-	fun flattenImages(images: com.badlogic.gdx.utils.Array<ImageLayer>): Pixmap
+	fun mergeImages(images: com.badlogic.gdx.utils.Array<ImageLayer>): Pixmap
 	{
 		var maxWidth = 0
 		var maxHeight = 0
+		var hasDrawActualSize = false
 
 		for (image in images)
 		{
-			val drawWidth = if (image.drawActualSize) image.pixmap.width else 32
-			val drawHeight = if (image.drawActualSize) image.pixmap.height else 32
+			var drawWidth = if (image.drawActualSize) image.pixmap.width else 32
+			var drawHeight = if (image.drawActualSize) image.pixmap.height else 32
+
+			drawWidth = (drawWidth*image.scale).toInt()
+			drawHeight = (drawHeight*image.scale).toInt()
 
 			if (drawWidth > maxWidth)
 			{
@@ -133,6 +137,8 @@ object ImageUtils
 			{
 				maxHeight = drawHeight
 			}
+
+			hasDrawActualSize = hasDrawActualSize || image.drawActualSize
 		}
 
 		val pixmap = Pixmap(maxWidth, maxHeight, Format.RGBA8888)
@@ -145,10 +151,14 @@ object ImageUtils
 
 		for (image in images)
 		{
-			val drawWidth = if (image.drawActualSize) image.pixmap.width else 34
-			val drawHeight = if (image.drawActualSize) image.pixmap.height else 34
+			var drawWidth = if (image.drawActualSize) image.pixmap.width else 34
+			var drawHeight = if (image.drawActualSize) image.pixmap.height else 34
+
+			drawWidth = (drawWidth*image.scale).toInt()
+			drawHeight = (drawHeight*image.scale).toInt()
 
 			val startX = (maxWidth / 2) - (drawWidth / 2)
+			val startY = if (hasDrawActualSize) (maxHeight-drawHeight) else (maxHeight / 2) - (drawHeight / 2)
 
 			val xRatio = image.pixmap.width.toFloat() / drawWidth
 			val yRatio = image.pixmap.height.toFloat() / drawHeight
@@ -160,7 +170,7 @@ object ImageUtils
 					val imgX = (x.toFloat() * xRatio).toInt()
 					val imgY = (y.toFloat() * yRatio).toInt()
 
-					Color.rgba8888ToColor(ca, pixmap.getPixel(startX+x, (maxHeight - drawHeight) + y))
+					Color.rgba8888ToColor(ca, pixmap.getPixel(startX+x, startY+y))
 					Color.rgba8888ToColor(cb, image.pixmap.getPixel(imgX, imgY))
 
 					cb.mul(image.tint)
@@ -172,7 +182,7 @@ object ImageUtils
 					ca.add(cb)
 					ca.a = a
 
-					pixmap.drawPixel(startX+x, (maxHeight - drawHeight) + y, Color.rgba8888(ca))
+					pixmap.drawPixel(startX+x, startY+y, Color.rgba8888(ca))
 				}
 			}
 		}

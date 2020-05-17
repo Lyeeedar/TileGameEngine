@@ -178,33 +178,38 @@ namespace InGamePreviewPlugin
 
 			Task.Run(() => 
 			{
-				var projectRoot = (string)Workspace.ProjectFolder;
-
-				var rootFolder = Path.GetFullPath(Path.Combine(projectRoot, "../.."));
-				var gradle = Path.Combine(rootFolder, "gradlew.bat");
-
-				var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
-
-				var compilerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/compiler.jar"));
-				if (!File.Exists(compilerPath))
+				try
 				{
-					CurrentStep = "Building Compiler";
+					var projectRoot = (string)Workspace.ProjectFolder;
 
-					var srcPath = Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar");
-					if (File.Exists(srcPath)) File.Delete(srcPath);
+					var rootFolder = Path.GetFullPath(Path.Combine(projectRoot, "../.."));
+					var gradle = Path.Combine(rootFolder, "gradlew.bat");
 
-					RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder);
-					File.Copy(srcPath, compilerPath);
+					var assetsFolder = Path.GetFullPath(Path.Combine(projectRoot, "../assets"));
+
+					var compilerPath = Path.GetFullPath(Path.Combine(assetsFolder, "../caches/compiler.jar"));
+					if (!File.Exists(compilerPath))
+					{
+						CurrentStep = "Building Compiler";
+
+						var srcPath = Path.Combine(rootFolder, "engine", "headless", "build", "libs", "headless.jar");
+						if (File.Exists(srcPath)) File.Delete(srcPath);
+
+						RunProcess(gradle, new string[] { ":headless:compilerDist" }, rootFolder);
+						File.Copy(srcPath, compilerPath);
+					}
+					CurrentStep = "Compiler Found";
+
+					RunProcess("java", new string[] { "-jar", compilerPath }, assetsFolder);
 				}
-				CurrentStep = "Compiler Found";
-
-				RunProcess("java", new string[] { "-jar", compilerPath }, assetsFolder);
-
-				Application.Current.Dispatcher.Invoke(() =>
+				finally
 				{
-					NotCompiling = true;
-					RaisePropertyChangedEvent(nameof(NotCompiling));
-				});
+					Application.Current.Dispatcher.Invoke(() =>
+					{
+						NotCompiling = true;
+						RaisePropertyChangedEvent(nameof(NotCompiling));
+					});
+				}
 			});
 		}
 

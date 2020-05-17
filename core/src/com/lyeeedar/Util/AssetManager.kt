@@ -520,8 +520,9 @@ class AssetManager
 				{
 					colour = loadColour(colEl).color()
 				}
+				val scale = layerEl.getFloat("Scale", 1f)
 
-				val layer = ImageUtils.ImageLayer(name, drawActualSize, clip, colour)
+				val layer = ImageUtils.ImageLayer(name, drawActualSize, clip, colour, scale)
 				layers.add(layer.toString())
 			}
 

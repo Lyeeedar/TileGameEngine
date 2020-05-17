@@ -782,8 +782,9 @@ class AtlasCreator
 				colour.b = java.lang.Float.parseFloat(cols[2]) / 255.0f
 				colour.a = if (cols.size > 3) cols[3].toFloat() / 255.0f else 1f
 			}
+			val scale = el.getFloat("Scale", 1f)
 
-			layers.add(ImageUtils.ImageLayer(name, drawActualSize, clip, colour))
+			layers.add(ImageUtils.ImageLayer(name, drawActualSize, clip, colour, scale))
 		}
 
 		val mergedName = layers.joinToString("+")
@@ -801,7 +802,7 @@ class AtlasCreator
 			layer.pixmap = Pixmap(fileHandle)
 		}
 
-		val merged = ImageUtils.flattenImages(layers)
+		val merged = ImageUtils.mergeImages(layers)
 
 		val image = ImageUtils.pixmapToImage(merged)
 		merged.dispose()
