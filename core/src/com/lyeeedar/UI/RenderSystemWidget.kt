@@ -18,7 +18,6 @@ import com.lyeeedar.Components.renderable
 import com.lyeeedar.Systems.AbstractRenderSystem
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
-import com.lyeeedar.Systems.renderSystem
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Point

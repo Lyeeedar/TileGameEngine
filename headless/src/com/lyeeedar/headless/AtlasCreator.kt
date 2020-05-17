@@ -772,11 +772,15 @@ class AtlasCreator
 
 			val drawActualSize = el.getBoolean("DrawActualSize", false)
 			val clip = el.getBoolean("Clip", false)
-			var colour = Color.WHITE
+			val colour = Color.WHITE.cpy()
 			val colEl = el.getChildByName("Tint")
 			if (colEl != null)
 			{
-				colour = AssetManager.loadColour(XmlData.loadFromElement(colEl)).color()
+				val cols = colEl.text.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+				colour.r = java.lang.Float.parseFloat(cols[0]) / 255.0f
+				colour.g = java.lang.Float.parseFloat(cols[1]) / 255.0f
+				colour.b = java.lang.Float.parseFloat(cols[2]) / 255.0f
+				colour.a = if (cols.size > 3) cols[3].toFloat() / 255.0f else 1f
 			}
 
 			layers.add(ImageUtils.ImageLayer(name, drawActualSize, clip, colour))

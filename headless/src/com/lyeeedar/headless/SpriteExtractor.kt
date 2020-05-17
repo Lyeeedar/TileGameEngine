@@ -22,16 +22,18 @@ class SpriteExtractor
 		if (!expectedOryxDir.exists())
 		{
 			unzip(File("../../../PrivateStuff/uf_split.zip").absolutePath, File("../assetsraw/Sprites/Oryx").absolutePath)
+			println("Extracted Oryx assets to " + expectedOryxDir.canonicalPath)
 		}
 		else
 		{
 			println("Oryx already extracted, nothing to do")
 		}
 
-		val expectedIconsDir = File("../assetsraw/GameIconsRaw")
+		val expectedIconsDir = File("../assetsraw/Sprites/GameIconsRaw")
 		if (!expectedIconsDir.exists())
 		{
 			unzip(File("../../../PrivateStuff/GameIconsRaw.zip").absolutePath, File("../assetsraw/Sprites").absolutePath)
+			println("Extracted GameIcons assets to " + expectedIconsDir.canonicalPath)
 		}
 		else
 		{
