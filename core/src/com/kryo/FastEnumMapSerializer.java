@@ -25,7 +25,7 @@ public class FastEnumMapSerializer extends Serializer<FastEnumMap<? extends Enum
 	@Override
 	public void write( final Kryo kryo, final Output output, final FastEnumMap<? extends Enum<?>, ?> map )
 	{
-		kryo.writeClass( output, map.keyType );
+		kryo.writeClass( output, map.getKeyType() );
 
 		output.writeInt( map.getSize(), true );
 		for ( int i = 0; i < map.numItems(); i++ )

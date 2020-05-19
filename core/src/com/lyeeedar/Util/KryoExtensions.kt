@@ -10,10 +10,12 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.kryo.FastEnumMapSerializer
 import com.lyeeedar.ActionSequence.ActionSequence
+import com.lyeeedar.Components.ComponentType
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Sprite.Sprite
+import com.lyeeedar.SpaceSlot
 import ktx.collections.set
 
 fun Kryo.registerLyeeedarSerialisers()
@@ -170,6 +172,12 @@ fun Kryo.registerLyeeedarSerialisers()
 	}, 107)
 
 	kryo.register(FastEnumMap::class.java, FastEnumMapSerializer(), 108)
+
+	kryo.register(Direction::class.java, 109)
+
+	kryo.register(SpaceSlot::class.java, 110)
+
+	kryo.register(ComponentType::class.java, 111)
 }
 
 fun Kryo.registerGdxSerialisers()

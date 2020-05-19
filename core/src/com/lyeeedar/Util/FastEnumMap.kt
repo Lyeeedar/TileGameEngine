@@ -3,12 +3,15 @@ package com.lyeeedar.Util
 class FastEnumMap<T : Enum<T>, V: Any> : Iterable<V>, Map<T, V>
 {
 	override var size = 0
-	lateinit var keyType: Class<T>
-	private lateinit var items: Array<V?>
+	public var keyType: Class<T>
+	private var items: Array<V?>
 
-	override val entries: Set<Map.Entry<T, V>> = keyType.enumConstants.filter { items[it.ordinal] != null }.map { FastEnumMapEntry<T, V>(it, items[it.ordinal]!!) }.toSet()
-	override val keys: Set<T> = keyType.enumConstants.filter { items[it.ordinal] != null }.toSet()
-	override val values: Collection<V> = items.filterNotNull()
+	override val entries: Set<Map.Entry<T, V>>
+		get() = keyType.enumConstants.filter { items[it.ordinal] != null }.map { FastEnumMapEntry<T, V>(it, items[it.ordinal]!!) }.toSet()
+	override val keys: Set<T>
+		get() = keyType.enumConstants.filter { items[it.ordinal] != null }.toSet()
+	override val values: Collection<V>
+		get() = items.filterNotNull()
 
 	constructor(keyType: Class<T>)
 	{

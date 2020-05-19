@@ -8,12 +8,11 @@ import com.lyeeedar.Util.registerGameSerializers
 import com.lyeeedar.Util.registerGdxSerialisers
 import com.lyeeedar.Util.registerLyeeedarSerialisers
 
-val kryo: Kryo by lazy { initKryo() }
+val sharedKryo: Kryo by lazy { initKryo() }
 fun initKryo(): Kryo
 {
 	val kryo = Kryo()
-	kryo.isRegistrationRequired = false
-
+	kryo.references = true
 	kryo.registerGdxSerialisers()
 	kryo.registerLyeeedarSerialisers()
 	kryo.registerGameSerializers()
@@ -21,8 +20,10 @@ fun initKryo(): Kryo
 	return kryo
 }
 
-fun serialize(obj: Any, path: String)
+fun serialize(obj: Any, path: String, kryo: Kryo? = null)
 {
+	val kryo = kryo ?: sharedKryo
+
 	val outputFile = Gdx.files.local(path)
 
 	var output: Output? = null
@@ -41,8 +42,10 @@ fun serialize(obj: Any, path: String)
 	output.close()
 }
 
-fun serialize(obj: Any): ByteArray
+fun serialize(obj: Any, kryo: Kryo? = null): ByteArray
 {
+	val kryo = kryo ?: sharedKryo
+
 	val output: Output
 	try
 	{
@@ -61,8 +64,10 @@ fun serialize(obj: Any): ByteArray
 	return output.buffer
 }
 
-fun <T> deserialize(byteArray: ByteArray, clazz: Class<T>): T
+fun <T> deserialize(byteArray: ByteArray, clazz: Class<T>, kryo: Kryo? = null): T
 {
+	val kryo = kryo ?: sharedKryo
+
 	var input: Input? = null
 
 	val data: T
@@ -84,8 +89,10 @@ fun <T> deserialize(byteArray: ByteArray, clazz: Class<T>): T
 	return data
 }
 
-fun <T> deserialize(path: String, clazz: Class<T>): T?
+fun <T> deserialize(path: String, clazz: Class<T>, kryo: Kryo? = null): T?
 {
+	val kryo = kryo ?: sharedKryo
+
 	var input: Input? = null
 
 	var data: T?
