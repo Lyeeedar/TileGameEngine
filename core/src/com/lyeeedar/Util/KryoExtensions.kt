@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.Serializer
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.kryo.FastEnumMapSerializer
+import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Sprite.Sprite
@@ -22,7 +23,7 @@ fun Kryo.registerLyeeedarSerialisers()
 
 	kryo.register(Sprite::class.java, object : Serializer<Sprite>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<Sprite>): Sprite
+		override fun read(kryo: Kryo, input: Input, type: Class<out Sprite>): Sprite
 		{
 			val fileName = input.readString()
 			val animDelay = input.readFloat()
@@ -43,14 +44,14 @@ fun Kryo.registerLyeeedarSerialisers()
 			output.writeFloat(sprite.animationDelay)
 			output.writeFloat(sprite.repeatDelay)
 			kryo.writeObject(output, sprite.colour)
-			output.writeFloats(sprite.baseScale)
+			output.writeFloats(sprite.baseScale, 0, 2)
 			output.writeBoolean(sprite.drawActualSize)
 		}
 	})
 
 	kryo.register(ParticleEffect::class.java, object : Serializer<ParticleEffect>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<ParticleEffect>): ParticleEffect
+		override fun read(kryo: Kryo, input: Input, type: Class<out ParticleEffect>): ParticleEffect
 		{
 			val description = kryo.readObject(input, ParticleEffectDescription::class.java)
 			val particle = ParticleEffect(description)
@@ -67,7 +68,7 @@ fun Kryo.registerLyeeedarSerialisers()
 
 	kryo.register(Point::class.java, object : Serializer<Point>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<Point>): Point
+		override fun read(kryo: Kryo, input: Input, type: Class<out Point>): Point
 		{
 			val x = input.readInt()
 			val y = input.readInt()
@@ -84,7 +85,7 @@ fun Kryo.registerLyeeedarSerialisers()
 
 	kryo.register(Colour::class.java, object : Serializer<Colour>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<Colour>): Colour
+		override fun read(kryo: Kryo, input: Input, type: Class<out Colour>): Colour
 		{
 			val r = input.readFloat()
 			val g = input.readFloat()
@@ -118,7 +119,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			}
 		}
 
-		override fun read(kryo: Kryo, input: Input, type: Class<Array2D<*>>): Array2D<*>
+		override fun read(kryo: Kryo, input: Input, type: Class<out Array2D<*>>): Array2D<*>
 		{
 			val width = input.readInt()
 			val height = input.readInt()
@@ -142,7 +143,7 @@ fun Kryo.registerLyeeedarSerialisers()
 
 	kryo.register(XmlData::class.java, object : Serializer<XmlData>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<XmlData>): XmlData
+		override fun read(kryo: Kryo, input: Input, type: Class<out XmlData>): XmlData
 		{
 			val xmlData = XmlData()
 			xmlData.load(input)
@@ -158,7 +159,7 @@ fun Kryo.registerLyeeedarSerialisers()
 
 	kryo.register(Settings::class.java, object : Serializer<Settings>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<Settings>): Settings
+		override fun read(kryo: Kryo, input: Input, type: Class<out Settings>): Settings
 		{
 			return Settings.load(kryo, input)
 		}
@@ -176,7 +177,7 @@ fun Kryo.registerGdxSerialisers()
 
 	kryo.register(Array::class.java, object : Serializer<Array<*>>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<Array<*>>): Array<*>
+		override fun read(kryo: Kryo, input: Input, type: Class<out Array<*>>): Array<*>
 		{
 			val array = Array<Any>()
 			kryo.reference(array)
@@ -207,7 +208,7 @@ fun Kryo.registerGdxSerialisers()
 
 	kryo.register(ObjectMap::class.java, object : Serializer<ObjectMap<*, *>>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<ObjectMap<*, *>>): ObjectMap<*, *>
+		override fun read(kryo: Kryo, input: Input, type: Class<out ObjectMap<*, *>>): ObjectMap<*, *>
 		{
 			val map = ObjectMap<Any, Any>()
 			kryo.reference(map)
@@ -241,7 +242,7 @@ fun Kryo.registerGdxSerialisers()
 
 	kryo.register(ObjectFloatMap::class.java, object : Serializer<ObjectFloatMap<*>>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<ObjectFloatMap<*>>): ObjectFloatMap<*>
+		override fun read(kryo: Kryo, input: Input, type: Class<out ObjectFloatMap<*>>): ObjectFloatMap<*>
 		{
 			val map = ObjectFloatMap<Any>()
 			kryo.reference(map)
@@ -275,7 +276,7 @@ fun Kryo.registerGdxSerialisers()
 
 	kryo.register(XmlReader.Element::class.java, object : Serializer<XmlReader.Element>()
 	{
-		override fun read(kryo: Kryo, input: Input, type: Class<XmlReader.Element>): XmlReader.Element
+		override fun read(kryo: Kryo, input: Input, type: Class<out XmlReader.Element>): XmlReader.Element
 		{
 			val xml = input.readString()
 

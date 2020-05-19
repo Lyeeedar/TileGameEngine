@@ -148,11 +148,11 @@ operator fun <K> ObjectFloatMap<K>.set(key: K, value: Float)
 	this.put(key, value)
 }
 
-fun <K> ObjectFloatMap(variables: Map<K, Float>): ObjectFloatMap<K>
+fun <K> Map<K, Float>.toObjectFloatMap(): ObjectFloatMap<K>
 {
 	val map = ObjectFloatMap<K>()
 
-	for (pair in variables)
+	for (pair in this)
 	{
 		map[pair.key] = pair.value
 	}
