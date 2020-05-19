@@ -19,7 +19,6 @@
 #   public *;
 #}
 
--dontobfuscate
 -optimizations !code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable
 -optimizationpasses 5
 -allowaccessmodification
@@ -48,8 +47,8 @@
 -keep,allowshrinking class sun.nio.ch.** { *; }
 -dontwarn sun.nio.ch.**
 -keep public class * extends com.google.protobuf.GeneratedMessage { *; }
--keep class de.javakaffee.kryoserializers.** { *; }
--dontwarn de.javakaffee.kryoserializers.**
+-keep class com.kryo.FastEnumMapSerializer { *; }
+-dontwarn com.kryo.FastEnumMapSerializer
 -keep class com.esotericsoftware.kryo.serializers.** { *; }
 -dontwarn com.esotericsoftware.kryo.serializers.**
 
