@@ -32,10 +32,10 @@ class FastEnumMap<T : Enum<T>, V: Any> : Iterable<V>, Map<T, V>
 		return items.size
 	}
 
-	fun calculateSize()
+	private fun calculateSize()
 	{
 		var count = 0
-		for (i in items.indices)
+		for (i in 0 until items.size)
 		{
 			if (items[i] != null)
 			{
@@ -55,11 +55,11 @@ class FastEnumMap<T : Enum<T>, V: Any> : Iterable<V>, Map<T, V>
 
 	fun clear()
 	{
-		for (i in items.indices) items[i] = null
+		for (i in 0 until items.size) items[i] = null
 		calculateSize()
 	}
 
-	operator fun set(key: T, value: V)
+	operator fun set(key: T, value: V?)
 	{
 		items[key.ordinal] = value
 		calculateSize()
