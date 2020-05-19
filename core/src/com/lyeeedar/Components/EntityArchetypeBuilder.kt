@@ -35,7 +35,7 @@ class EntityArchetypeBuilder
 
 			for (type in ComponentType.Values)
 			{
-				entity.components[type]?.reset()
+				entity.components[type.ordinal]?.reset()
 			}
 		}
 		else

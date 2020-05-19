@@ -1,5 +1,8 @@
 package com.lyeeedar.Components
 
+import com.esotericsoftware.kryo.Kryo
+import com.esotericsoftware.kryo.io.Input
+import com.esotericsoftware.kryo.io.Output
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
@@ -25,6 +28,9 @@ abstract class AbstractComponent()
 	{
 		return type.toString()
 	}
+
+	open fun serialize(kryo: Kryo, output: Output) { }
+	open fun deserialize(kryo: Kryo, input: Input) { }
 
 	var obtained = false
 	fun free()

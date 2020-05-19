@@ -29,7 +29,7 @@ class ComponentType
 
 				val extensionName = if (enumName.length < 4) enumName.toLowerCase() else enumName.substring(0, 1).toLowerCase() + enumName.substring(1)
 
-				extensionsBuilder.appendln("inline fun Entity.$extensionName(): $className? = this.components[ComponentType.$enumName] as $className?")
+				extensionsBuilder.appendln("inline fun Entity.$extensionName(): $className? = this.components[ComponentType.$enumName.ordinal] as $className?")
 			}
 
 			val output = IndentedStringBuilder()

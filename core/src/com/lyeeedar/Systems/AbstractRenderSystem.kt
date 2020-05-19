@@ -211,7 +211,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				}
 			}
 
-			if (entity.components.containsKey(ComponentType.Transient))
+			if (entity.hasComponent(ComponentType.Transient))
 			{
 				entity.markForDeletion(0f, "Out of Sight")
 			}
@@ -221,7 +221,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 		if (renderable is ParticleEffect)
 		{
-			if (renderable.completed && entity.components.containsKey(ComponentType.Transient) && renderable.complete())
+			if (renderable.completed && entity.hasComponent(ComponentType.Transient) && renderable.complete())
 			{
 				entity.markForDeletion(0f, "completed")
 			}

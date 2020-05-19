@@ -40,10 +40,10 @@ class EntityPool
 		{
 			for (type in ComponentType.Values)
 			{
-				val component = entity.components[type]
+				val component = entity.components[type.ordinal]
 				component?.free()
+				entity.components[type.ordinal] = null
 			}
-			entity.components.clear()
 			entity.signature.clear()
 
 			entity.obtained = false

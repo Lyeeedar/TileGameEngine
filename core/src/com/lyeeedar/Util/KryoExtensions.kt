@@ -10,7 +10,7 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.kryo.FastEnumMapSerializer
 import com.lyeeedar.ActionSequence.ActionSequence
-import com.lyeeedar.Components.ComponentType
+import com.lyeeedar.Components.*
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
@@ -178,6 +178,40 @@ fun Kryo.registerLyeeedarSerialisers()
 	kryo.register(SpaceSlot::class.java, 110)
 
 	kryo.register(ComponentType::class.java, 111)
+
+	kryo.register(Entity::class.java, object : Serializer<Entity>() {
+		override fun write(kryo: Kryo, output: Output, entity: Entity)
+		{
+			output.writeInt(entity.signature.bitFlag)
+
+			val toWrite = entity.components.mapIndexedNotNull { i, c -> if (c == null) null else Pair(i, c) }
+			output.writeInt(toWrite.size, true)
+			for (comp in toWrite)
+			{
+				output.writeInt(comp.first, true)
+				comp.second.serialize(kryo, output)
+			}
+		}
+
+		override fun read(kryo: Kryo, input: Input, type: Class<out Entity>): Entity
+		{
+			val entity = EntityPool.obtain()
+			entity.signature.bitFlag = input.readInt()
+
+			val compCount = input.readInt(true)
+			for (i in 0 until compCount)
+			{
+				val enumOrdinal = input.readInt(true)
+				val enumVal = ComponentType.Values[enumOrdinal]
+
+				val comp = entity.addOrGet(enumVal)
+				comp.deserialize(kryo, input)
+			}
+
+			return entity
+		}
+	}, 112)
+
 }
 
 fun Kryo.registerGdxSerialisers()

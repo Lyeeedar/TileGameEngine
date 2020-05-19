@@ -65,11 +65,11 @@ class Entity
 	var world: World<*>? = null
 
 	val signature = EnumBitflag<ComponentType>()
-	@JvmField val components = FastEnumMap<ComponentType, AbstractComponent>(ComponentType::class.java)
+	@JvmField val components = arrayOfNulls<AbstractComponent?>(ComponentType.Values.size)
 
 	fun addOrGet(componentType: ComponentType): AbstractComponent
 	{
-		var comp = components[componentType]
+		var comp = components[componentType.ordinal]
 		if (comp == null)
 		{
 			comp = addComponent(componentType)
@@ -80,7 +80,7 @@ class Entity
 
 	fun addComponent(component: AbstractComponent)
 	{
-		components[component.type] = component
+		components[component.type.ordinal] = component
 		signature.setBit(component.type)
 
 		component.onAddedToEntity(this)
@@ -98,13 +98,17 @@ class Entity
 
 	fun removeComponent(componentType: ComponentType): AbstractComponent?
 	{
-		val component = components[componentType]
-		components.remove(componentType)
-		signature.clearBit(componentType)
+		val component = components[componentType.ordinal]
 
-		component?.onRemovedFromEntity(this)
+		if (component != null)
+		{
+			components[componentType.ordinal] = null
+			signature.clearBit(componentType)
 
-		world?.entityListsDirty = true
+			component.onRemovedFromEntity(this)
+
+			world?.entityListsDirty = true
+		}
 
 		return component
 	}
@@ -138,6 +142,7 @@ class Entity
 
 		for (component in components)
 		{
+			if (component == null) continue
 			output.append(component.toShortString()).append(",")
 		}
 

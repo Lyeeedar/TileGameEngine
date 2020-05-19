@@ -92,12 +92,10 @@ class KryoSerializerTests
 
 		val entity = EntityPool.obtain()
 		entity.addComponent(ComponentType.Position)
-		entity.addComponent(ComponentType.Renderable)
 		entity.addComponent(ComponentType.Name)
 
 		val entity2 = EntityPool.obtain()
 		entity2.addComponent(ComponentType.Position)
-		entity2.addComponent(ComponentType.Renderable)
 
 		val map = FastEnumMap<SpaceSlot, Entity>(SpaceSlot::class.java)
 		map[SpaceSlot.ENTITY] = entity
