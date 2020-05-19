@@ -9,6 +9,7 @@ import com.esotericsoftware.kryo.Serializer
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.kryo.FastEnumMapSerializer
+import com.lyeeedar.ActionSequence.ActionSequence
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
@@ -18,8 +19,6 @@ import ktx.collections.set
 fun Kryo.registerLyeeedarSerialisers()
 {
 	val kryo = this
-
-	kryo.register(FastEnumMap::class.java, FastEnumMapSerializer())
 
 	kryo.register(Sprite::class.java, object : Serializer<Sprite>()
 	{
@@ -47,7 +46,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			output.writeFloats(sprite.baseScale, 0, 2)
 			output.writeBoolean(sprite.drawActualSize)
 		}
-	})
+	}, 101)
 
 	kryo.register(ParticleEffect::class.java, object : Serializer<ParticleEffect>()
 	{
@@ -64,7 +63,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			kryo.writeObject(output, particle.description)
 			particle.store(kryo, output)
 		}
-	})
+	}, 102)
 
 	kryo.register(Point::class.java, object : Serializer<Point>()
 	{
@@ -81,7 +80,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			output.writeInt(point.x)
 			output.writeInt(point.y)
 		}
-	})
+	}, 103)
 
 	kryo.register(Colour::class.java, object : Serializer<Colour>()
 	{
@@ -102,7 +101,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			output.writeFloat(colour.b)
 			output.writeFloat(colour.a)
 		}
-	})
+	}, 104)
 
 	kryo.register(Array2D::class.java, object : Serializer<Array2D<*>>()
 	{
@@ -139,7 +138,7 @@ fun Kryo.registerLyeeedarSerialisers()
 			return grid
 		}
 
-	})
+	}, 105)
 
 	kryo.register(XmlData::class.java, object : Serializer<XmlData>()
 	{
@@ -155,7 +154,7 @@ fun Kryo.registerLyeeedarSerialisers()
 		{
 			xmlData.save(output)
 		}
-	})
+	}, 106)
 
 	kryo.register(Settings::class.java, object : Serializer<Settings>()
 	{
@@ -168,7 +167,9 @@ fun Kryo.registerLyeeedarSerialisers()
 		{
 			settings.save(kryo, output)
 		}
-	})
+	}, 107)
+
+	kryo.register(FastEnumMap::class.java, FastEnumMapSerializer(), 108)
 }
 
 fun Kryo.registerGdxSerialisers()
@@ -204,7 +205,7 @@ fun Kryo.registerGdxSerialisers()
 				kryo.writeClassAndObject(output, array[i])
 			}
 		}
-	})
+	}, 201)
 
 	kryo.register(ObjectMap::class.java, object : Serializer<ObjectMap<*, *>>()
 	{
@@ -238,7 +239,7 @@ fun Kryo.registerGdxSerialisers()
 				kryo.writeClassAndObject(output, entry.value)
 			}
 		}
-	})
+	}, 202)
 
 	kryo.register(ObjectFloatMap::class.java, object : Serializer<ObjectFloatMap<*>>()
 	{
@@ -272,7 +273,7 @@ fun Kryo.registerGdxSerialisers()
 				output.writeFloat(entry.value)
 			}
 		}
-	})
+	}, 203)
 
 	kryo.register(XmlReader.Element::class.java, object : Serializer<XmlReader.Element>()
 	{
@@ -296,5 +297,5 @@ fun Kryo.registerGdxSerialisers()
 		{
 			output.writeString(element.toString())
 		}
-	})
+	}, 204)
 }

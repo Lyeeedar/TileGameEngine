@@ -12,7 +12,7 @@ class ComponentPool
 
 		fun obtain(type: ComponentType): AbstractComponent
 		{
-			val pool = pools[type]
+			val pool = pools[type]!!
 
 			val obj = pool.obtain()
 			if (obj.obtained) throw RuntimeException()
@@ -27,7 +27,7 @@ class ComponentPool
 		{
 			if (!component.obtained) throw RuntimeException()
 			component.obtained = false
-			pools[component.type].free(component)
+			pools[component.type]!!.free(component)
 		}
 
 		init

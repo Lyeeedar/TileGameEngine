@@ -50,7 +50,7 @@ class Controls
 
 	fun addKeyMapping(key: Keys, source: KeySource, code: Int)
 	{
-		keyMap[key].add(KeyMapping(source, code))
+		keyMap[key]?.add(KeyMapping(source, code))
 	}
 
 	fun defaultXboxController()
@@ -130,14 +130,14 @@ class Controls
 
 	fun getKeyCodes(key: Keys): ObjectSet<KeyMapping>
 	{
-		return keyMap.get(key)
+		return keyMap[key]!!
 	}
 
 	fun getKey(source: KeySource, keycode: Int): Keys?
 	{
 		for (key in Keys.values())
 		{
-			if (keyMap[key].any { it.source == source && it.code == keycode }) return key
+			if (keyMap[key]!!.any { it.source == source && it.code == keycode }) return key
 		}
 
 		return null
@@ -145,24 +145,24 @@ class Controls
 
 	fun isKey(key: Keys, source: KeySource, keycode: Int): Boolean
 	{
-		return keyMap.get(key).any { it.source == source && it.code == keycode }
+		return keyMap[key]!!.any { it.source == source && it.code == keycode }
 	}
 
 	fun isKeyDown(key: Keys): Boolean
 	{
-		return keyDownMap[key]
+		return keyDownMap[key]!!
 	}
 
 	fun isKeyDownAndNotConsumed(key: Keys): Boolean
 	{
-		return keyPressMap[key]
+		return keyPressMap[key]!!
 	}
 
 	fun keyPressed(source: KeySource, code: Int)
 	{
 		for (k in Keys.values())
 		{
-			if (keyMap[k].any { it.source == source && it.code == code })
+			if (keyMap[k]!!.any { it.source == source && it.code == code })
 			{
 				keyPressMap[k] = true
 				keyDownMap[k] = true
@@ -174,7 +174,7 @@ class Controls
 	{
 		for (k in Keys.values())
 		{
-			if (keyMap[k].any { it.source == source && it.code == code })
+			if (keyMap[k]!!.any { it.source == source && it.code == code })
 			{
 				keyPressMap[k] = false
 				keyDownMap[k] = false
@@ -190,7 +190,7 @@ class Controls
 		return pressed
 	}
 
-	fun isDirectionDownAndNotConsumed(): Boolean = keyPressMap[Keys.UP] || keyPressMap[Keys.DOWN] || keyPressMap[Keys.LEFT] || keyPressMap[Keys.RIGHT]
+	fun isDirectionDownAndNotConsumed(): Boolean = keyPressMap[Keys.UP, false] || keyPressMap[Keys.DOWN, false] || keyPressMap[Keys.LEFT, false] || keyPressMap[Keys.RIGHT, false]
 
 	fun isDirectionDown(): Boolean = Keys.UP.isDown() || Keys.DOWN.isDown() || Keys.LEFT.isDown() || Keys.RIGHT.isDown()
 }
