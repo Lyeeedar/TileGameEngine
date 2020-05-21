@@ -99,8 +99,8 @@ class AtlasCreator
 			settings.paddingX = 4
 			settings.paddingY = 4
 			settings.useIndexes = false
-			settings.filterMin = Texture.TextureFilter.MipMapLinearLinear
-			settings.filterMag = Texture.TextureFilter.MipMapLinearLinear
+			settings.filterMin = Texture.TextureFilter.Nearest
+			settings.filterMag = Texture.TextureFilter.Nearest
 
 			val packer = TexturePacker(File("../assetsraw/Sprites"), settings)
 

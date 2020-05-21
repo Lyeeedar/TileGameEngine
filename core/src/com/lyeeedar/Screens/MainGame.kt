@@ -3,6 +3,7 @@ package com.lyeeedar
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.lyeeedar.Game.load
 import com.lyeeedar.Game.newGame
 import com.lyeeedar.Screens.AbstractScreen
@@ -38,6 +39,16 @@ class MainGame(val debugScreenOverride: ScreenEnum? = null) : Game()
 
 	override fun create()
 	{
+		if (Statics.debug)
+		{
+			val profiler = GLProfiler(Gdx.graphics)
+			profiler.enable()
+
+			profiler.setListener {
+				throw java.lang.RuntimeException("Error code: $it")
+			}
+		}
+
 		Statics.analytics.appOpen()
 
 		Statics.setup()
