@@ -28,6 +28,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 	private val tempVec2 = Vector2()
 	private val tempVec3 = Vector3()
 	private val tempCol = Colour()
+	private val bitflag = EnumBitflag<Direction>()
 
 	private val MAX_INDEX = 5
 	private val MAX_LAYER = renderer.layers
@@ -46,6 +47,34 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 	internal fun sort()
 	{
+		// set tiling sprites
+		for (i in 0 until renderer.queuedSprites)
+		{
+			val rs = renderer.spriteArray[i] ?: continue
+			if (rs.tilingSprite != null)
+			{
+				bitflag.clear()
+				for (dir in Direction.Values)
+				{
+					val hash = Point.getHashcode(rs.px, rs.py, dir)
+					val keys = renderer.tilingMap[hash]
+
+					if (keys?.contains(rs.tilingSprite!!.checkID) != true)
+					{
+						bitflag.setBit(dir)
+					}
+				}
+
+				val sprite = rs.tilingSprite!!.getSprite(bitflag)
+				rs.sprite = sprite
+
+				if (sprite.light != null)
+				{
+					renderer.addLight(sprite.light!!, rs.px + 0.5f, rs.py + 0.5f)
+				}
+			}
+		}
+
 		renderer.spriteArray.sort(0, renderer.queuedSprites)
 	}
 
