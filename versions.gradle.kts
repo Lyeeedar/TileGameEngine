@@ -5,7 +5,7 @@ extra["gdxVersion"] = "1.9.10"
 extra["ktxVersion"] = "1.9.10-b5"
 extra["squidlibVersion"] = "3.0.0-b10"
 
-extra["kryoVersion"] = "5.0.0-RC6"
+extra["kryoVersion"] = "5.0.0-RC2"
 
 extra["androidToolsVersion"] = "3.4.2"
 
