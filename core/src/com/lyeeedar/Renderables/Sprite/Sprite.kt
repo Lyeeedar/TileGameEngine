@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Renderables.Animation.AbstractColourAnimation
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.SortedRenderer
+import com.lyeeedar.Renderables.Renderer.SpriteDrawerer
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Random
 
@@ -328,7 +328,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 	}
 	private val lastRenderHash = VertexHash(Vector2(-1f, -1f), -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1)
 	private val cachedRenderHash = VertexHash(Vector2(-1f, -1f), -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1)
-	private val vertexCache = FloatArray(SortedRenderer.verticesASprite)
+	private val vertexCache = FloatArray(SpriteDrawerer.verticesASprite)
 	fun render(vertices: FloatArray, offset: Int, colour: Colour, x: Float, y: Float, width: Float, height: Float, scaleX: Float, scaleY: Float, rotation: Float, isLit: Boolean)
 	{
 		var cacheVertices = false
@@ -336,7 +336,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 		{
 			if (cachedRenderHash.isSame(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex))
 			{
-				System.arraycopy(vertexCache, 0, vertices, offset, SortedRenderer.verticesASprite)
+				System.arraycopy(vertexCache, 0, vertices, offset, SpriteDrawerer.verticesASprite)
 				return
 			}
 			else if (lastRenderHash.isSame(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex))
@@ -424,7 +424,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 		if (cacheVertices)
 		{
 			cachedRenderHash.update(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex)
-			System.arraycopy(vertices, offset, vertexCache, 0, SortedRenderer.verticesASprite)
+			System.arraycopy(vertices, offset, vertexCache, 0, SpriteDrawerer.verticesASprite)
 		}
 	}
 

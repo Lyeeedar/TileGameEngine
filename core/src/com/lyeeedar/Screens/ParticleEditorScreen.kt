@@ -20,7 +20,7 @@ import com.lyeeedar.Renderables.Animation.MoveAnimation
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.SortedRenderer
+import com.lyeeedar.Renderables.Renderer.SortedRenderer
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.UI.addClickListener

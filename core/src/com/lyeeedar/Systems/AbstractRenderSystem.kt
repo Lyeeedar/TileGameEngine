@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.IntSet
 import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffect
+import com.lyeeedar.Renderables.Renderer.SortedRenderer
 import com.lyeeedar.Renderables.ShadowCastCache
-import com.lyeeedar.Renderables.SortedRenderer
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.SpaceSlotType
 import com.lyeeedar.Util.*
