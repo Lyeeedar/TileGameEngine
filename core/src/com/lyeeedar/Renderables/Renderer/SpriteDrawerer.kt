@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BigMesh
 import com.badlogic.gdx.graphics.glutils.FrameBuffer
+import com.badlogic.gdx.graphics.glutils.GL30FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Vector3
@@ -52,7 +53,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	private val lightMesh: BigMesh
 	private val lightShader: ShaderProgram
-	private val lightFBO: FrameBuffer
+	private val lightFBO: GL30FrameBuffer
 	private var numLights: Int = 0
 
 	private val mesh: BigMesh
@@ -119,7 +120,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader = createShader()
 		lightShader = createLightShader()
 
-		lightFBO = FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight, false)
+		lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight, false)
 	}
 
 	override fun dispose()
@@ -261,10 +262,10 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		lightFBO.begin()
 
 		Gdx.gl.glEnable(GL20.GL_BLEND)
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
+		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE)
 		Gdx.gl.glDepthMask(false)
 
-		Gdx.gl.glClearColor(ambientLight.r * ambientLight.a, ambientLight.g * ambientLight.a, ambientLight.b * ambientLight.a, 1.0f)
+		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 0f)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
 		lightShader.begin()
@@ -311,7 +312,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader.setUniformf("u_offset", offsetx, offsety)
 		shader.setUniformi("u_texture", 0)
 		shader.setUniformi("u_lightTexture", 1)
-		lightFBO.colorBufferTexture.bind(1)
+		lightFBO.colorBufferTexture!!.bind(1)
 
 		if (currentBuffer != null)
 		{
@@ -459,18 +460,19 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		fun getLightVertex(): String
 		{
 			return """
-attribute vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
-attribute vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
-attribute vec2 a_rangeBrightness;
+#version 300 es
+in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
+in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
+in vec2 a_rangeBrightness;
 
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
 
-varying vec4 v_color;
-varying vec2 v_lightPos;
-varying vec2 v_pixelPos;
-varying float v_lightRange;
-varying float v_brightness;
+out vec4 v_color;
+out vec2 v_lightPos;
+out vec2 v_pixelPos;
+out float v_lightRange;
+out float v_brightness;
 
 void main()
 {
@@ -491,28 +493,31 @@ void main()
 		fun getLightFragment(): String
 		{
 			return """
-varying vec4 v_color;
-varying vec2 v_lightPos;
-varying vec2 v_pixelPos;
-varying float v_lightRange;
-varying float v_brightness;
+#version 300 es
+in mediump vec4 v_color;
+in mediump vec2 v_lightPos;
+in mediump vec2 v_pixelPos;
+in mediump float v_lightRange;
+in mediump float v_brightness;
 
-float calculateLightStrength()
+out highp vec4 fragColour;
+
+mediump float calculateLightStrength()
 {
-	vec2 diff = v_lightPos - v_pixelPos;
-	float distSq = (diff.x * diff.x) + (diff.y * diff.y);
-	float rangeSq = v_lightRange * v_lightRange;
+	mediump vec2 diff = v_lightPos - v_pixelPos;
+	mediump float distSq = (diff.x * diff.x) + (diff.y * diff.y);
+	mediump float rangeSq = v_lightRange * v_lightRange;
 
-	float lightStrength = step(distSq, rangeSq);
-	float alpha = 1.0 - (distSq / rangeSq);
+	mediump float lightStrength = step(distSq, rangeSq);
+	mediump float alpha = 1.0 - (distSq / rangeSq);
 
 	return lightStrength * alpha;
 }
 
 void main()
 {
-	float lightStrength = calculateLightStrength();
-	gl_FragColor = v_color * v_brightness * lightStrength;
+	mediump float lightStrength = calculateLightStrength();
+	fragColour = v_color * v_brightness * lightStrength;
 }
 			""".trimIndent()
 		}
@@ -591,7 +596,7 @@ void main()
 	vec4 objCol = vec4(v_color.rgb * v_brightness * 255.0, v_color.a);
 
 	vec4 finalCol = clamp(objCol * outCol, 0.0, 1.0);
-	gl_FragColor = finalCol * light;
+	gl_FragColor = finalCol * vec4(light.rgb, 1.0);
 }
 """
 			return fragmentShader

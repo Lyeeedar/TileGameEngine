@@ -21,6 +21,8 @@ class AndroidLauncher : AndroidApplication()
 		val config = AndroidApplicationConfiguration()
 		config.resolutionStrategy.calcMeasures(360, 640)
 		config.disableAudio = false
+		config.useGL30 = true
+		config.useGLSurfaceView20API18 = true
 
 		Statics.android = true
 		Statics.crashReporter = AndroidCrashReporter()

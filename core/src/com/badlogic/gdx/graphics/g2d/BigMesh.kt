@@ -6,15 +6,16 @@ import com.badlogic.gdx.graphics.VertexAttribute
 import com.badlogic.gdx.graphics.VertexAttributes
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.graphics.glutils.VertexBufferObject
+import com.badlogic.gdx.graphics.glutils.VertexBufferObjectWithVAO
 
 class BigMesh
 {
-	internal var vertices: VertexBufferObject
+	internal var vertices: VertexBufferObjectWithVAO
 	internal var indices: LargeIndexBufferObject
 
 	constructor(isStatic: Boolean, maxVertices: Int, maxIndices: Int, vararg attributes: VertexAttribute)
 	{
-		vertices = VertexBufferObject(isStatic, maxVertices, VertexAttributes(*attributes))
+		vertices = VertexBufferObjectWithVAO(isStatic, maxVertices, VertexAttributes(*attributes))
 		indices = LargeIndexBufferObject(true, maxIndices)
 	}
 

@@ -32,6 +32,9 @@ class LwjglApplicationChanger : AbstractApplicationChanger(LwjglPreferences("gam
 		cfg.samples = pref.getInteger("msaa")
 		cfg.addIcon("Sprites/Unpacked/Icon32.png", FileType.Internal)
 		cfg.allowSoftwareMode = true
+		cfg.useGL30 = true
+		cfg.gles30ContextMajorVersion = 4
+		cfg.gles30ContextMinorVersion = 3
 
 		Statics.fps = pref.getInteger("fps")
 
