@@ -525,22 +525,23 @@ void main()
 		fun getVertexUnoptimised(): String
 		{
 			val vertexShader = """
-attribute vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
-attribute vec4 ${ShaderProgram.TEXCOORD_ATTRIBUTE};
-attribute vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
-attribute vec4 a_additionalData;
+#version 300 es
+in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
+in vec4 ${ShaderProgram.TEXCOORD_ATTRIBUTE};
+in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
+in vec4 a_additionalData;
 
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
 
-varying vec4 v_color;
-varying vec2 v_spritePos;
-varying vec2 v_texCoords1;
-varying vec2 v_texCoords2;
-varying float v_blendAlpha;
-varying float v_isLit;
-varying float v_alphaRef;
-varying float v_brightness;
+out vec4 v_color;
+out vec2 v_spritePos;
+out vec2 v_texCoords1;
+out vec2 v_texCoords2;
+out float v_blendAlpha;
+out float v_isLit;
+out float v_alphaRef;
+out float v_brightness;
 
 void main()
 {
@@ -559,7 +560,7 @@ void main()
 	v_brightness = a_additionalData.w;
 	gl_Position = screenPos;
 }
-"""
+""".trimIndent()
 
 			return vertexShader
 		}
@@ -567,38 +568,41 @@ void main()
 		fun getFragmentUnoptimised(): String
 		{
 			val fragmentShader = """
-varying vec4 v_color;
-varying vec2 v_spritePos;
-varying vec2 v_texCoords1;
-varying vec2 v_texCoords2;
-varying float v_blendAlpha;
-varying float v_isLit;
-varying float v_alphaRef;
-varying float v_brightness;
+#version 300 es
+in mediump vec4 v_color;
+in mediump vec2 v_spritePos;
+in mediump vec2 v_texCoords1;
+in mediump vec2 v_texCoords2;
+in mediump float v_blendAlpha;
+in mediump float v_isLit;
+in mediump float v_alphaRef;
+in mediump float v_brightness;
 
 uniform sampler2D u_lightTexture;
 uniform sampler2D u_texture;
 
+out highp vec4 fragColour;
+
 // ------------------------------------------------------
 void main()
 {
-	vec4 light = texture2D(u_lightTexture, v_spritePos);
-	vec4 col1 = texture2D(u_texture, v_texCoords1);
-	vec4 col2 = texture2D(u_texture, v_texCoords2);
+	highp vec4 light = texture(u_lightTexture, v_spritePos);
+	highp vec4 col1 = texture(u_texture, v_texCoords1);
+	highp vec4 col2 = texture(u_texture, v_texCoords2);
 
-	vec4 outCol = mix(col1, col2, v_blendAlpha);
+	highp vec4 outCol = mix(col1, col2, v_blendAlpha);
 
 	if (v_color.a * outCol.a < v_alphaRef)
 	{
 		outCol = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 
-	vec4 objCol = vec4(v_color.rgb * v_brightness * 255.0, v_color.a);
+	highp vec4 objCol = vec4(v_color.rgb * v_brightness * 255.0, v_color.a);
 
-	vec4 finalCol = clamp(objCol * outCol, 0.0, 1.0);
-	gl_FragColor = finalCol * vec4(light.rgb, 1.0);
+	highp vec4 finalCol = clamp(objCol * outCol, 0.0, 1.0);
+	fragColour = finalCol * vec4(light.rgb, 1.0);
 }
-"""
+""".trimIndent()
 			return fragmentShader
 		}
 	}
