@@ -110,4 +110,9 @@ class PointRect()
 			throw Exception("Unhandled direction")
 		}
 	}
+
+	fun contains(point: Point): Boolean
+	{
+		return point.x >= x && point.x <= x+width-1 && point.y >= y && point.y <= y+height-1
+	}
 }

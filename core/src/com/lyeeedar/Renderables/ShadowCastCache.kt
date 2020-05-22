@@ -216,6 +216,7 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 		Point.freeAllTS(invisibleOOB)
 	}
 
+	private val tempPoint = Point()
 	private fun updateOpaqueRegions()
 	{
 		opaqueRegions.clear()
@@ -226,7 +227,6 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 			tileSet.add(tile)
 		}
 
-		val tempPoint = Point.obtainTS()
 		while (tileSet.isNotEmpty())
 		{
 			val sourceTile = tileSet.asSequence().first()
@@ -289,13 +289,10 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 				opaqueRegions.add(PointRect(sourceTile.x, sourceTile.y, 1, 1))
 			}
 		}
-
-		tempPoint.freeTS()
 	}
 
-	fun getShadowCast(x: Int, y: Int, range: Int): com.badlogic.gdx.utils.Array<Point>
+	fun getShadowCast(x: Int, y: Int, range: Int, collisionGrid: Array2D<Boolean>? = lightCollisionGrid): com.badlogic.gdx.utils.Array<Point>
 	{
-		val collisionGrid = lightCollisionGrid
 		if (collisionGrid == null)
 		{
 			var recalculate = false
