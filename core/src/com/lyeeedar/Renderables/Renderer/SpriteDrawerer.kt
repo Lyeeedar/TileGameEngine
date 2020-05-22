@@ -419,10 +419,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		{
 			renderVertices()
 		}
-
-		//batch?.begin()
-		//batch?.draw(lightFBO.colorBufferTexture, 0f, 0f)
-		//batch?.end()
 	}
 
 	companion object
@@ -437,8 +433,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		fun createShader(): ShaderProgram
 		{
-			val vertexShader = getVertexUnoptimised()
-			val fragmentShader = getFragmentUnoptimised()
+			val vertexShader = getGeometryVertex()
+			val fragmentShader = getGeometryFragment()
 
 			val shader = ShaderProgram(vertexShader, fragmentShader)
 			if (!shader.isCompiled) throw IllegalArgumentException("Error compiling shader: " + shader.log)
@@ -494,7 +490,7 @@ void main()
 		{
 			return """
 #version 300 es
-in mediump vec4 v_color;
+in highp vec4 v_color;
 in mediump vec2 v_lightPos;
 in mediump vec2 v_pixelPos;
 in mediump float v_lightRange;
@@ -502,27 +498,27 @@ in mediump float v_brightness;
 
 out highp vec4 fragColour;
 
-mediump float calculateLightStrength()
+highp float calculateLightStrength()
 {
-	mediump vec2 diff = v_lightPos - v_pixelPos;
-	mediump float distSq = (diff.x * diff.x) + (diff.y * diff.y);
-	mediump float rangeSq = v_lightRange * v_lightRange;
+	highp vec2 diff = v_lightPos - v_pixelPos;
+	highp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
+	highp float rangeSq = v_lightRange * v_lightRange;
 
-	mediump float lightStrength = step(distSq, rangeSq);
-	mediump float alpha = 1.0 - (distSq / rangeSq);
+	highp float lightStrength = step(distSq, rangeSq);
+	highp float alpha = 1.0 - (distSq / rangeSq);
 
 	return lightStrength * alpha;
 }
 
 void main()
 {
-	mediump float lightStrength = calculateLightStrength();
+	highp float lightStrength = calculateLightStrength();
 	fragColour = v_color * v_brightness * lightStrength;
 }
 			""".trimIndent()
 		}
 
-		fun getVertexUnoptimised(): String
+		fun getGeometryVertex(): String
 		{
 			val vertexShader = """
 #version 300 es
@@ -565,7 +561,7 @@ void main()
 			return vertexShader
 		}
 
-		fun getFragmentUnoptimised(): String
+		fun getGeometryFragment(): String
 		{
 			val fragmentShader = """
 #version 300 es
