@@ -4,21 +4,14 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BigMesh
-import com.badlogic.gdx.graphics.glutils.FrameBuffer
 import com.badlogic.gdx.graphics.glutils.GL30FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Disposable
-import com.badlogic.gdx.utils.ObjectMap
+import com.badlogic.gdx.utils.NumberUtils
 import com.badlogic.gdx.utils.Pool
-import com.lyeeedar.Direction
-import com.lyeeedar.Renderables.Light
-import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.doDraw
-import com.lyeeedar.Util.*
-import ktx.collections.set
-import ktx.collections.toGdxArray
+import com.lyeeedar.Util.Colour
 
 class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 {
@@ -55,6 +48,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	private val lightShader: ShaderProgram
 	private val lightFBO: GL30FrameBuffer
 	private var numLights: Int = 0
+	private var lightBufferHash: Int = 0
 
 	private val mesh: BigMesh
 	private val staticMesh: BigMesh
@@ -209,11 +203,37 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 	}
 
+	private fun updateLightBuffer()
+	{
+		var lightsHash = NumberUtils.floatToIntBits(renderer.offsetx)
+		lightsHash = lightsHash xor NumberUtils.floatToIntBits(renderer.offsety)
+		lightsHash = lightsHash xor NumberUtils.floatToIntBits(renderer.tileSize)
+
+		for (i in 0 until renderer.basicLights.size)
+		{
+			val light = renderer.basicLights[i]
+
+			lightsHash = lightsHash xor light.pos.hashCode()
+			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.range)
+			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.brightness)
+		}
+
+		if (lightsHash != lightBufferHash)
+		{
+			lightBufferHash = lightsHash
+
+			fillLightBuffer()
+			renderLights()
+		}
+	}
+
 	private fun fillLightBuffer()
 	{
 		var i = 0
-		for (light in renderer.basicLights)
+		for (l in 0 until renderer.basicLights.size)
 		{
+			val light = renderer.basicLights[l]
+
 			val x = light.pos.x * renderer.tileSize
 			val y = light.pos.y * renderer.tileSize
 			val range = light.range * renderer.tileSize
@@ -369,8 +389,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		if (!renderer.inStaticBegin)
 		{
-			fillLightBuffer()
-			renderLights()
+			updateLightBuffer()
 		}
 
 		// begin rendering

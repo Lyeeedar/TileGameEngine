@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.Random
+import ktx.math.compareTo
 import squidpony.squidgrid.FOV
 import java.util.*
 
@@ -14,7 +15,7 @@ import java.util.*
 //
 // vec4 posx, posy, packedColBrightness, range
 
-class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, hasShadows: Boolean = false)
+class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, hasShadows: Boolean = false): Comparable<Light>
 {
 	var pos = Vector2()
 
@@ -123,6 +124,11 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 		val rangeHash = (range * 1000).toInt()
 
 		return posHash + colHash + rangeHash
+	}
+
+	override fun compareTo(other: Light): Int
+	{
+		return pos.compareTo(other.pos)
 	}
 }
 

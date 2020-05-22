@@ -76,6 +76,8 @@ class SpriteSorter(val renderer: SortedRenderer)
 		}
 
 		renderer.spriteArray.sort(0, renderer.queuedSprites)
+		renderer.basicLights.sort()
+		renderer.shadowLights.sort()
 	}
 
 	private fun getComparisonVal(x: Float, y: Float, layer: Int, index: Int, blend: BlendMode) : Int
