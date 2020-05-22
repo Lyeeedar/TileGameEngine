@@ -10,8 +10,9 @@ import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.NumberUtils
 import com.badlogic.gdx.utils.Pool
-import com.lyeeedar.Renderables.doDraw
+import com.lyeeedar.Renderables.writeInstanceData
 import com.lyeeedar.Util.Colour
+import com.lyeeedar.Util.Statics
 
 class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 {
@@ -46,16 +47,16 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	private val lightMesh: Mesh
 	private val lightShader: ShaderProgram
-	private val lightFBO: GL30FrameBuffer
-	private var numLights: Int = 0
+	private var lightFBO: GL30FrameBuffer
+	private val lightInstanceData: FloatArray
 	private var lightBufferHash: Int = 0
 
-	private val mesh: BigMesh
-	private val staticMesh: BigMesh
+	private val geometryMesh: Mesh
+	private val staticGeometryMesh: Mesh
 	private var currentBuffer: VertexBuffer? = null
-	private val vertices: FloatArray
-	private val instanceData: FloatArray
-	private var currentVertexCount = 0
+	private val geometryInstanceData: FloatArray
+	private var currentGeometryInstanceIndex = 0
+
 	private val staticBuffers = com.badlogic.gdx.utils.Array<VertexBuffer>()
 	private val queuedBuffers = com.badlogic.gdx.utils.Array<VertexBuffer>()
 	private val shader: ShaderProgram
@@ -71,47 +72,38 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	init
 	{
-		mesh = BigMesh(false, maxSprites * 4, maxSprites * 6,
-		               VertexAttribute(VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE),
-		               VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 4, ShaderProgram.TEXCOORD_ATTRIBUTE),
-		               VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-		               VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_additionalData") // blendalpha, islit, alpharef, brightness
-		              )
+		val billboardVertices = floatArrayOf(-1f, +1f, -1f, -1f, +1f, -1f, +1f, +1f)
+		val billboardIndices = shortArrayOf(0, 1, 2, 2, 3, 0)
 
-		staticMesh = BigMesh(true, maxSprites * 4, maxSprites * 6,
-		                     VertexAttribute(VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE),
-		                     VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 4, ShaderProgram.TEXCOORD_ATTRIBUTE),
-		                     VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-		                     VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_additionalData") // blendalpha, islit, alpharef, brightness
-		                    )
+		geometryMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
+		geometryMesh.setVertices(billboardVertices)
+		geometryMesh.setIndices(billboardIndices)
+		geometryMesh.enableInstancedRendering(false, maxInstances,
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_width_height"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords1"),
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"))
+
+		staticGeometryMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
+		staticGeometryMesh.setVertices(billboardVertices)
+		staticGeometryMesh.setIndices(billboardIndices)
+		staticGeometryMesh.enableInstancedRendering(true, maxInstances,
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_width_height"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords1"),
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"))
 
 		lightMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
-		lightMesh.setVertices(floatArrayOf(-1f, +1f, -1f, -1f, +1f, -1f, +1f, +1f))
-		lightMesh.setIndices(shortArrayOf(0, 1, 2, 2, 3, 0))
-		lightMesh.enableInstancedRendering(false, 100000,
-		                                   VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_posRangeBrightness"),
+		lightMesh.setVertices(billboardVertices)
+		lightMesh.setIndices(billboardIndices)
+		lightMesh.enableInstancedRendering(false, 10000,
+		                                   VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_range_brightness"),
 		                                   VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE))
-		instanceData = FloatArray(10000 * (4 + 1))
 
-		val len = maxSprites * 6
-		val indices = IntArray(len)
-		var j = 0
-		var i = 0
-		while (i < len)
-		{
-			indices[i] = j
-			indices[i + 1] = j + 1
-			indices[i + 2] = j + 2
-			indices[i + 3] = j + 2
-			indices[i + 4] = j + 3
-			indices[i + 5] = j
-			i += 6
-			j += 4
-		}
-		mesh.setIndices(indices)
-		staticMesh.setIndices(indices)
-
-		vertices = FloatArray(maxVertices)
+		geometryInstanceData = FloatArray(maxInstances * instanceDataSize)
+		lightInstanceData = FloatArray(10000 * (4 + 1))
 
 		shader = createShader()
 		lightShader = createLightShader()
@@ -121,8 +113,24 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	override fun dispose()
 	{
-		mesh.dispose()
-		staticMesh.dispose()
+		geometryMesh.dispose()
+		staticGeometryMesh.dispose()
+		lightMesh.dispose()
+		lightFBO.dispose()
+		shader.dispose()
+		lightShader.dispose()
+	}
+
+	fun updateFBO()
+	{
+		val width = Statics.stage.viewport.screenWidth
+		val height = Statics.stage.viewport.screenHeight
+
+		if (width != lightFBO.width || height != lightFBO.height)
+		{
+			lightFBO.dispose()
+			lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
+		}
 	}
 
 	fun freeStaticBuffers()
@@ -136,9 +144,9 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	private fun fillVertexBuffer(rs: RenderSprite)
 	{
-		if (currentVertexCount+verticesASprite >= maxVertices)
+		if (currentGeometryInstanceIndex + instanceDataSize >= maxInstances * instanceDataSize)
 		{
-			System.err.println("Too many vertices queued!")
+			System.err.println("Too many instances queued!")
 			return
 		}
 
@@ -162,7 +170,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		{
 			currentBuffer = bufferPool.obtain()
 			currentBuffer!!.reset(blendSrc, blendDst, texture)
-			currentBuffer!!.offset = currentVertexCount
+			currentBuffer!!.offset = currentGeometryInstanceIndex
 		}
 
 		var buffer = currentBuffer!!
@@ -171,14 +179,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			queuedBuffers.add(currentBuffer)
 			buffer = bufferPool.obtain()
 			buffer.reset(blendSrc, blendDst, texture)
-			buffer.offset = currentVertexCount
+			buffer.offset = currentGeometryInstanceIndex
 
 			currentBuffer = buffer
 		}
 
-		val offset = currentVertexCount
-		buffer.count += verticesASprite
-		currentVertexCount += verticesASprite
+		val offset = currentGeometryInstanceIndex
+		buffer.count += instanceDataSize
+		currentGeometryInstanceIndex += instanceDataSize
 
 		val localx = rs.x
 		val localy = rs.y
@@ -192,20 +200,23 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			val renderCol = sprite.getRenderColour()
 			if (!renderCol.isWhite()) colour.mul(renderCol)
 
-			sprite.render(vertices, offset, colour, localx, localy, localw, localh, rs.scaleX, rs.scaleY, rs.rotation, rs.isLit)
+			sprite.render(geometryInstanceData, offset, colour, localx, localy, localw, localh, rs.scaleX, rs.scaleY, rs.rotation, rs.isLit)
 		}
 		else if (rs.texture != null)
 		{
-			doDraw(vertices, offset,
+			writeInstanceData(geometryInstanceData, offset,
 			       rs.texture!!, rs.nextTexture ?: rs.texture!!, colour,
-			       localx, localy, 0.5f, 0.5f, 1f, 1f, localw * rs.scaleX, localh * rs.scaleY, rs.rotation, rs.flipX, rs.flipY,
+			       localx, localy, 1f, 1f, localw * rs.scaleX, localh * rs.scaleY, rs.rotation, rs.flipX, rs.flipY,
 			       0f, rs.blendAlpha, rs.alphaRef, rs.isLit, false)
 		}
 	}
 
 	private fun updateLightBuffer()
 	{
-		var lightsHash = NumberUtils.floatToIntBits(renderer.offsetx)
+		updateFBO()
+
+		var lightsHash = ambientLight.hashCode() xor lightFBO.hashCode()
+		lightsHash = lightsHash xor NumberUtils.floatToIntBits(renderer.offsetx)
 		lightsHash = lightsHash xor NumberUtils.floatToIntBits(renderer.offsety)
 		lightsHash = lightsHash xor NumberUtils.floatToIntBits(renderer.tileSize)
 
@@ -239,15 +250,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			val range = light.range * renderer.tileSize
 			val colourBrightness = light.colour.toScaledFloatBits()
 
-			instanceData[i++] = x
-			instanceData[i++] = y
-			instanceData[i++] = range
-			instanceData[i++] = colourBrightness.y * light.brightness
-			instanceData[i++] = colourBrightness.x
+			lightInstanceData[i++] = x
+			lightInstanceData[i++] = y
+			lightInstanceData[i++] = range
+			lightInstanceData[i++] = colourBrightness.y * light.brightness
+			lightInstanceData[i++] = colourBrightness.x
 		}
 
-		lightMesh.setInstanceData(instanceData, 0, i)
-		numLights = renderer.basicLights.size
+		lightMesh.setInstanceData(lightInstanceData, 0, i)
 	}
 
 	private fun renderLights()
@@ -277,7 +287,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		Gdx.gl.glDepthMask(true)
 		Gdx.gl.glDisable(GL20.GL_BLEND)
 
-		lightFBO.end()
+		lightFBO.end(Statics.stage.viewport.screenX, Statics.stage.viewport.screenY, Statics.stage.viewport.screenWidth, Statics.stage.viewport.screenHeight)
 	}
 
 	private fun storeStatic()
@@ -288,8 +298,13 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		staticBuffers.addAll(queuedBuffers)
 		queuedBuffers.clear()
 
-		staticMesh.setVertices(vertices, 0, currentVertexCount)
-		currentVertexCount = 0
+		staticGeometryMesh.setInstanceData(geometryInstanceData, 0, currentGeometryInstanceIndex)
+		currentGeometryInstanceIndex = 0
+
+		if (staticBuffers.size > 1)
+		{
+			throw RuntimeException("Cannot queue more than 1 static buffer.")
+		}
 	}
 
 	private fun renderVertices()
@@ -318,9 +333,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		var lastBlendSrc = -1
 		var lastBlendDst = -1
 		var lastTexture: Texture? = null
-		var currentOffset = 0
 
-		fun drawBuffer(buffer: VertexBuffer, mesh: BigMesh)
+		fun drawBuffer(buffer: VertexBuffer, mesh: Mesh)
 		{
 			if (buffer.texture != lastTexture)
 			{
@@ -336,38 +350,34 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 				lastBlendDst = buffer.blendDst
 			}
 
-			val spritesInBuffer = buffer.count / (4 * vertexSize)
-			val drawCount = spritesInBuffer * 6
-			mesh.render(shader, GL20.GL_TRIANGLES, currentOffset, drawCount)
-			currentOffset += drawCount
+			mesh.render(shader, GL20.GL_TRIANGLES, 0, 6)
 		}
 
 		if (staticBuffers.size > 0 && renderStatic)
 		{
-			staticMesh.bind(shader)
+			staticGeometryMesh.bind(shader)
 
 			for (buffer in staticBuffers)
 			{
-				drawBuffer(buffer, staticMesh)
+				drawBuffer(buffer, staticGeometryMesh)
 			}
 
-			staticMesh.unbind(shader)
+			staticGeometryMesh.unbind(shader)
 		}
 
 		if (queuedBuffers.size > 0)
 		{
-			currentOffset = 0
-			mesh.setVertices(vertices, 0, currentVertexCount)
-			mesh.bind(shader)
-
 			for (buffer in queuedBuffers)
 			{
-				drawBuffer(buffer, mesh)
+				geometryMesh.setInstanceData(geometryInstanceData, buffer.offset, buffer.count)
+				geometryMesh.bind(shader)
+
+				drawBuffer(buffer, geometryMesh)
 				bufferPool.free(buffer)
+
+				geometryMesh.unbind(shader)
 			}
 			queuedBuffers.clear()
-
-			mesh.unbind(shader)
 		}
 
 		Gdx.gl.glDepthMask(true)
@@ -375,7 +385,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 		shader.end()
 
-		currentVertexCount = 0
+		currentGeometryInstanceIndex = 0
 	}
 
 	internal fun draw(batch: Batch?)
@@ -399,7 +409,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			fillVertexBuffer(rs)
 
-			if (!renderer.inStaticBegin && currentVertexCount+verticesASprite >= maxVertices)
+			if (!renderer.inStaticBegin && currentGeometryInstanceIndex + instanceDataSize >= maxInstances * instanceDataSize)
 			{
 				renderVertices()
 			}
@@ -420,10 +430,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		// Optimisation reference:
 		// https://zz85.github.io/glsl-optimizer/
 
-		public const val vertexSize = 4 + 4 + 1 + 1
-		private const val maxSprites = 10000
-		public const val verticesASprite = vertexSize * 4
-		private const val maxVertices = maxSprites * vertexSize
+		public const val instanceDataSize = 4+4+4+1+1
+		private const val maxInstances = 100000
 
 		fun createShader(): ShaderProgram
 		{
@@ -455,7 +463,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
 
 // per instance
-in vec4 a_posRangeBrightness;
+in vec4 a_pos_range_brightness;
 in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
 
 // uniforms
@@ -473,14 +481,14 @@ void main()
 {
 	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
 
-	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_posRangeBrightness.z + a_posRangeBrightness.xy;
+	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_pos_range_brightness.z + a_pos_range_brightness.xy;
 	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 
 	v_pixelPos = worldPos;
-	v_lightPos = a_posRangeBrightness.xy;
+	v_lightPos = a_pos_range_brightness.xy;
 	
-	v_lightRange = a_posRangeBrightness.z;
-	v_brightness = a_posRangeBrightness.w;
+	v_lightRange = a_pos_range_brightness.z;
+	v_brightness = a_pos_range_brightness.w;
 	
 	gl_Position = u_projTrans * viewPos;
 }
@@ -523,38 +531,46 @@ void main()
 		{
 			val vertexShader = """
 #version 300 es
-in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
-in vec4 ${ShaderProgram.TEXCOORD_ATTRIBUTE};
+// per vertex
+in vec2 ${ShaderProgram.POSITION_ATTRIBUTE};
+
+// per instance
+in vec4 a_pos_width_height;
+in vec4 a_texCoords0;
+in vec4 a_texCoords1;
 in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
-in vec4 a_additionalData;
+in vec4 a_blendAlpha_isLit_alphaRef_rotation;
 
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
 
 out vec4 v_color;
-out vec2 v_spritePos;
+out vec2 v_lightSamplePos;
+
 out vec2 v_texCoords1;
 out vec2 v_texCoords2;
+
 out float v_blendAlpha;
 out float v_isLit;
 out float v_alphaRef;
-out float v_brightness;
 
 void main()
 {
+	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_pos_width_height.zw * 0.5 + a_pos_width_height.xy;
+	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
+	vec4 screenPos = u_projTrans * viewPos;
+
 	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
-
-	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy + u_offset;
-	vec4 truePos = vec4(worldPos.x, worldPos.y, 0.0, 1.0);
-	vec4 screenPos = u_projTrans * truePos;
-
-	v_spritePos = (screenPos.xy + 1.0) / 2.0;
-	v_texCoords1 = ${ShaderProgram.TEXCOORD_ATTRIBUTE}.xy;
-	v_texCoords2 = ${ShaderProgram.TEXCOORD_ATTRIBUTE}.zw;
-	v_blendAlpha = a_additionalData.x;
-	v_isLit = float(a_additionalData.y == 0.0);
-	v_alphaRef = a_additionalData.z;
-	v_brightness = a_additionalData.w;
+	v_lightSamplePos = (screenPos.xy + 1.0) / 2.0;
+	
+	float texCoordAlpha = (${ShaderProgram.POSITION_ATTRIBUTE}.xy + 1.0) / 2.0;
+	v_texCoords1 = mix(a_texCoords0.xy, a_texCoords0.zw, texCoordAlpha);
+	v_texCoords2 = mix(a_texCoords1.xy, a_texCoords1.zw, texCoordAlpha);
+	
+	v_blendAlpha = a_blendAlpha_isLit_alphaRef_rotation.x;
+	v_isLit = float(a_blendAlpha_isLit_alphaRef_rotation.y == 0.0);
+	v_alphaRef = a_blendAlpha_isLit_alphaRef_rotation.z;
+	
 	gl_Position = screenPos;
 }
 """.trimIndent()
@@ -566,14 +582,16 @@ void main()
 		{
 			val fragmentShader = """
 #version 300 es
+
 in mediump vec4 v_color;
-in mediump vec2 v_spritePos;
+in mediump vec2 v_lightSamplePos;
+
 in mediump vec2 v_texCoords1;
 in mediump vec2 v_texCoords2;
+
 in mediump float v_blendAlpha;
 in mediump float v_isLit;
 in mediump float v_alphaRef;
-in mediump float v_brightness;
 
 uniform sampler2D u_lightTexture;
 uniform sampler2D u_texture;
@@ -583,7 +601,7 @@ out highp vec4 fragColour;
 // ------------------------------------------------------
 void main()
 {
-	highp vec4 light = texture(u_lightTexture, v_spritePos);
+	highp vec4 light = texture(u_lightTexture, v_lightSamplePos);
 	highp vec4 col1 = texture(u_texture, v_texCoords1);
 	highp vec4 col2 = texture(u_texture, v_texCoords2);
 
@@ -594,9 +612,7 @@ void main()
 		outCol = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 
-	highp vec4 objCol = vec4(v_color.rgb * v_brightness * 255.0, v_color.a);
-
-	highp vec4 finalCol = clamp(objCol * outCol, 0.0, 1.0);
+	highp vec4 finalCol = clamp(v_color * outCol, 0.0, 1.0);
 	fragColour = finalCol * vec4(light.rgb, 1.0);
 }
 """.trimIndent()

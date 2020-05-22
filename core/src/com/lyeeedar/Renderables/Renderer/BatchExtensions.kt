@@ -7,17 +7,17 @@ import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.clamp
 import com.lyeeedar.Util.packFloats
 
-internal inline fun draw(batch: Batch, region: TextureRegion,
+internal inline fun drawBatch(batch: Batch, region: TextureRegion,
 		 x: Float, y: Float, originX: Float, originY: Float,
 		 width: Float, height: Float, scaleX: Float, scaleY: Float,
 		 rotation: Float, flipX: Boolean, flipY: Boolean, removeAmount: Float)
 {
-	doDraw(batch, region, batch.packedColor, x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
+	doDrawBatch(batch, region, batch.packedColor, x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
 }
 
 val tempCol1 = Colour()
 val tempCol2 = Colour()
-internal inline fun drawBlend(batch: Batch, region1: TextureRegion, region2: TextureRegion, blendAlpha: Float,
+internal inline fun drawBlendBatch(batch: Batch, region1: TextureRegion, region2: TextureRegion, blendAlpha: Float,
 				x: Float, y: Float, originX: Float, originY: Float,
 				width: Float, height: Float, scaleX: Float, scaleY: Float,
 				rotation: Float, flipX: Boolean, flipY: Boolean, removeAmount: Float)
@@ -29,17 +29,17 @@ internal inline fun drawBlend(batch: Batch, region1: TextureRegion, region2: Tex
 	tempCol2.set(tempCol1)
 	tempCol2.a *= 1f - blendAlpha
 
-	doDraw(batch, region1, tempCol2.toFloatBits(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
+	doDrawBatch(batch, region1, tempCol2.toFloatBits(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
 
 	tempCol2.set(tempCol1)
 	tempCol2.a *= blendAlpha
 
-	doDraw(batch, region2, tempCol2.toFloatBits(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
+	doDrawBatch(batch, region2, tempCol2.toFloatBits(), x, y, originX, originY, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
 }
 
 // 4 vertices of order x, y, colour, u, v
 val verticesSpriteBatch: FloatArray by lazy { FloatArray(4 * 5) }
-internal inline fun doDraw(batch: Batch, region: TextureRegion, packedColor: Float,
+internal inline fun doDrawBatch(batch: Batch, region: TextureRegion, packedColor: Float,
 		   x: Float, y: Float, originX: Float, originY: Float,
 		   width: Float, height: Float, scaleX: Float, scaleY: Float,
 		   rotation: Float, flipX: Boolean, flipY: Boolean, removeAmount: Float)
@@ -208,93 +208,16 @@ internal inline fun doDraw(batch: Batch, region: TextureRegion, packedColor: Flo
 	batch.draw(region.texture, vertices, 0, 20)
 }
 
-val defaultData = packFloats(0f, 0f, 0f, 1f / 254.0f)
-internal inline fun doDraw(vertices: FloatArray, offset: Int, region1: TextureRegion, region2: TextureRegion, colour: Colour,
-						   x: Float, y: Float, originX: Float, originY: Float,
-						   width: Float, height: Float, scaleX: Float, scaleY: Float,
+val defaultData = packFloats(0f, 0f, 0f, 0f)
+internal inline fun writeInstanceData(instanceData: FloatArray, offset: Int, region1: TextureRegion, region2: TextureRegion, colour: Colour,
+						   x: Float, y: Float, width: Float, height: Float, scaleX: Float, scaleY: Float,
 						   rotation: Float, flipX: Boolean, flipY: Boolean, removeAmount: Float, blendAlpha: Float, alphaRef: Float, isLit: Boolean, smoothShade: Boolean)
 {
-	//##################################################################### Vertex Calculation #######################################//
-	// bottom left and top right corner points relative to origin
-	val worldOriginX = x + originX
-	val worldOriginY = y + originY
-	var fx = -originX
-	var fy = -originY
-	var fx2 = width - originX
-	var fy2 = height - originY
+	var worldX = x + width / 2f
+	var worldY = y + height / 2f
 
-	// scale
-	if (scaleX != 1f || scaleY != 1f)
-	{
-		fx *= scaleX
-		fy *= scaleY
-		fx2 *= scaleX
-		fy2 *= scaleY
-	}
-
-	// construct corner points, start from top left and go counter clockwise
-	val p1x = fx
-	val p1y = fy
-	val p2x = fx
-	val p2y = fy2
-	val p3x = fx2
-	val p3y = fy2
-	val p4x = fx2
-	val p4y = fy
-
-	val spriteX = worldOriginX
-	val spriteY = worldOriginY - originY*scaleY*0.9f
-
-	var x1: Float
-	var y1: Float
-	var x2: Float
-	var y2: Float
-	var x3: Float
-	var y3: Float
-	var x4: Float
-	var y4: Float
-
-	// rotate
-	if (rotation != 0f)
-	{
-		val cos = MathUtils.cosDeg(rotation)
-		val sin = MathUtils.sinDeg(rotation)
-
-		x1 = cos * p1x - sin * p1y
-		y1 = sin * p1x + cos * p1y
-
-		x2 = cos * p2x - sin * p2y
-		y2 = sin * p2x + cos * p2y
-
-		x3 = cos * p3x - sin * p3y
-		y3 = sin * p3x + cos * p3y
-
-		x4 = x1 + (x3 - x2)
-		y4 = y3 - (y2 - y1)
-	}
-	else
-	{
-		x1 = p1x
-		y1 = p1y
-
-		x2 = p2x
-		y2 = p2y
-
-		x3 = p3x
-		y3 = p3y
-
-		x4 = p4x
-		y4 = p4y
-	}
-
-	x1 += worldOriginX
-	y1 += worldOriginY
-	x2 += worldOriginX
-	y2 += worldOriginY
-	x3 += worldOriginX
-	y3 += worldOriginY
-	x4 += worldOriginX
-	y4 += worldOriginY
+	var worldWidth = width * scaleX
+	var worldHeight = height * scaleY
 
 	val r1u: Float
 	var r1v: Float
@@ -338,12 +261,10 @@ internal inline fun doDraw(vertices: FloatArray, offset: Int, region1: TextureRe
 
 	if (removeAmount > 0f)
 	{
-		val yMove = (y1-y2) * removeAmount
-		y1 -= yMove / 2f
-		y4 -= yMove / 2f
+		val yMove = worldHeight * removeAmount
+		worldHeight -= yMove
 
-		y2 += yMove / 2f
-		y3 += yMove / 2f
+		worldY += yMove
 
 		val vMove1 = (r1v-r1v2) * removeAmount
 		r1v -= vMove1
@@ -351,177 +272,30 @@ internal inline fun doDraw(vertices: FloatArray, offset: Int, region1: TextureRe
 		val vMove2 = (r2v-r2v2) * removeAmount
 		r2v -= vMove2
 	}
-	//##################################################################### Vertex Calculation #######################################//
 
-	val packedCol = colour.toScaledFloatBits()
-	val packedData = if (blendAlpha == 0f && isLit && alphaRef == 0f && packedCol.y == 1f)
+	val packedCol = colour.toFloatBits()
+	val packedData = if (blendAlpha == 0f && isLit && alphaRef == 0f && rotation == 0f)
 	{
 		defaultData
 	}
 	else
 	{
-		packFloats(blendAlpha, if (isLit) 0.0f else 1.0f, alphaRef, packedCol.y / 254.0f)
+		packFloats(blendAlpha, if (isLit) 0.0f else 1.0f, alphaRef, rotation)
 	}
 
 	var i = offset
-	vertices[i++] = x1
-	vertices[i++] = y1
-	vertices[i++] = if (smoothShade) x1 else spriteX
-	vertices[i++] = if (smoothShade) y1 else spriteY
-	vertices[i++] = r1u
-	vertices[i++] = r1v
-	vertices[i++] = r2u
-	vertices[i++] = r2v
-	vertices[i++] = packedCol.x
-	vertices[i++] = packedData
-
-	vertices[i++] = x2
-	vertices[i++] = y2
-	vertices[i++] = if (smoothShade) x2 else spriteX
-	vertices[i++] = if (smoothShade) y2 else spriteY
-	vertices[i++] = r1u
-	vertices[i++] = r1v2
-	vertices[i++] = r2u
-	vertices[i++] = r2v2
-	vertices[i++] = packedCol.x
-	vertices[i++] = packedData
-
-	vertices[i++] = x3
-	vertices[i++] = y3
-	vertices[i++] = if (smoothShade) x3 else spriteX
-	vertices[i++] = if (smoothShade) y3 else spriteY
-	vertices[i++] = r1u2
-	vertices[i++] = r1v2
-	vertices[i++] = r2u2
-	vertices[i++] = r2v2
-	vertices[i++] = packedCol.x
-	vertices[i++] = packedData
-
-	vertices[i++] = x4
-	vertices[i++] = y4
-	vertices[i++] = if (smoothShade) x4 else spriteX
-	vertices[i++] = if (smoothShade) y4 else spriteY
-	vertices[i++] = r1u2
-	vertices[i++] = r1v
-	vertices[i++] = r2u2
-	vertices[i++] = r2v
-	vertices[i++] = packedCol.x
-	vertices[i++] = packedData
+	instanceData[i++] = worldX
+	instanceData[i++] = worldY
+	instanceData[i++] = worldWidth
+	instanceData[i++] = worldHeight
+	instanceData[i++] = r1u
+	instanceData[i++] = r1v
+	instanceData[i++] = r1u2
+	instanceData[i++] = r1v2
+	instanceData[i++] = r2u
+	instanceData[i++] = r2v
+	instanceData[i++] = r2u2
+	instanceData[i++] = r2v2
+	instanceData[i++] = packedCol
+	instanceData[i++] = packedData
 }
-
-inline fun calculateVertexData(region1: TextureRegion, region2: TextureRegion,
-							   x: Float, y: Float, originX: Float, originY: Float,
-							   width: Float, height: Float, scaleX: Float, scaleY: Float,
-							   rotation: Float, flipX: Boolean, flipY: Boolean, removeAmount: Float): VertexData
-{
-	// bottom left and top right corner points relative to origin
-	val worldOriginX = x + originX
-	val worldOriginY = y + originY
-	var fx = -originX
-	var fy = -originY
-	var fx2 = width - originX
-	var fy2 = height - originY
-
-	// scale
-	if (scaleX != 1f || scaleY != 1f)
-	{
-		fx *= scaleX
-		fy *= scaleY
-		fx2 *= scaleX
-		fy2 *= scaleY
-	}
-
-	// construct corner points, start from top left and go counter clockwise
-	val p1x = fx
-	val p1y = fy
-	val p2x = fx
-	val p2y = fy2
-	val p3x = fx2
-	val p3y = fy2
-	val p4x = fx2
-	val p4y = fy
-
-	var x1: Float
-	var y1: Float
-	var x2: Float
-	var y2: Float
-	var x3: Float
-	var y3: Float
-	var x4: Float
-	var y4: Float
-
-	// rotate
-	if (rotation != 0f)
-	{
-		val cos = MathUtils.cosDeg(rotation)
-		val sin = MathUtils.sinDeg(rotation)
-
-		x1 = cos * p1x - sin * p1y
-		y1 = sin * p1x + cos * p1y
-
-		x2 = cos * p2x - sin * p2y
-		y2 = sin * p2x + cos * p2y
-
-		x3 = cos * p3x - sin * p3y
-		y3 = sin * p3x + cos * p3y
-
-		x4 = x1 + (x3 - x2)
-		y4 = y3 - (y2 - y1)
-	}
-	else
-	{
-		x1 = p1x
-		y1 = p1y
-
-		x2 = p2x
-		y2 = p2y
-
-		x3 = p3x
-		y3 = p3y
-
-		x4 = p4x
-		y4 = p4y
-	}
-
-	x1 += worldOriginX
-	y1 += worldOriginY
-	x2 += worldOriginX
-	y2 += worldOriginY
-	x3 += worldOriginX
-	y3 += worldOriginY
-	x4 += worldOriginX
-	y4 += worldOriginY
-
-	val r1u = if (flipX) region1.u2 else region1.u
-	var r1v = if (flipY) region1.v else region1.v2
-	val r1u2 = if (flipX) region1.u else region1.u2
-	val r1v2 = if (flipY) region1.v2 else region1.v
-
-	val r2u = if (flipX) region2.u2 else region2.u
-	var r2v = if (flipY) region2.v else region2.v2
-	val r2u2 = if (flipX) region2.u else region2.u2
-	val r2v2 = if (flipY) region2.v2 else region2.v
-
-	if (removeAmount > 0f)
-	{
-		val yMove = (y1-y2) * removeAmount
-		y1 -= yMove / 2f
-		y4 -= yMove / 2f
-
-		y2 += yMove / 2f
-		y3 += yMove / 2f
-
-		val vMove1 = (r1v-r1v2) * removeAmount
-		r1v -= vMove1
-
-		val vMove2 = (r2v-r2v2) * removeAmount
-		r2v -= vMove2
-	}
-
-	return VertexData(x1, x2, x3, x4, y1, y2, y3, y4, r1u, r1u2, r1v, r1v2, r2u, r2u2, r2v, r2v2)
-}
-data class VertexData(
-		val x1: Float, val x2: Float, val x3: Float, val x4: Float,
-		val y1: Float, val y2: Float, val y3: Float, val y4: Float,
-		val r1u: Float, val r1u2: Float, val r1v: Float, val r1v2: Float,
-		val r2u: Float, val r2u2: Float, val r2v: Float, val r2v2: Float)

@@ -286,11 +286,11 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 			val alpha = animationAccumulator / animationDelay
 			val nextIndex = if (textureIndex+1 == textures.size) 0 else textureIndex+1
 
-			com.lyeeedar.Renderables.drawBlend(batch, texture, textures[nextIndex], alpha, x, y, width / 2.0f, height / 2.0f, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
+			com.lyeeedar.Renderables.drawBlendBatch(batch, texture, textures[nextIndex], alpha, x, y, width / 2.0f, height / 2.0f, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
 		}
 		else
 		{
-			com.lyeeedar.Renderables.draw(batch, texture, x, y, width / 2.0f, height / 2.0f, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
+			com.lyeeedar.Renderables.drawBatch(batch, texture, x, y, width / 2.0f, height / 2.0f, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount)
 		}
 	}
 
@@ -306,49 +306,8 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 		return renderCol
 	}
 
-	private class VertexHash(private val colour: Vector2, private var x: Float, private var y: Float, private var width: Float, private var height: Float, private var scaleX: Float, private var scaleY: Float, private var rotation: Float, private var texIndex: Int)
-	{
-		fun isSame(colour: Vector2, x: Float, y: Float, width: Float, height: Float, scaleX: Float, scaleY: Float, rotation: Float, texIndex: Int): Boolean
-		{
-			return this.colour.x == colour.x && this.colour.y == colour.y && this.x == x && this.y == y && this.width == width && this.height == height && this.scaleX == scaleX && this.scaleY == scaleY && this.rotation == rotation && this.texIndex == texIndex
-		}
-
-		fun update(colour: Vector2, x: Float, y: Float, width: Float, height: Float, scaleX: Float, scaleY: Float, rotation: Float, texIndex: Int)
-		{
-			this.colour.set(colour)
-			this.x = x
-			this.y = y
-			this.width = width
-			this.height = height
-			this.scaleX = scaleX
-			this.scaleY = scaleY
-			this.rotation = rotation
-			this.texIndex = texIndex
-		}
-	}
-	private val lastRenderHash = VertexHash(Vector2(-1f, -1f), -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1)
-	private val cachedRenderHash = VertexHash(Vector2(-1f, -1f), -1f, -1f, -1f, -1f, -1f, -1f, -1f, -1)
-	private val vertexCache = FloatArray(SpriteDrawerer.verticesASprite)
 	fun render(vertices: FloatArray, offset: Int, colour: Colour, x: Float, y: Float, width: Float, height: Float, scaleX: Float, scaleY: Float, rotation: Float, isLit: Boolean)
 	{
-		var cacheVertices = false
-		if (!hasAnim && !frameBlend)
-		{
-			if (cachedRenderHash.isSame(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex))
-			{
-				System.arraycopy(vertexCache, 0, vertices, offset, SpriteDrawerer.verticesASprite)
-				return
-			}
-			else if (lastRenderHash.isSame(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex))
-			{
-				cacheVertices = true
-			}
-			else
-			{
-				lastRenderHash.update(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex)
-			}
-		}
-
 		var scaleX = baseScale[0] * scaleX
 		var scaleY = baseScale[1] * scaleY
 
@@ -419,13 +378,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 			texAlpha = 0f
 		}
 
-		com.lyeeedar.Renderables.doDraw(vertices, offset, tex1, tex2, colour, x, y, width / 2.0f, height / 2.0f, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount, texAlpha, 0f, isLit, smoothShade)
-
-		if (cacheVertices)
-		{
-			cachedRenderHash.update(colour.toScaledFloatBits(), x, y, width, height, scaleX, scaleY, rotation, texIndex)
-			System.arraycopy(vertices, offset, vertexCache, 0, SpriteDrawerer.verticesASprite)
-		}
+		com.lyeeedar.Renderables.writeInstanceData(vertices, offset, tex1, tex2, colour, x, y, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount, texAlpha, 0f, isLit, smoothShade)
 	}
 
 	inline val currentTexture: TextureRegion
