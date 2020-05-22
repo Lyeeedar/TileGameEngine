@@ -51,7 +51,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 	}
 
-	private val lightMesh: BigMesh
+	private val lightMesh: Mesh
 	private val lightShader: ShaderProgram
 	private val lightFBO: GL30FrameBuffer
 	private var numLights: Int = 0
@@ -60,6 +60,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	private val staticMesh: BigMesh
 	private var currentBuffer: VertexBuffer? = null
 	private val vertices: FloatArray
+	private val instanceData: FloatArray
 	private var currentVertexCount = 0
 	private val staticBuffers = com.badlogic.gdx.utils.Array<VertexBuffer>()
 	private val queuedBuffers = com.badlogic.gdx.utils.Array<VertexBuffer>()
@@ -90,11 +91,13 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		                     VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_additionalData") // blendalpha, islit, alpharef, brightness
 		                    )
 
-		lightMesh = BigMesh(false, maxSprites * 4, maxSprites * 6,
-		               VertexAttribute(VertexAttributes.Usage.Position, 4, ShaderProgram.POSITION_ATTRIBUTE),
-		               VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-		               VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_rangeBrightness")
-		              )
+		lightMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
+		lightMesh.setVertices(floatArrayOf(-1f, +1f, -1f, -1f, +1f, -1f, +1f, +1f))
+		lightMesh.setIndices(shortArrayOf(0, 1, 2, 2, 3, 0))
+		lightMesh.enableInstancedRendering(false, 100000,
+		                                   VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_posRangeBrightness"),
+		                                   VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE))
+		instanceData = FloatArray(10000 * (4 + 1))
 
 		val len = maxSprites * 6
 		val indices = IntArray(len)
@@ -113,7 +116,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 		mesh.setIndices(indices)
 		staticMesh.setIndices(indices)
-		lightMesh.setIndices(indices)
 
 		vertices = FloatArray(maxVertices)
 
@@ -217,40 +219,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			val range = light.range * renderer.tileSize
 			val colourBrightness = light.colour.toScaledFloatBits()
 
-			vertices[i++] = x - range
-			vertices[i++] = y + range
-			vertices[i++] = x
-			vertices[i++] = y
-			vertices[i++] = colourBrightness.x
-			vertices[i++] = range
-			vertices[i++] = colourBrightness.y * light.brightness
-
-			vertices[i++] = x - range
-			vertices[i++] = y - range
-			vertices[i++] = x
-			vertices[i++] = y
-			vertices[i++] = colourBrightness.x
-			vertices[i++] = range
-			vertices[i++] = colourBrightness.y * light.brightness
-
-			vertices[i++] = x + range
-			vertices[i++] = y - range
-			vertices[i++] = x
-			vertices[i++] = y
-			vertices[i++] = colourBrightness.x
-			vertices[i++] = range
-			vertices[i++] = colourBrightness.y * light.brightness
-
-			vertices[i++] = x + range
-			vertices[i++] = y + range
-			vertices[i++] = x
-			vertices[i++] = y
-			vertices[i++] = colourBrightness.x
-			vertices[i++] = range
-			vertices[i++] = colourBrightness.y * light.brightness
+			instanceData[i++] = x
+			instanceData[i++] = y
+			instanceData[i++] = range
+			instanceData[i++] = colourBrightness.y * light.brightness
+			instanceData[i++] = colourBrightness.x
 		}
 
-		lightMesh.setVertices(vertices, 0, i)
+		lightMesh.setInstanceData(instanceData, 0, i)
 		numLights = renderer.basicLights.size
 	}
 
@@ -274,8 +250,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		lightMesh.bind(lightShader)
 
-		val drawCount = numLights * 6
-		lightMesh.render(lightShader, GL20.GL_TRIANGLES, 0, drawCount)
+		lightMesh.render(lightShader, GL20.GL_TRIANGLES, 0, 6)
 
 		lightMesh.unbind(lightShader)
 
@@ -457,13 +432,18 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		{
 			return """
 #version 300 es
+// per vertex
 in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
-in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
-in vec2 a_rangeBrightness;
 
+// per instance
+in vec4 a_posRangeBrightness;
+in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
+
+// uniforms
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
 
+// outputs
 out vec4 v_color;
 out vec2 v_lightPos;
 out vec2 v_pixelPos;
@@ -474,14 +454,16 @@ void main()
 {
 	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
 
-	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy + u_offset;
-	vec4 truePos = vec4(worldPos.x, worldPos.y, 0.0, 1.0);
+	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_posRangeBrightness.z + a_posRangeBrightness.xy;
+	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 
-	v_pixelPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy;
-	v_lightPos = ${ShaderProgram.POSITION_ATTRIBUTE}.zw;
-	v_lightRange = a_rangeBrightness.x;
-	v_brightness = a_rangeBrightness.y;
-	gl_Position = u_projTrans * truePos;
+	v_pixelPos = worldPos;
+	v_lightPos = a_posRangeBrightness.xy;
+	
+	v_lightRange = a_posRangeBrightness.z;
+	v_brightness = a_posRangeBrightness.w;
+	
+	gl_Position = u_projTrans * viewPos;
 }
 			""".trimIndent()
 		}
