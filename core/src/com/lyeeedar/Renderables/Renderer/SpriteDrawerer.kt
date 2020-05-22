@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.BigMesh
 import com.badlogic.gdx.graphics.glutils.GL30FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Matrix4
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.NumberUtils
 import com.badlogic.gdx.utils.Pool
@@ -531,6 +532,8 @@ void main()
 		{
 			val vertexShader = """
 #version 300 es
+#define PI 3.1415926538
+
 // per vertex
 in vec2 ${ShaderProgram.POSITION_ATTRIBUTE};
 
@@ -556,14 +559,22 @@ out float v_alphaRef;
 
 void main()
 {
-	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_pos_width_height.zw * 0.5 + a_pos_width_height.xy;
+	vec2 vertexPos = ${ShaderProgram.POSITION_ATTRIBUTE};
+	
+	float rotation = a_blendAlpha_isLit_alphaRef_rotation.w * PI * 2.0;
+	float c = cos(rotation);
+	float s = sin(rotation);
+
+	vec2 rotatedVertexPos = vec2(vertexPos.x * c - vertexPos.y * s, vertexPos.x * s + vertexPos.y * c);
+
+	vec2 worldPos = rotatedVertexPos * a_pos_width_height.zw * 0.5 + a_pos_width_height.xy;
 	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 	vec4 screenPos = u_projTrans * viewPos;
 
 	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
 	v_lightSamplePos = (screenPos.xy + 1.0) / 2.0;
 	
-	float texCoordAlpha = (${ShaderProgram.POSITION_ATTRIBUTE}.xy + 1.0) / 2.0;
+	vec2 texCoordAlpha = (vertexPos + 1.0) / 2.0;
 	v_texCoords1 = mix(a_texCoords0.xy, a_texCoords0.zw, texCoordAlpha);
 	v_texCoords2 = mix(a_texCoords1.xy, a_texCoords1.zw, texCoordAlpha);
 	

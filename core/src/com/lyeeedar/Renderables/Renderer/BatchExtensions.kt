@@ -264,8 +264,6 @@ internal inline fun writeInstanceData(instanceData: FloatArray, offset: Int, reg
 		val yMove = worldHeight * removeAmount
 		worldHeight -= yMove
 
-		worldY += yMove
-
 		val vMove1 = (r1v-r1v2) * removeAmount
 		r1v -= vMove1
 
@@ -273,14 +271,16 @@ internal inline fun writeInstanceData(instanceData: FloatArray, offset: Int, reg
 		r2v -= vMove2
 	}
 
+	val scaledRotation = (MathUtils.degreesToRadians * rotation) / (MathUtils.PI2)
+
 	val packedCol = colour.toFloatBits()
-	val packedData = if (blendAlpha == 0f && isLit && alphaRef == 0f && rotation == 0f)
+	val packedData = if (blendAlpha == 0f && isLit && alphaRef == 0f && scaledRotation == 0f)
 	{
 		defaultData
 	}
 	else
 	{
-		packFloats(blendAlpha, if (isLit) 0.0f else 1.0f, alphaRef, rotation)
+		packFloats(blendAlpha, if (isLit) 0.0f else 1.0f, alphaRef, scaledRotation)
 	}
 
 	var i = offset
