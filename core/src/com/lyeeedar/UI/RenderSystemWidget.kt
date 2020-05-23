@@ -74,6 +74,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 				            lightEntity.position()!!.position.set(basex, basey)
 				            lightEntity.position()!!.offset.set(offsetx, offsety)
 
+
+
 				            super.mouseMoved(event, x, y)
 				            return true
 			            }
@@ -97,7 +99,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 		lightEntity.addComponent(ComponentType.Position)
 		lightEntity.addComponent(ComponentType.Light)
-		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 3f, brightness = 2f, hasShadows = true)
+		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 6f, brightness = 2f, hasShadows = true)
 		world.addEntity(lightEntity)
 	}
 

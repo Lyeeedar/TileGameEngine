@@ -275,27 +275,38 @@ class AssetManager
 			var updateTime = updateTime
 			val textures = Array<TextureRegion>(false, 1, TextureRegion::class.java)
 
-			// Try 0 indexed sprite
-			var i = 0
-			while (true)
+			// Try sprite without indexes
+			val tex = loadTextureRegion("Sprites/$name.png")
+			if (tex != null)
 			{
-				val tex = loadTextureRegion("Sprites/" + name + "_" + i + ".png")
+				textures.add(tex)
+			}
 
-				if (tex == null)
+			// Try 0 indexed sprite
+			if (textures.size == 0)
+			{
+				var i = 0
+				while (true)
 				{
-					break
-				} else
-				{
-					textures.add(tex)
+					val tex = loadTextureRegion("Sprites/" + name + "_" + i + ".png")
+
+					if (tex == null)
+					{
+						break
+					}
+					else
+					{
+						textures.add(tex)
+					}
+
+					i++
 				}
-
-				i++
 			}
 
 			// Try 1 indexed sprite
 			if (textures.size == 0)
 			{
-				i = 1
+				var i = 1
 				while (true)
 				{
 					val tex = loadTextureRegion("Sprites/" + name + "_" + i + ".png")
@@ -309,17 +320,6 @@ class AssetManager
 					}
 
 					i++
-				}
-			}
-
-			// Try sprite without indexes
-			if (textures.size == 0)
-			{
-				val tex = loadTextureRegion("Sprites/$name.png")
-
-				if (tex != null)
-				{
-					textures.add(tex)
 				}
 			}
 

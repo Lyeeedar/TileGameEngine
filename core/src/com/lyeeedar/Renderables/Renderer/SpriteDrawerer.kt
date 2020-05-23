@@ -282,7 +282,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			lightInstanceData[i++] = x
 			lightInstanceData[i++] = y
-			lightInstanceData[i++] = range
+			lightInstanceData[i++] = range * 0.9f
 			lightInstanceData[i++] = colourBrightness.y * light.brightness
 			lightInstanceData[i++] = colourBrightness.x
 		}
@@ -303,7 +303,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			shadowLightInstanceData[i++] = x
 			shadowLightInstanceData[i++] = y
-			shadowLightInstanceData[i++] = range
+			shadowLightInstanceData[i++] = range * 0.9f
 			shadowLightInstanceData[i++] = colourBrightness.y * light.brightness
 			shadowLightInstanceData[i++] = colourBrightness.x
 			shadowLightInstanceData[i++] = r.toFloat() / 4f
@@ -339,7 +339,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE)
 		Gdx.gl.glDepthMask(false)
 
-		ambientLight.set(0f)
 		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 0f)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
@@ -708,20 +707,22 @@ mediump float insideBox(mediump vec2 v, mediump vec2 bottomLeft, mediump vec2 to
 // ------------------------------------------------------
 lowp float isPixelVisible()
 {
-	mediump vec2 diff = v_pixelPos - v_lightPos;
+	mediump vec2 diff = v_lightPos - v_pixelPos;
 	mediump float rayLen = length(diff);
 	mediump vec2 rdir = 1.0 / (diff / rayLen);
 
+	lowp float insideRegion = 0.0;
 	lowp float collided = 0.0;
 	for (int i = 0; i < int(v_region_offset_count.y); i++)
 	{
 		mediump vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
-		lowp float intersect = rayBoxIntersect(v_lightPos, rdir, occluder.xy, occluder.zw);
+		lowp float intersect = rayBoxIntersect(v_pixelPos, rdir, occluder.xy, occluder.zw);
 
-		collided += float(intersect > 0.0 && intersect < rayLen) + insideBox(v_pixelPos, occluder.xy, occluder.zw);
+		collided += float(intersect > 0.0 && intersect < rayLen);
+		insideRegion += insideBox(v_pixelPos, occluder.xy, occluder.zw);
 	}
 
-	return float(collided == 0.0);
+	return float(collided == 0.0 || insideRegion > 0.0);
 }
 
 // ------------------------------------------------------

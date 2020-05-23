@@ -668,26 +668,37 @@ class AtlasCreator
 	{
 		var foundCount = 0
 
-		// Try 0 indexed sprite
-		var i = 0
-		while (true)
+		// Try sprite without indexes
+		val exists = tryPackSprite(name)
+		if (exists)
 		{
-			val exists = tryPackSprite(name + "_" + i)
-			if (!exists)
-			{
-				break
-			} else
-			{
-				foundCount++
-			}
+			foundCount++
+		}
 
-			i++
+		// Try 0 indexed sprite
+		if (foundCount == 0)
+		{
+			var i = 0
+			while (true)
+			{
+				val exists = tryPackSprite(name + "_" + i)
+				if (!exists)
+				{
+					break
+				}
+				else
+				{
+					foundCount++
+				}
+
+				i++
+			}
 		}
 
 		// Try 1 indexed sprite
 		if (foundCount == 0)
 		{
-			i = 1
+			var i = 1
 			while (true)
 			{
 				val exists = tryPackSprite(name + "_" + i)
@@ -703,20 +714,11 @@ class AtlasCreator
 			}
 		}
 
-		// Try sprite without indexes
-		if (foundCount == 0)
-		{
-			val exists = tryPackSprite(name)
-			if (exists)
-			{
-				foundCount++
-			}
-		}
-
 		if (foundCount == 0)
 		{
 			System.err.println("Could not find sprites with name: " + name)
-		} else
+		}
+		else
 		{
 			println("Added sprites for name: " + name)
 		}
