@@ -58,6 +58,8 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 	val numOpaqueRegions: Int
 		get() = getOpaqueRegions().size
 
+	var castID: Int = 0
+
 	var opaqueRegionsDirty = true
 	fun getOpaqueRegions(): com.badlogic.gdx.utils.Array<PointRect>
 	{
@@ -370,6 +372,8 @@ class ShadowCastCache @JvmOverloads constructor(val fovType: Int = FOV.SHADOW)
 
 		if (recalculate)
 		{
+			castID++
+
 			Point.freeAllTS(currentShadowCast)
 			currentShadowCast.clear()
 

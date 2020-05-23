@@ -47,9 +47,13 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	}
 
 	private val lightMesh: Mesh
+	private val shadowLightMesh: Mesh
 	private val lightShader: ShaderProgram
+	private val shadowLightShader: ShaderProgram
 	private var lightFBO: GL30FrameBuffer
 	private val lightInstanceData: FloatArray
+	private val shadowLightInstanceData: FloatArray
+	private val shadowRegionUniformData: FloatArray
 	private var lightBufferHash: Int = 0
 
 	private val geometryMesh: Mesh
@@ -103,11 +107,22 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		                                   VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_range_brightness"),
 		                                   VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE))
 
+		shadowLightMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
+		shadowLightMesh.setVertices(billboardVertices)
+		shadowLightMesh.setIndices(billboardIndices)
+		shadowLightMesh.enableInstancedRendering(false, 100,
+		                                   VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_range_brightness"),
+		                                   VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+		                                   VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_region_offset_count"))
+
 		geometryInstanceData = FloatArray(maxInstances * instanceDataSize)
 		lightInstanceData = FloatArray(10000 * (4 + 1))
+		shadowLightInstanceData = FloatArray(100 * (4 + 1 + 2))
+		shadowRegionUniformData = FloatArray(128 * 4)
 
 		shader = createShader()
 		lightShader = createLightShader()
+		shadowLightShader = createShadowLightShader()
 
 		lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight, false)
 	}
@@ -120,6 +135,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		lightFBO.dispose()
 		shader.dispose()
 		lightShader.dispose()
+		shadowLightShader.dispose()
 	}
 
 	fun updateFBO()
@@ -230,6 +246,16 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.brightness)
 		}
 
+		for (i in 0 until renderer.shadowLights.size)
+		{
+			val light = renderer.shadowLights[i]
+
+			lightsHash = lightsHash xor light.cache.castID
+			lightsHash = lightsHash xor light.pos.hashCode()
+			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.range)
+			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.brightness)
+		}
+
 		if (lightsHash != lightBufferHash)
 		{
 			lightBufferHash = lightsHash
@@ -259,6 +285,44 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 
 		lightMesh.setInstanceData(lightInstanceData, 0, i)
+
+		i = 0
+		var r = 0
+		for (l in 0 until renderer.shadowLights.size)
+		{
+			val light = renderer.shadowLights[l]
+
+			val x = light.pos.x * renderer.tileSize
+			val y = light.pos.y * renderer.tileSize
+			val range = light.range * renderer.tileSize
+			val colourBrightness = light.colour.toScaledFloatBits()
+			val regions = light.cache.getOpaqueRegions()
+
+			shadowLightInstanceData[i++] = x
+			shadowLightInstanceData[i++] = y
+			shadowLightInstanceData[i++] = range
+			shadowLightInstanceData[i++] = colourBrightness.y * light.brightness
+			shadowLightInstanceData[i++] = colourBrightness.x
+			shadowLightInstanceData[i++] = r.toFloat()
+			shadowLightInstanceData[i++] = regions.size.toFloat()
+
+			for (ri in 0 until regions.size)
+			{
+				val region = regions[ri]
+
+				val x = region.x.toFloat() * renderer.tileSize
+				val y = region.y.toFloat() * renderer.tileSize
+				val w = region.width.toFloat() * renderer.tileSize
+				val h = region.height.toFloat() * renderer.tileSize
+
+				shadowRegionUniformData[r++] = x
+				shadowRegionUniformData[r++] = y
+				shadowRegionUniformData[r++] = x+w
+				shadowRegionUniformData[r++] = y+h
+			}
+		}
+
+		shadowLightMesh.setInstanceData(shadowLightInstanceData, 0, i)
 	}
 
 	private fun renderLights()
@@ -272,18 +336,36 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE)
 		Gdx.gl.glDepthMask(false)
 
+		ambientLight.set(0f)
 		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 0f)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
-		lightShader.begin()
-		lightShader.setUniformMatrix("u_projTrans", combinedMatrix)
-		lightShader.setUniformf("u_offset", offsetx, offsety)
+		if (renderer.basicLights.size > 0)
+		{
+			lightShader.begin()
+			lightShader.setUniformMatrix("u_projTrans", combinedMatrix)
+			lightShader.setUniformf("u_offset", offsetx, offsety)
 
-		lightMesh.bind(lightShader)
+			lightMesh.bind(lightShader)
 
-		lightMesh.render(lightShader, GL20.GL_TRIANGLES, 0, 6)
+			lightMesh.render(lightShader, GL20.GL_TRIANGLES, 0, 6)
 
-		lightMesh.unbind(lightShader)
+			lightMesh.unbind(lightShader)
+		}
+
+		if (renderer.shadowLights.size > 0)
+		{
+			shadowLightShader.begin()
+			shadowLightShader.setUniformMatrix("u_projTrans", combinedMatrix)
+			shadowLightShader.setUniformf("u_offset", offsetx, offsety)
+			shadowLightShader.setUniform4fv("u_shadowRegions", shadowRegionUniformData, 0, shadowRegionUniformData.size)
+
+			shadowLightMesh.bind(shadowLightShader)
+
+			shadowLightMesh.render(shadowLightShader, GL20.GL_TRIANGLES, 0, 6)
+
+			shadowLightMesh.unbind(shadowLightShader)
+		}
 
 		Gdx.gl.glDepthMask(true)
 		Gdx.gl.glDisable(GL20.GL_BLEND)
@@ -456,6 +538,17 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			return shader
 		}
 
+		fun createShadowLightShader(): ShaderProgram
+		{
+			val vertexShader = getShadowLightVertex()
+			val fragmentShader = getShadowLightFragment()
+
+			val shader = ShaderProgram(vertexShader, fragmentShader)
+			if (!shader.isCompiled) throw IllegalArgumentException("Error compiling shader: " + shader.log)
+
+			return shader
+		}
+
 		fun getLightVertex(): String
 		{
 			return """
@@ -520,6 +613,130 @@ highp float calculateLightStrength()
 	return lightStrength * alpha;
 }
 
+void main()
+{
+	highp float lightStrength = calculateLightStrength();
+	fragColour = v_color * v_brightness * lightStrength;
+}
+			""".trimIndent()
+		}
+
+		fun getShadowLightVertex(): String
+		{
+			return """
+#version 300 es
+// per vertex
+in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
+
+// per instance
+in vec4 a_pos_range_brightness;
+in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
+in vec2 a_region_offset_count;
+
+// uniforms
+uniform mat4 u_projTrans;
+uniform vec2 u_offset;
+
+// outputs
+out vec4 v_color;
+out vec2 v_lightPos;
+out vec2 v_pixelPos;
+out float v_lightRange;
+out float v_brightness;
+out vec2 v_region_offset_count;
+
+void main()
+{
+	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
+
+	vec2 worldPos = ${ShaderProgram.POSITION_ATTRIBUTE}.xy * a_pos_range_brightness.z + a_pos_range_brightness.xy;
+	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
+
+	v_pixelPos = worldPos;
+	v_lightPos = a_pos_range_brightness.xy;
+	
+	v_lightRange = a_pos_range_brightness.z;
+	v_brightness = a_pos_range_brightness.w;
+	
+	v_region_offset_count = a_region_offset_count;
+	
+	gl_Position = u_projTrans * viewPos;
+}
+			""".trimIndent()
+		}
+
+		fun getShadowLightFragment(): String
+		{
+			return """
+#version 300 es
+in highp vec4 v_color;
+in mediump vec2 v_lightPos;
+in mediump vec2 v_pixelPos;
+in mediump float v_lightRange;
+in mediump float v_brightness;
+in lowp vec2 v_region_offset_count;
+
+uniform lowp vec4 u_shadowRegions[128];
+
+out highp vec4 fragColour;
+
+// ------------------------------------------------------
+mediump float rayBoxIntersect ( mediump vec2 rpos, mediump vec2 rdir, mediump vec2 vmin, mediump vec2 vmax )
+{
+	mediump float t0 = (vmin.x - rpos.x) * rdir.x;
+	mediump float t1 = (vmax.x - rpos.x) * rdir.x;
+	mediump float t2 = (vmin.y - rpos.y) * rdir.y;
+	mediump float t3 = (vmax.y - rpos.y) * rdir.y;
+
+	mediump float t4 = max(min(t0, t1), min(t2, t3));
+	mediump float t5 = min(max(t0, t1), max(t2, t3));
+
+	mediump float t6 = (t5 < 0.0 || t4 > t5) ? -1.0 : t4;
+	return t6;
+}
+
+// ------------------------------------------------------
+mediump float insideBox(mediump vec2 v, mediump vec2 bottomLeft, mediump vec2 topRight)
+{
+    mediump vec2 s = step(bottomLeft, v) - step(topRight, v);
+    return s.x * s.y;
+}
+
+// ------------------------------------------------------
+lowp float isPixelVisible()
+{
+	mediump vec2 diff = v_pixelPos - v_lightPos;
+	mediump float rayLen = length(diff);
+	mediump vec2 rdir = 1.0 / (diff / rayLen);
+
+	lowp float collided = 0.0;
+	for (int i = 0; i < int(v_region_offset_count.y); i++)
+	{
+		mediump vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
+		lowp float intersect = rayBoxIntersect(v_lightPos, rdir, occluder.xy, occluder.zw);
+
+		collided += float(intersect > 0.0 && intersect < rayLen) + insideBox(v_pixelPos, occluder.xy, occluder.zw);
+	}
+
+	return float(collided == 0.0);
+}
+
+// ------------------------------------------------------
+highp float calculateLightStrength()
+{
+	highp vec2 diff = v_lightPos - v_pixelPos;
+	highp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
+	highp float rangeSq = v_lightRange * v_lightRange;
+
+	highp float lightStrength = step(distSq, rangeSq);
+	highp float alpha = 1.0 - (distSq / rangeSq);
+	
+	lowp float isVisible = isPixelVisible();
+
+	return lightStrength * alpha * isVisible;
+}
+
+// ------------------------------------------------------
 void main()
 {
 	highp float lightStrength = calculateLightStrength();

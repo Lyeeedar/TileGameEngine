@@ -171,9 +171,9 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		{
 			val light = entity.light()!!
 
-			val pos = entity.position()!!.position
-			var lx = pos.xFloat + 0.5f
-			var ly = pos.yFloat + 0.5f
+			val pos = entity.position()!!
+			var lx = pos.position.xFloat + 0.5f + pos.offset.x
+			var ly = pos.position.yFloat + 0.5f + pos.offset.y
 
 			val renderOffset = entity.renderOffset()
 			if (renderOffset != null)

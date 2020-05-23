@@ -11,10 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.utils.Array
-import com.lyeeedar.Components.EntityReference
-import com.lyeeedar.Components.position
-import com.lyeeedar.Components.renderOffset
-import com.lyeeedar.Components.renderable
+import com.lyeeedar.Components.*
+import com.lyeeedar.Renderables.Light
 import com.lyeeedar.Systems.AbstractRenderSystem
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
@@ -35,6 +33,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 	var isSelected = false
 
 	var attachedToEntityWidgets = Array<AttachedToEntityWidget>(false, 4)
+
+	val lightEntity: Entity = EntityPool.obtain()
 
 	init
 	{
@@ -57,6 +57,23 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 			            {
 				            mousePos.set(x, y)
 
+				            val offset = getPlayerOffset()
+				            val tileSize = world.tileSize
+
+				            val xp = x - offset.x
+				            val yp = y - offset.y
+
+				            val sx = xp / tileSize
+				            val sy = yp / tileSize
+				            val basex = sx.toInt()
+				            val offsetx = sx - basex
+
+				            val basey = sy.toInt()
+				            val offsety = sy - basey
+
+				            lightEntity.position()!!.position.set(basex, basey)
+				            lightEntity.position()!!.offset.set(offsetx, offsety)
+
 				            super.mouseMoved(event, x, y)
 				            return true
 			            }
@@ -77,6 +94,11 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 				            super.touchUp(event, x, y, pointer, button)
 			            }
 		            })
+
+		lightEntity.addComponent(ComponentType.Position)
+		lightEntity.addComponent(ComponentType.Light)
+		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 5f, brightness = 1f, hasShadows = true)
+		world.addEntity(lightEntity)
 	}
 
 	private val offsetVec = Vector2()
