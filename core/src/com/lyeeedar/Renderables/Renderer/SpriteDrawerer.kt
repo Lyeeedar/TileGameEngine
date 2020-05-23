@@ -88,7 +88,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"),
 		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords1"),
 		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"))
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 1, "a_smoothLighting"))
 
 		staticGeometryMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
 		staticGeometryMesh.setVertices(billboardVertices)
@@ -98,7 +99,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"),
 		                                      VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords1"),
 		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"))
+		                                      VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, "a_blendAlpha_isLit_alphaRef_rotation"),
+		                                      VertexAttribute(VertexAttributes.Usage.Generic, 1, "a_smoothLighting"))
 
 		lightMesh = Mesh(true, 4, 6, VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE))
 		lightMesh.setVertices(billboardVertices)
@@ -303,7 +305,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			shadowLightInstanceData[i++] = range
 			shadowLightInstanceData[i++] = colourBrightness.y * light.brightness
 			shadowLightInstanceData[i++] = colourBrightness.x
-			shadowLightInstanceData[i++] = r.toFloat()
+			shadowLightInstanceData[i++] = r.toFloat() / 4f
 			shadowLightInstanceData[i++] = regions.size.toFloat()
 
 			for (ri in 0 until regions.size)
@@ -513,7 +515,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		// Optimisation reference:
 		// https://zz85.github.io/glsl-optimizer/
 
-		public const val instanceDataSize = 4+4+4+1+1
+		public const val instanceDataSize = 4+4+4+1+1+1
 		private const val maxInstances = 100000
 
 		fun createShader(): ShaderProgram
@@ -760,6 +762,7 @@ in vec4 a_texCoords0;
 in vec4 a_texCoords1;
 in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
 in vec4 a_blendAlpha_isLit_alphaRef_rotation;
+in float a_smoothLighting;
 
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
@@ -784,12 +787,15 @@ void main()
 
 	vec2 rotatedVertexPos = vec2(vertexPos.x * c - vertexPos.y * s, vertexPos.x * s + vertexPos.y * c);
 
-	vec2 worldPos = rotatedVertexPos * a_pos_width_height.zw * 0.5 + a_pos_width_height.xy;
+	vec2 halfSize = a_pos_width_height.zw * 0.5;
+	vec2 worldPos = rotatedVertexPos * halfSize + a_pos_width_height.xy;
+	vec2 basePos = a_pos_width_height.xy - vec2(0.0, halfSize.y);
 	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 	vec4 screenPos = u_projTrans * viewPos;
+	vec4 baseScreenPos = u_projTrans * vec4(basePos.xy + u_offset, 0.0, 1.0);
 
 	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
-	v_lightSamplePos = (screenPos.xy + 1.0) / 2.0;
+	v_lightSamplePos = mix((baseScreenPos.xy + 1.0) / 2.0, (screenPos.xy + 1.0) / 2.0, a_smoothLighting);
 	
 	vec2 texCoordAlpha = (vertexPos + 1.0) / 2.0;
 	v_texCoords1 = mix(a_texCoords0.xy, a_texCoords0.zw, texCoordAlpha);
@@ -829,7 +835,9 @@ out highp vec4 fragColour;
 // ------------------------------------------------------
 void main()
 {
-	highp vec4 light = texture(u_lightTexture, v_lightSamplePos);
+	highp vec3 light = texture(u_lightTexture, v_lightSamplePos).rgb;
+	light = mix(vec3(1.0, 1.0, 1.0), light, v_isLit);
+	
 	highp vec4 col1 = texture(u_texture, v_texCoords1);
 	highp vec4 col2 = texture(u_texture, v_texCoords2);
 

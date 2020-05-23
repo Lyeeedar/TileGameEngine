@@ -63,8 +63,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 				            val xp = x - offset.x
 				            val yp = y - offset.y
 
-				            val sx = xp / tileSize
-				            val sy = yp / tileSize
+				            val sx = xp / tileSize - 0.5f
+				            val sy = yp / tileSize - 0.5f
 				            val basex = sx.toInt()
 				            val offsetx = sx - basex
 
@@ -97,7 +97,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 		lightEntity.addComponent(ComponentType.Position)
 		lightEntity.addComponent(ComponentType.Light)
-		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 5f, brightness = 1f, hasShadows = true)
+		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 3f, brightness = 2f, hasShadows = true)
 		world.addEntity(lightEntity)
 	}
 

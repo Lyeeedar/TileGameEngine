@@ -298,4 +298,5 @@ internal inline fun writeInstanceData(instanceData: FloatArray, offset: Int, reg
 	instanceData[i++] = r2v2
 	instanceData[i++] = packedCol
 	instanceData[i++] = packedData
+	instanceData[i++] = if (smoothShade) 1.0f else 0.0f
 }

@@ -60,8 +60,6 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 
 	var texIndex: Int = 0
 
-	var smoothShade = false
-
 	var tintLight = false
 
 	private val tempColour = Colour()
@@ -378,7 +376,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 			texAlpha = 0f
 		}
 
-		com.lyeeedar.Renderables.writeInstanceData(vertices, offset, tex1, tex2, colour, x, y, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount, texAlpha, 0f, isLit, smoothShade)
+		com.lyeeedar.Renderables.writeInstanceData(vertices, offset, tex1, tex2, colour, x, y, width, height, scaleX, scaleY, rotation, flipX, flipY, removeAmount, texAlpha, 0f, isLit, !drawActualSize)
 	}
 
 	inline val currentTexture: TextureRegion
