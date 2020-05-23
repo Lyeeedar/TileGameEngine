@@ -142,13 +142,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	fun updateFBO()
 	{
-		val width = Statics.stage.viewport.screenWidth
-		val height = Statics.stage.viewport.screenHeight
+		val width = Statics.stage.viewport.screenWidth / 4
+		val height = Statics.stage.viewport.screenHeight / 4
 
 		if (width != lightFBO.width || height != lightFBO.height)
 		{
 			lightFBO.dispose()
 			lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
+			lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
 		}
 	}
 
