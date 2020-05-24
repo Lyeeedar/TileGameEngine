@@ -10,9 +10,9 @@ import com.lyeeedar.Util.Point
 
 class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 {
-	private val width: Int
-	private val height: Int
-	private val nodes: Array2D<Node?>
+	private val width: Int = grid.xSize
+	private val height: Int = grid.ySize
+	private val nodes: Array2D<Node>
 
 	private var startx: Int = 0
 	private var starty: Int = 0
@@ -20,6 +20,8 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 	private var endy: Int = 0
 	private var currentx: Int = 0
 	private var currenty: Int = 0
+
+	private var currentID: Int = 0
 
 	private var findOptimal: Boolean = false
 	private var actorSize: Int = 1
@@ -32,10 +34,7 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 
 	init
 	{
-		this.width = grid.xSize
-		this.height = grid.ySize
-
-		this.nodes = Array2D<Node?>(width, height)
+		this.nodes = Array2D<Node>(width, height) { x,y -> Node(x, y) }
 	}
 
 	private fun path()
@@ -91,12 +90,12 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 
 		// 3 possible conditions
 
-		var node: Node? = nodes[x, y]
+		val node: Node = nodes[x, y]
 
 		// not added to open list yet, so add it
-		if (node == null)
+		if (node.id != currentID)
 		{
-			node = pool.obtain().set(x, y)
+			node.id = currentID
 			node.cost = cost
 			node.parent = parent
 			openList.add(node, node.cost.toFloat())
@@ -134,6 +133,9 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 
 	fun getPath(startx: Int, starty: Int, endx: Int, endy: Int, findOptimal: Boolean, actorSize: Int, travelType: SpaceSlot, self: Any): Array<Point>?
 	{
+		currentID++
+		openList.clear()
+
 		this.startx = MathUtils.clamp(startx, 0, width - 1)
 		this.starty = MathUtils.clamp(starty, 0, height - 1)
 
@@ -155,9 +157,8 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 			path()
 		}
 
-		if (nodes[endx, endy] == null)
+		if (nodes[endx, endy].id != currentID)
 		{
-			free()
 			return null
 		}
 		else
@@ -168,53 +169,27 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 
 			var node = nodes[endx, endy]
 
-			while (node != null)
+			while (node.id == currentID)
 			{
 				path.add(Point.obtain().set(node.x, node.y))
 
-				node = node.parent
+				if (node.parent == null) break
+				node = node.parent!!
 			}
 
 			path.reverse()
 
-			free()
 			return path
 		}
 	}
 
-	private fun free()
+	class Node(val x: Int, val y: Int) : BinaryHeap.Node(0f)
 	{
-		for (x in 0 until width)
-		{
-			for (y in 0 until height)
-			{
-				val node = nodes[x, y]
-				if (node != null)
-				{
-					pool.free(node)
-					nodes[x, y] = null
-				}
-			}
-		}
-		openList.clear()
-	}
-
-	class Node : BinaryHeap.Node(0f)
-	{
-		var x: Int = 0
-		var y: Int = 0
+		var id: Int = 0
 		var cost: Int = 0
 		var parent: Node? = null
 
 		var processed = false
-
-		operator fun set(x: Int, y: Int): Node
-		{
-			this.x = x
-			this.y = y
-
-			return this
-		}
 
 		override fun toString(): String
 		{
@@ -225,14 +200,6 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 	companion object
 	{
 		private val NormalOffsets = arrayOf(intArrayOf(-1, 0), intArrayOf(0, -1), intArrayOf(+1, 0), intArrayOf(0, +1))
-
-		private val pool = object : Pool<Node>() {
-			override fun newObject(): Node
-			{
-				return Node()
-			}
-
-		}
 	}
 
 }
