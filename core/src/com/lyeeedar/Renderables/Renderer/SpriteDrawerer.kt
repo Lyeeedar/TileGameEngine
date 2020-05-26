@@ -51,6 +51,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	private val lightShader: ShaderProgram
 	private val shadowLightShader: ShaderProgram
 	private var lightFBO: GL30FrameBuffer
+	private val lightFBOSize: Vector2 = Vector2()
 	private val lightInstanceData: FloatArray
 	private val shadowLightInstanceData: FloatArray
 	private val shadowRegionUniformData: FloatArray
@@ -142,14 +143,16 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	fun updateFBO()
 	{
-		val width = Statics.stage.viewport.screenWidth / 4
-		val height = Statics.stage.viewport.screenHeight / 4
+		val width = Statics.stage.viewport.screenWidth / 2
+		val height = Statics.stage.viewport.screenHeight / 2
 
 		if (width != lightFBO.width || height != lightFBO.height)
 		{
 			lightFBO.dispose()
 			lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
 			lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
+
+			lightFBOSize.set(width.toFloat(), height.toFloat())
 		}
 	}
 
@@ -407,6 +410,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader.setUniformf("u_offset", offsetx, offsety)
 		shader.setUniformi("u_texture", 0)
 		shader.setUniformi("u_lightTexture", 1)
+		shader.setUniformf("u_lightTextureSize", lightFBOSize)
+
 		lightFBO.colorBufferTexture!!.bind(1)
 
 		if (currentBuffer != null)
@@ -507,6 +512,10 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		else
 		{
 			renderVertices()
+
+			//batch?.begin()
+			//batch?.draw(lightFBO.colorBufferTexture, 0f, 0f, Gdx.graphics.backBufferWidth.toFloat(), Gdx.graphics.backBufferHeight.toFloat())
+			//batch?.end()
 		}
 	}
 
@@ -672,8 +681,8 @@ void main()
 			return """
 #version 300 es
 in highp vec4 v_color;
-in mediump vec2 v_lightPos;
-in mediump vec2 v_pixelPos;
+in highp vec2 v_lightPos;
+in highp vec2 v_pixelPos;
 in mediump float v_lightRange;
 in mediump float v_brightness;
 in lowp vec2 v_region_offset_count;
@@ -683,39 +692,39 @@ uniform lowp vec4 u_shadowRegions[128];
 out highp vec4 fragColour;
 
 // ------------------------------------------------------
-mediump float rayBoxIntersect ( mediump vec2 rpos, mediump vec2 rdir, mediump vec2 vmin, mediump vec2 vmax )
+highp float rayBoxIntersect ( highp vec2 rpos, highp vec2 rdir, highp vec2 vmin, highp vec2 vmax )
 {
-	mediump float t0 = (vmin.x - rpos.x) * rdir.x;
-	mediump float t1 = (vmax.x - rpos.x) * rdir.x;
-	mediump float t2 = (vmin.y - rpos.y) * rdir.y;
-	mediump float t3 = (vmax.y - rpos.y) * rdir.y;
+	highp float t0 = (vmin.x - rpos.x) * rdir.x;
+	highp float t1 = (vmax.x - rpos.x) * rdir.x;
+	highp float t2 = (vmin.y - rpos.y) * rdir.y;
+	highp float t3 = (vmax.y - rpos.y) * rdir.y;
 
-	mediump float t4 = max(min(t0, t1), min(t2, t3));
-	mediump float t5 = min(max(t0, t1), max(t2, t3));
+	highp float t4 = max(min(t0, t1), min(t2, t3));
+	highp float t5 = min(max(t0, t1), max(t2, t3));
 
-	mediump float t6 = (t5 < 0.0 || t4 > t5) ? -1.0 : t4;
+	highp float t6 = (t5 < 0.0 || t4 > t5) ? -1.0 : t4;
 	return t6;
 }
 
 // ------------------------------------------------------
-mediump float insideBox(mediump vec2 v, mediump vec2 bottomLeft, mediump vec2 topRight)
+highp float insideBox(highp vec2 v, highp vec2 bottomLeft, highp vec2 topRight)
 {
-    mediump vec2 s = step(bottomLeft, v) - step(topRight, v);
+    highp vec2 s = step(bottomLeft, v) - step(topRight, v);
     return s.x * s.y;
 }
 
 // ------------------------------------------------------
 lowp float isPixelVisible()
 {
-	mediump vec2 diff = v_lightPos - v_pixelPos;
-	mediump float rayLen = length(diff);
-	mediump vec2 rdir = 1.0 / (diff / rayLen);
+	highp vec2 diff = v_lightPos - v_pixelPos;
+	highp float rayLen = length(diff);
+	highp vec2 rdir = 1.0 / (diff / rayLen);
 
 	lowp float insideRegion = 0.0;
 	lowp float collided = 0.0;
 	for (int i = 0; i < int(v_region_offset_count.y); i++)
 	{
-		mediump vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
+		highp vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
 		lowp float intersect = rayBoxIntersect(v_pixelPos, rdir, occluder.xy, occluder.zw);
 
 		collided += float(intersect > 0.0 && intersect < rayLen);
@@ -791,7 +800,7 @@ void main()
 
 	vec2 halfSize = a_pos_width_height.zw * 0.5;
 	vec2 worldPos = rotatedVertexPos * halfSize + a_pos_width_height.xy;
-	vec2 basePos = a_pos_width_height.xy - vec2(0.0, halfSize.y);
+	vec2 basePos = a_pos_width_height.xy - vec2(0.0, halfSize.y * 0.8);
 	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 	vec4 screenPos = u_projTrans * viewPos;
 	vec4 baseScreenPos = u_projTrans * vec4(basePos.xy + u_offset, 0.0, 1.0);
@@ -820,7 +829,7 @@ void main()
 #version 300 es
 
 in mediump vec4 v_color;
-in mediump vec2 v_lightSamplePos;
+in highp vec2 v_lightSamplePos;
 
 in mediump vec2 v_texCoords1;
 in mediump vec2 v_texCoords2;
@@ -830,6 +839,8 @@ in mediump float v_isLit;
 in mediump float v_alphaRef;
 
 uniform sampler2D u_lightTexture;
+uniform mediump vec2 u_lightTextureSize;
+
 uniform sampler2D u_texture;
 
 out highp vec4 fragColour;
@@ -837,7 +848,14 @@ out highp vec4 fragColour;
 // ------------------------------------------------------
 void main()
 {
-	highp vec3 light = texture(u_lightTexture, v_lightSamplePos).rgb;
+	highp vec3 light = texture(u_lightTexture, v_lightSamplePos).rgb * 0.4;
+	
+	mediump vec2 sampleOffset = vec2(1.0, 1.0) / u_lightTextureSize;
+	light += texture(u_lightTexture, v_lightSamplePos + vec2(-sampleOffset.x, -sampleOffset.y)).rgb * 0.15;
+	light += texture(u_lightTexture, v_lightSamplePos + vec2(sampleOffset.x, sampleOffset.y)).rgb * 0.15;
+	light += texture(u_lightTexture, v_lightSamplePos + vec2(-sampleOffset.x, sampleOffset.y)).rgb * 0.15;
+	light += texture(u_lightTexture, v_lightSamplePos + vec2(sampleOffset.x, -sampleOffset.y)).rgb * 0.15;
+	
 	light = mix(vec3(1.0, 1.0, 1.0), light, v_isLit);
 	
 	highp vec4 col1 = texture(u_texture, v_texCoords1);
