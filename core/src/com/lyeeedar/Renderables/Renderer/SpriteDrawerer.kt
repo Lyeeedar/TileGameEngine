@@ -50,7 +50,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	private val shadowLightMesh: Mesh
 	private val lightShader: ShaderProgram
 	private val shadowLightShader: ShaderProgram
-	private var lightFBO: GL30FrameBuffer
+	private lateinit var lightFBO: GL30FrameBuffer
 	private val lightFBOSize: Vector2 = Vector2()
 	private val lightInstanceData: FloatArray
 	private val shadowLightInstanceData: FloatArray
@@ -127,7 +127,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		lightShader = createLightShader()
 		shadowLightShader = createShadowLightShader()
 
-		lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, Gdx.graphics.backBufferWidth, Gdx.graphics.backBufferHeight, false)
+		createFBO()
 	}
 
 	override fun dispose()
@@ -149,11 +149,19 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		if (width != lightFBO.width || height != lightFBO.height)
 		{
 			lightFBO.dispose()
-			lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
-			lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
-
-			lightFBOSize.set(width.toFloat(), height.toFloat())
+			createFBO()
 		}
+	}
+
+	fun createFBO()
+	{
+		val width = Statics.stage.viewport.screenWidth / 2
+		val height = Statics.stage.viewport.screenHeight / 2
+
+		lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
+		lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
+
+		lightFBOSize.set(width.toFloat(), height.toFloat())
 	}
 
 	fun freeStaticBuffers()
@@ -604,29 +612,29 @@ void main()
 		{
 			return """
 #version 300 es
-in highp vec4 v_color;
+in lowp vec4 v_color;
 in mediump vec2 v_lightPos;
 in mediump vec2 v_pixelPos;
-in mediump float v_lightRange;
-in mediump float v_brightness;
+in lowp float v_lightRange;
+in lowp float v_brightness;
 
-out highp vec4 fragColour;
+out lowp vec4 fragColour;
 
-highp float calculateLightStrength()
+lowp float calculateLightStrength()
 {
-	highp vec2 diff = v_lightPos - v_pixelPos;
-	highp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
-	highp float rangeSq = v_lightRange * v_lightRange;
+	mediump vec2 diff = v_lightPos - v_pixelPos;
+	lowp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
+	lowp float rangeSq = v_lightRange * v_lightRange;
 
-	highp float lightStrength = step(distSq, rangeSq);
-	highp float alpha = 1.0 - (distSq / rangeSq);
+	lowp float lightStrength = step(distSq, rangeSq);
+	lowp float alpha = 1.0 - (distSq / rangeSq);
 
 	return lightStrength * alpha;
 }
 
 void main()
 {
-	highp float lightStrength = calculateLightStrength();
+	lowp float lightStrength = calculateLightStrength();
 	fragColour = v_color * v_brightness * lightStrength;
 }
 			""".trimIndent()
@@ -680,51 +688,51 @@ void main()
 		{
 			return """
 #version 300 es
-in highp vec4 v_color;
-in highp vec2 v_lightPos;
-in highp vec2 v_pixelPos;
-in mediump float v_lightRange;
-in mediump float v_brightness;
+in lowp vec4 v_color;
+in mediump vec2 v_lightPos;
+in mediump vec2 v_pixelPos;
+in lowp float v_lightRange;
+in lowp float v_brightness;
 in lowp vec2 v_region_offset_count;
 
 uniform lowp vec4 u_shadowRegions[128];
 
-out highp vec4 fragColour;
+out lowp vec4 fragColour;
 
 // ------------------------------------------------------
-highp float rayBoxIntersect ( highp vec2 rpos, highp vec2 rdir, highp vec2 vmin, highp vec2 vmax )
+lowp float rayBoxIntersect ( lowp vec2 rpos, lowp vec2 rdir, lowp vec2 vmin, lowp vec2 vmax )
 {
-	highp float t0 = (vmin.x - rpos.x) * rdir.x;
-	highp float t1 = (vmax.x - rpos.x) * rdir.x;
-	highp float t2 = (vmin.y - rpos.y) * rdir.y;
-	highp float t3 = (vmax.y - rpos.y) * rdir.y;
+	lowp float t0 = (vmin.x - rpos.x) * rdir.x;
+	lowp float t1 = (vmax.x - rpos.x) * rdir.x;
+	lowp float t2 = (vmin.y - rpos.y) * rdir.y;
+	lowp float t3 = (vmax.y - rpos.y) * rdir.y;
 
-	highp float t4 = max(min(t0, t1), min(t2, t3));
-	highp float t5 = min(max(t0, t1), max(t2, t3));
+	lowp float t4 = max(min(t0, t1), min(t2, t3));
+	lowp float t5 = min(max(t0, t1), max(t2, t3));
 
-	highp float t6 = (t5 < 0.0 || t4 > t5) ? -1.0 : t4;
+	lowp float t6 = (t5 < 0.0 || t4 > t5) ? -1.0 : t4;
 	return t6;
 }
 
 // ------------------------------------------------------
-highp float insideBox(highp vec2 v, highp vec2 bottomLeft, highp vec2 topRight)
+lowp float insideBox(lowp vec2 v, lowp vec2 bottomLeft, lowp vec2 topRight)
 {
-    highp vec2 s = step(bottomLeft, v) - step(topRight, v);
+    lowp vec2 s = step(bottomLeft, v) - step(topRight, v);
     return s.x * s.y;
 }
 
 // ------------------------------------------------------
 lowp float isPixelVisible()
 {
-	highp vec2 diff = v_lightPos - v_pixelPos;
-	highp float rayLen = length(diff);
-	highp vec2 rdir = 1.0 / (diff / rayLen);
+	mediump vec2 diff = v_lightPos - v_pixelPos;
+	lowp float rayLen = length(diff);
+	lowp vec2 rdir = 1.0 / (diff / rayLen);
 
 	lowp float insideRegion = 0.0;
 	lowp float collided = 0.0;
 	for (int i = 0; i < int(v_region_offset_count.y); i++)
 	{
-		highp vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
+		lowp vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
 		lowp float intersect = rayBoxIntersect(v_pixelPos, rdir, occluder.xy, occluder.zw);
 
 		collided += float(intersect > 0.0 && intersect < rayLen);
@@ -735,14 +743,14 @@ lowp float isPixelVisible()
 }
 
 // ------------------------------------------------------
-highp float calculateLightStrength()
+lowp float calculateLightStrength()
 {
-	highp vec2 diff = v_lightPos - v_pixelPos;
-	highp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
-	highp float rangeSq = v_lightRange * v_lightRange;
+	mediump vec2 diff = v_lightPos - v_pixelPos;
+	lowp float distSq = (diff.x * diff.x) + (diff.y * diff.y);
+	lowp float rangeSq = v_lightRange * v_lightRange;
 
-	highp float lightStrength = step(distSq, rangeSq);
-	highp float alpha = 1.0 - (distSq / rangeSq);
+	lowp float lightStrength = step(distSq, rangeSq);
+	lowp float alpha = 1.0 - (distSq / rangeSq);
 	
 	lowp float isVisible = isPixelVisible();
 
@@ -752,7 +760,7 @@ highp float calculateLightStrength()
 // ------------------------------------------------------
 void main()
 {
-	highp float lightStrength = calculateLightStrength();
+	lowp float lightStrength = calculateLightStrength();
 	fragColour = v_color * v_brightness * lightStrength;
 }
 			""".trimIndent()
@@ -828,29 +836,29 @@ void main()
 			val fragmentShader = """
 #version 300 es
 
-in mediump vec4 v_color;
-in highp vec2 v_lightSamplePos;
+in lowp vec4 v_color;
+in mediump vec2 v_lightSamplePos;
 
 in mediump vec2 v_texCoords1;
 in mediump vec2 v_texCoords2;
 
-in mediump float v_blendAlpha;
-in mediump float v_isLit;
-in mediump float v_alphaRef;
+in lowp float v_blendAlpha;
+in lowp float v_isLit;
+in lowp float v_alphaRef;
 
 uniform sampler2D u_lightTexture;
-uniform mediump vec2 u_lightTextureSize;
+uniform lowp vec2 u_lightTextureSize;
 
 uniform sampler2D u_texture;
 
-out highp vec4 fragColour;
+out lowp vec4 fragColour;
 
 // ------------------------------------------------------
 void main()
 {
-	highp vec3 light = texture(u_lightTexture, v_lightSamplePos).rgb * 0.4;
+	lowp vec3 light = texture(u_lightTexture, v_lightSamplePos).rgb * 0.4;
 	
-	mediump vec2 sampleOffset = vec2(1.0, 1.0) / u_lightTextureSize;
+	lowp vec2 sampleOffset = 1.0 / u_lightTextureSize;
 	light += texture(u_lightTexture, v_lightSamplePos + vec2(-sampleOffset.x, -sampleOffset.y)).rgb * 0.15;
 	light += texture(u_lightTexture, v_lightSamplePos + vec2(sampleOffset.x, sampleOffset.y)).rgb * 0.15;
 	light += texture(u_lightTexture, v_lightSamplePos + vec2(-sampleOffset.x, sampleOffset.y)).rgb * 0.15;
@@ -858,18 +866,13 @@ void main()
 	
 	light = mix(vec3(1.0, 1.0, 1.0), light, v_isLit);
 	
-	highp vec4 col1 = texture(u_texture, v_texCoords1);
-	highp vec4 col2 = texture(u_texture, v_texCoords2);
+	lowp vec4 col1 = texture(u_texture, v_texCoords1);
+	lowp vec4 col2 = texture(u_texture, v_texCoords2);
 
-	highp vec4 outCol = mix(col1, col2, v_blendAlpha);
+	lowp vec4 outCol = mix(col1, col2, v_blendAlpha);
+	outCol *= step(v_alphaRef, v_color.a * outCol.a);
 
-	if (v_color.a * outCol.a < v_alphaRef)
-	{
-		outCol = vec4(0.0, 0.0, 0.0, 0.0);
-	}
-
-	highp vec4 finalCol = clamp(v_color * outCol, 0.0, 1.0);
-	fragColour = finalCol * vec4(light.rgb, 1.0);
+	fragColour = clamp(v_color * outCol, 0.0, 1.0) * vec4(light.rgb, 1.0);
 }
 """.trimIndent()
 			return fragmentShader
