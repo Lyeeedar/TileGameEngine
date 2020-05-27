@@ -728,18 +728,16 @@ lowp float isPixelVisible()
 	lowp float rayLen = length(diff);
 	lowp vec2 rdir = 1.0 / (diff / rayLen);
 
-	lowp float insideRegion = 0.0;
 	lowp float collided = 0.0;
 	for (int i = 0; i < int(v_region_offset_count.y); i++)
 	{
 		lowp vec4 occluder = u_shadowRegions[int(v_region_offset_count.x) + i];
 		lowp float intersect = rayBoxIntersect(v_pixelPos, rdir, occluder.xy, occluder.zw);
 
-		collided += float(intersect > 0.0 && intersect < rayLen);
-		insideRegion += insideBox(v_pixelPos, occluder.xy, occluder.zw);
+		collided += float(intersect > 0.0 && intersect < rayLen && insideBox(v_pixelPos, occluder.xy, occluder.zw) == 0.0);
 	}
 
-	return float(collided == 0.0 || insideRegion > 0.0);
+	return float(collided == 0.0);
 }
 
 // ------------------------------------------------------

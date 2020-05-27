@@ -111,16 +111,16 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 					}
 					else
 					{
-						val cornertile = world.grid[0, 0]
+						val clampedTile = world.grid.getClamped(x, y)
 
-						if (cornertile.floor != null)
+						if (clampedTile.floor != null)
 						{
-							renderer.queueSpriteWrapper(cornertile.floor!!, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = nonVisibleColour)
+							renderer.queueSpriteWrapper(clampedTile.floor!!, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = nonVisibleColour)
 						}
 
-						if (tile == null && cornertile.wall != null)
+						if (tile == null && clampedTile.wall != null)
 						{
-							renderer.queueSpriteWrapper(cornertile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
+							renderer.queueSpriteWrapper(clampedTile.wall!!, x.toFloat(), y.toFloat(), SpaceSlot.WALL.ordinal, colour = nonVisibleColour)
 						}
 					}
 				}

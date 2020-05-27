@@ -74,7 +74,7 @@ class SpriteWrapper
 
 	companion object
 	{
-		private val loaded = ObjectMap<XmlData, SpriteWrapper>()
+		val loaded = ObjectMap<XmlData, SpriteWrapper>()
 		fun load(xml: XmlData): SpriteWrapper
 		{
 			val existing = loaded[xml]

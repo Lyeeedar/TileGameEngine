@@ -37,6 +37,8 @@ class AssetManager
 			loadedTextureRegions.clear()
 			loadedTextures.clear()
 
+			SpriteWrapper.loaded.clear()
+
 			XmlData.cachedXml.clear()
 			XmlData.existingPaths = null
 
