@@ -20,12 +20,14 @@ class PermuteAction() : AbstractOneShotActionSequenceAction()
 	@DataAsciiGrid
 	val hitPoints: Array<Point> = Array<Point>(4)
 
-	//region non-data
+	@Transient
 	val mat = Matrix3()
+	@Transient
 	val vec = Vector3()
+	@Transient
 	val addedset = ObjectSet<Point>(4)
+	@Transient
 	val currentTargets = Array<Point>(false, 4)
-	//endregion
 
 	override fun enter(state: ActionSequenceState)
 	{

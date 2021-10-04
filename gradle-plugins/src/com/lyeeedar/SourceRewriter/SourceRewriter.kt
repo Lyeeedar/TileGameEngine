@@ -147,7 +147,7 @@ class SourceRewriter(val file: File, val classRegister: ClassRegister)
 
 						annotations.add(AnnotationDescription(trimmed))
 					}
-					else if (!inNonDataPart && !inGeneratedPart)
+					else if (!inNonDataPart && !inGeneratedPart && annotations?.any { it.name == "Transient" } != true)
 					{
 						val matches = variableRegex.matchEntire(trimmed)
 						if (matches != null)
