@@ -108,6 +108,12 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 				}
 			}
 
+			for (i in 0 until actionSequenceEntities.entities.size)
+			{
+				val entity = actionSequenceEntities.entities[i]
+				entity.actionSequence()?.actionSequence?.preTurn(entity.actionSequence()!!.actionSequenceState)
+			}
+
 			updateProcessList()
 			world.onTurn()
 
@@ -151,6 +157,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 	{
 		if (entity.isMarkedForDeletion()) return ProcessEntityState.SKIPPED
 		if (world.player != null && entity.position()!!.position.dist(world.player!!.position()!!.position) > 40) return ProcessEntityState.SKIPPED
+		if (entity.actionSequence()?.actionSequenceState?.blocked != true) return ProcessEntityState.DELAYED
 
 		val task = entity.task()!!
 

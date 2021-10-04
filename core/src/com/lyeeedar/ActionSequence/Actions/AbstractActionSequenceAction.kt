@@ -25,6 +25,11 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	abstract fun enter(state: ActionSequenceState)
 	abstract fun exit(state: ActionSequenceState): ActionState
 
+	open fun preTurn(state: ActionSequenceState)
+	{
+
+	}
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{

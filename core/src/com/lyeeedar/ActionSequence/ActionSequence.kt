@@ -177,6 +177,14 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		triggers.sort(compareBy { it.time })
 	}
 
+	fun preTurn(state: ActionSequenceState)
+	{
+		for (action in state.enteredActions)
+		{
+			action.preTurn(state)
+		}
+	}
+
 	fun onTurn(state: ActionSequenceState)
 	{
 		var anyBlocked = false
