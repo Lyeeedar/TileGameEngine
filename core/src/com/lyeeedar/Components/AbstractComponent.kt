@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.io.Output
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
+
 abstract class AbstractComponentData : XmlDataClass()
 {
 
@@ -45,3 +46,5 @@ abstract class DataComponent : AbstractComponent()
 {
 	abstract fun initialiseFrom(data: AbstractComponentData)
 }
+
+expect enum class ComponentType

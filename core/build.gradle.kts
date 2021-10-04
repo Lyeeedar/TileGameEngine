@@ -49,6 +49,7 @@ tasks.rewriteSources {
 }
 tasks.compileKotlin {
 	dependsOn(tasks.rewriteSources)
+	kotlinOptions.freeCompilerArgs += "-Xmulti-platform"
 }
 
 tasks.test {

@@ -1,7 +1,7 @@
 package com.lyeeedar.desktop
 
 import com.lyeeedar.MainGame
-import com.lyeeedar.ScreenEnum
+import com.lyeeedar.Screens.ScreenEnum
 import com.lyeeedar.Util.Statics
 
 object ParticlePreviewLauncher

@@ -35,7 +35,7 @@ class ComponentType
 			val output = IndentedStringBuilder()
 			output.appendln("package com.lyeeedar.Components")
 			output.appendln("")
-			output.appendln("enum class ComponentType private constructor(val constructor: ()->AbstractComponent)")
+			output.appendln("actual enum class ComponentType private constructor(val constructor: ()->AbstractComponent)")
 			output.appendln("{")
 			output.appendln(enumBuilder.toString().trimEnd().dropLast(1) + ";")
 			output.appendln("")

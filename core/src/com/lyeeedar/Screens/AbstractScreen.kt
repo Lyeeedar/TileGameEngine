@@ -18,6 +18,7 @@ import com.lyeeedar.Util.KeyMapping
 import com.lyeeedar.Util.KeySource
 import com.lyeeedar.Util.Statics
 import ktx.actors.setKeyboardFocus
+import java.util.HashMap
 
 
 /**
@@ -358,3 +359,8 @@ public enum class FadeType
 	OUT,
 	IN
 }
+
+expect class GameLoopTest
+expect enum class ScreenEnum
+expect fun registerDebugScreens(): HashMap<ScreenEnum, AbstractScreen>
+expect fun registerGameScreens(): HashMap<ScreenEnum, AbstractScreen>

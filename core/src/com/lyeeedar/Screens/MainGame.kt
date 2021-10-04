@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.profiling.GLProfiler
 import com.lyeeedar.Game.load
 import com.lyeeedar.Game.newGame
 import com.lyeeedar.Screens.AbstractScreen
+import com.lyeeedar.Screens.ScreenEnum
+import com.lyeeedar.Screens.registerDebugScreens
+import com.lyeeedar.Screens.registerGameScreens
 import com.lyeeedar.Util.Statics
 import java.io.PrintWriter
 import java.io.StringWriter

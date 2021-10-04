@@ -341,3 +341,5 @@ fun Kryo.registerGdxSerialisers()
 		}
 	}, 204)
 }
+
+expect fun Kryo.registerGameSerializers()
