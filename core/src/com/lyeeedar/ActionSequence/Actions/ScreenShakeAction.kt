@@ -11,11 +11,6 @@ class ScreenShakeAction : AbstractDurationActionSequenceAction()
 	var speed: Float = 10f
 	var amount: Float = 5f
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		val renderSystem = state.world.systems.filterIsInstance<AbstractRenderSystem>().first()
@@ -23,12 +18,10 @@ class ScreenShakeAction : AbstractDurationActionSequenceAction()
 		renderSystem.renderer.lockScreenShake()
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
 		val renderSystem = state.world.systems.filterIsInstance<AbstractRenderSystem>().first()
 		renderSystem.renderer.unlockScreenShake()
-
-		return ActionState.Completed
 	}
 
 	//region generated

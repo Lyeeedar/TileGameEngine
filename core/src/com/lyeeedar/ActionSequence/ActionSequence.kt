@@ -3,8 +3,6 @@ package com.lyeeedar.ActionSequence
 import com.badlogic.gdx.utils.*
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.ActionSequence.Actions.AbstractActionSequenceAction
-import com.lyeeedar.ActionSequence.Actions.ActionState
-import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Direction
@@ -179,10 +177,16 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun preTurn(state: ActionSequenceState)
 	{
+		var anyBlocked = false
 		for (action in state.enteredActions)
 		{
 			action.preTurn(state)
+			if (action.isBlocked(state))
+			{
+				anyBlocked = true
+			}
 		}
+		state.blocked = anyBlocked
 	}
 
 	fun onTurn(state: ActionSequenceState)
@@ -190,8 +194,8 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		var anyBlocked = false
 		for (action in state.enteredActions)
 		{
-			val actionState = action.onTurn(state)
-			if (actionState == ActionState.Blocked)
+			action.onTurn(state)
+			if (action.isBlocked(state))
 			{
 				anyBlocked = true
 			}
@@ -258,8 +262,8 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 			val trigger = triggers[state.index]
 			if (trigger.time <= state.currentTime)
 			{
-				val actionState = trigger.executeTrigger(state)
-				if (actionState == ActionState.Blocked)
+				val blocked = trigger.executeTrigger(state)
+				if (blocked)
 				{
 					state.blocked = true
 					state.currentTime = trigger.time
@@ -352,28 +356,29 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 abstract class AbstractActionSequenceTrigger(val action: AbstractActionSequenceAction, val time: Float)
 {
-	abstract fun executeTrigger(state: ActionSequenceState): ActionState
+	abstract fun executeTrigger(state: ActionSequenceState): Boolean
 }
 class EnterTrigger(action: AbstractActionSequenceAction) : AbstractActionSequenceTrigger(action, action.time)
 {
-	override fun executeTrigger(state: ActionSequenceState): ActionState
+	override fun executeTrigger(state: ActionSequenceState): Boolean
 	{
 		state.enteredActions.add(action)
 		action.enter(state)
-		return ActionState.Completed
+		return false
 	}
 }
 
 class ExitTrigger(action: AbstractActionSequenceAction) : AbstractActionSequenceTrigger(action, action.end)
 {
-	override fun executeTrigger(state: ActionSequenceState): ActionState
+	override fun executeTrigger(state: ActionSequenceState): Boolean
 	{
-		val actionState = action.exit(state)
-		if (actionState != ActionState.Blocked)
+		action.exit(state)
+		val blocked = action.isBlocked(state)
+		if (!blocked)
 		{
 			state.enteredActions.remove(action)
 		}
 
-		return actionState
+		return blocked
 	}
 }

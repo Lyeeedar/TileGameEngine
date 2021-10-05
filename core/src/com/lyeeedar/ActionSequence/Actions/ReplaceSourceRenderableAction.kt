@@ -19,11 +19,6 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 	var blendDuration: Float = 0f
 	var restoreOriginal: Boolean = true
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		val source = state.source.get()!!
@@ -53,7 +48,7 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 		}
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
 		if (restoreOriginal)
 		{
@@ -76,8 +71,6 @@ class ReplaceSourceRenderableAction : AbstractDurationActionSequenceAction()
 				originalRenderable.animation = ColourChangeAnimation.obtain().set(Colour.WHITE.copy().mul(50f), Colour.WHITE, blendDuration)
 			}
 		}
-
-		return ActionState.Completed
 	}
 
 	//region generated

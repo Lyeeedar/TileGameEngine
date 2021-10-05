@@ -44,11 +44,6 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 	@DataValue(visibleIf = "anim == Flash")
 	var targetColour: Colour = Colour.RED
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		val source = state.source
@@ -66,9 +61,9 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 		}
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
-		return ActionState.Completed
+
 	}
 
 	//region generated

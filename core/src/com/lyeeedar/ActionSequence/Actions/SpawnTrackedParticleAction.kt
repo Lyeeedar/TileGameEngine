@@ -21,11 +21,6 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 	var spawnSingleParticle: Boolean = false
 	var alignToVector: Boolean = true
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		if (state.targets.size == 0) return
@@ -97,7 +92,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 		state.data[key] = spawnedParticles
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
 		val spawnedParticles = state.data[key] as Array<Entity>
 		for (entity in spawnedParticles)
@@ -108,8 +103,6 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 			entity.addComponent(ComponentType.Transient)
 		}
 		state.data.remove(key)
-
-		return ActionState.Completed
 	}
 
 	//region generated

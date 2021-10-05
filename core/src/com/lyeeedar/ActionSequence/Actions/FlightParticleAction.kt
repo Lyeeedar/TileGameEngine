@@ -35,11 +35,6 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 	var spawnBehaviour: SpawnBehaviour = SpawnBehaviour.IMMEDIATE
 	var spawnDuration: Float = 0f
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		val sourceTile = state.sourcePoint
@@ -122,9 +117,9 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 		}
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
-		return ActionState.Completed
+
 	}
 
 	//region generated

@@ -22,11 +22,6 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 	var above: Boolean = true
 	var killOnEnd: Boolean = false
 
-	override fun onTurn(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
-	}
-
 	override fun enter(state: ActionSequenceState)
 	{
 		val attachedParticles = Array<EntityReference>()
@@ -59,7 +54,7 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 		state.data[dataKey] = attachedParticles
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
 		val attachedParticles = state.data[dataKey] as Array<EntityReference>
 		for (entityRef in attachedParticles)
@@ -90,8 +85,6 @@ class AttachParticleAction : AbstractDurationActionSequenceAction()
 			}
 		}
 		state.data.remove(dataKey)
-
-		return ActionState.Completed
 	}
 
 	//region generated

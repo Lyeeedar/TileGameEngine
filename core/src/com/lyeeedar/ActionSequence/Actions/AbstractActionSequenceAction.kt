@@ -6,12 +6,6 @@ import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
 import com.lyeeedar.Util.XmlDataClassLoader
 
-enum class ActionState
-{
-	Completed,
-	Blocked
-}
-
 abstract class AbstractActionSequenceAction : XmlDataClass()
 {
 	@DataNumericRange(min = 0f)
@@ -21,14 +15,11 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	abstract val end: Float
 	//endregion
 
-	abstract fun onTurn(state: ActionSequenceState): ActionState
+	open fun preTurn(state: ActionSequenceState) {}
+	open fun onTurn(state: ActionSequenceState) {}
 	abstract fun enter(state: ActionSequenceState)
-	abstract fun exit(state: ActionSequenceState): ActionState
-
-	open fun preTurn(state: ActionSequenceState)
-	{
-
-	}
+	abstract fun exit(state: ActionSequenceState)
+	open fun isBlocked(state: ActionSequenceState): Boolean = false
 
 	//region generated
 	override fun load(xmlData: XmlData)
@@ -46,14 +37,9 @@ abstract class AbstractOneShotActionSequenceAction : AbstractActionSequenceActio
 		get() = time
 	//endregion
 
-	override fun onTurn(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
-		return ActionState.Completed
-	}
 
-	override fun exit(state: ActionSequenceState): ActionState
-	{
-		return ActionState.Completed
 	}
 
 	//region generated

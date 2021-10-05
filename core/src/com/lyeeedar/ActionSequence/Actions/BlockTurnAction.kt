@@ -11,13 +11,11 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 	val key = "blocked"
 	var turns: Int = 1
 
-	override fun onTurn(state: ActionSequenceState): ActionState
+	override fun onTurn(state: ActionSequenceState)
 	{
 		var counter = state.data[key] as Int
 		counter--
 		state.data[key] = counter
-
-		return if (counter <= 0) ActionState.Completed else ActionState.Blocked
 	}
 
 	override fun enter(state: ActionSequenceState)
@@ -25,19 +23,20 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 		state.data[key] = turns
 	}
 
-	override fun exit(state: ActionSequenceState): ActionState
+	override fun exit(state: ActionSequenceState)
 	{
 		val counter = state.data[key] as Int
 
 		if (counter <= 0)
 		{
 			state.data.remove(key)
-			return ActionState.Completed
 		}
-		else
-		{
-			return ActionState.Blocked
-		}
+	}
+
+	override fun isBlocked(state: ActionSequenceState): Boolean
+	{
+		val counter = state.data[key] as Int
+		return counter > 0
 	}
 
 	//region generated

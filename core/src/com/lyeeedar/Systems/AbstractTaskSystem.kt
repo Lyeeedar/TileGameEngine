@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffect
+import com.lyeeedar.Util.Colour
 
 abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 {
@@ -180,6 +181,8 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 		task.tasks.removeIndex(0)
 		t.execute(entity, world, world.rng)
 		entity.event()?.onTurn?.invoke()
+
+		entity.statistics()?.addMessage(t::class.simpleName!!, Colour.YELLOW, 1f)
 
 		task.actionAccumulator -= getTaskCost(entity, t)
 
