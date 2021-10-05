@@ -182,8 +182,6 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 		t.execute(entity, world, world.rng)
 		entity.event()?.onTurn?.invoke()
 
-		entity.statistics()?.addMessage(t::class.simpleName!!, Colour.YELLOW, 1f)
-
 		task.actionAccumulator -= getTaskCost(entity, t)
 
 		t.free()

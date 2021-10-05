@@ -49,6 +49,8 @@ class Statics
 
 		lateinit var game: MainGame
 
+		var supportsDiagonals = false
+
 		val stage: Stage
 			get() = (game.screen as AbstractScreen).stage
 

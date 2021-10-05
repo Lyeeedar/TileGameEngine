@@ -4,9 +4,11 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.BinaryHeap
 import com.badlogic.gdx.utils.Pool
+import com.lyeeedar.Direction
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
+import com.lyeeedar.Util.Statics
 
 class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 {
@@ -49,9 +51,17 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 			return
 		}
 
-		for (offset in NormalOffsets)
+		for (offset in Direction.CardinalValues)
 		{
-			addNodeToOpenList(current.x + offset[0], current.y + offset[1], current)
+			addNodeToOpenList(current.x + offset.x, current.y + offset.y, current)
+		}
+
+		if (Statics.supportsDiagonals)
+		{
+			for (offset in Direction.DiagonalValues)
+			{
+				addNodeToOpenList(current.x + offset.x, current.y + offset.y, current)
+			}
 		}
 
 		current.processed = true
@@ -196,10 +206,4 @@ class AStarPathfind<T: IPathfindingTile>(private val grid: Array2D<T>)
 			return "" + cost
 		}
 	}
-
-	companion object
-	{
-		private val NormalOffsets = arrayOf(intArrayOf(-1, 0), intArrayOf(0, -1), intArrayOf(+1, 0), intArrayOf(0, +1))
-	}
-
 }
