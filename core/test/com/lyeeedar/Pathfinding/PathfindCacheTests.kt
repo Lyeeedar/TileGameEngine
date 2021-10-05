@@ -158,8 +158,8 @@ class PathfindCacheTests
 		val path2 = """
 			#####
 			#.p.#
-			#.p.#
 			#.pp#
+			#..p#
 			#####
 		""".trimIndent()
 
@@ -404,9 +404,9 @@ class PathfindCacheTests
 
 		val path2 = """
 			#####
-			#pp.#
-			#p#.#
-			#pp.#
+			#.pp#
+			#.#p#
+			#.pp#
 			#.p.#
 			#.p.#
 			#.p.#
