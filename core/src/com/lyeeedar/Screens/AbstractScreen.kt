@@ -196,7 +196,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 	override fun touchDown(x: Float, y: Float, pointer: Int, button: Int): Boolean = false
 
 	// ----------------------------------------------------------------------
-	override fun scrolled(amount: Int) = false
+	override fun scrolled(amountX: Float, amountY: Float) = false
 
 	// ----------------------------------------------------------------------
 	override fun tap(x: Float, y: Float, count: Int, button: Int): Boolean = false

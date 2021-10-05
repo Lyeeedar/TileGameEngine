@@ -1,11 +1,11 @@
 extra["kotlinVersion"] = "1.3.71"
 extra["kotlinCoroutinesVersion"] = "1.3.3"
 
-extra["gdxVersion"] = "1.9.10"
+extra["gdxVersion"] = "1.10.0"
 extra["ktxVersion"] = "1.9.10-b5"
-extra["squidlibVersion"] = "3.0.0-b10"
+extra["squidlibVersion"] = "3.0.4"
 
-extra["kryoVersion"] = "5.0.0-RC2"
+extra["kryoVersion"] = "5.2.0"
 
 extra["androidToolsVersion"] = "3.4.2"
 
