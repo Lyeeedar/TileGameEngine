@@ -431,7 +431,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 		storeRenderSprite(rs)
 	}
 
-	internal fun queueTexture(texture: TextureRegion, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?)
+	internal fun queueTexture(texture: TextureRegion, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?, rotation: Float?)
 	{
 		val tileSize = renderer.tileSize
 
@@ -452,7 +452,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
-		val rs = RenderSprite.obtain().set(null, null, texture, x, y, ix, iy, colour, width, height, 0f, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
+		val rs = RenderSprite.obtain().set(null, null, texture, x, y, ix, iy, colour, width, height, rotation ?: 0f, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 
 		storeRenderSprite(rs)
 	}

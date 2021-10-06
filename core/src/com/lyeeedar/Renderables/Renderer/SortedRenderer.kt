@@ -271,10 +271,10 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		sorter.queueSprite(sprite, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY)
 	}
 
-	fun queueTexture(texture: TextureRegion, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Float? = null, sortY: Float? = null)
+	fun queueTexture(texture: TextureRegion, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Float? = null, sortY: Float? = null, rotation: Float? = null)
 	{
 		if (!inBegin && !inStaticBegin) throw Exception("Queue called before begin!")
-		sorter.queueTexture(texture, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY)
+		sorter.queueTexture(texture, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
 	}
 
 	//endregion
