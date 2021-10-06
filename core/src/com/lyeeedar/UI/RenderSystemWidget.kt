@@ -34,8 +34,6 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 	var attachedToEntityWidgets = Array<AttachedToEntityWidget>(false, 4)
 
-	val lightEntity: Entity = EntityPool.obtain()
-
 	init
 	{
 		instance = this
@@ -57,25 +55,6 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 			            {
 				            mousePos.set(x, y)
 
-				            val offset = getPlayerOffset()
-				            val tileSize = world.tileSize
-
-				            val xp = x - offset.x
-				            val yp = y - offset.y
-
-				            val sx = xp / tileSize - 0.5f
-				            val sy = yp / tileSize - 0.5f
-				            val basex = sx.toInt()
-				            val offsetx = sx - basex
-
-				            val basey = sy.toInt()
-				            val offsety = sy - basey
-
-				            lightEntity.position()!!.position.set(basex, basey)
-				            lightEntity.position()!!.offset.set(offsetx, offsety)
-
-
-
 				            super.mouseMoved(event, x, y)
 				            return true
 			            }
@@ -96,11 +75,6 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 				            super.touchUp(event, x, y, pointer, button)
 			            }
 		            })
-
-		lightEntity.addComponent(ComponentType.Position)
-		lightEntity.addComponent(ComponentType.Light)
-		lightEntity.light()!!.light = Light(colour = Colour.PURPLE, range = 6f, brightness = 2f, hasShadows = true)
-		world.addEntity(lightEntity)
 	}
 
 	private val offsetVec = Vector2()

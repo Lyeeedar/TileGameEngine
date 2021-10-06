@@ -108,6 +108,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 						val floor = tile.floor ?: continue
 
 						renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.getRenderCol())
+						drawExtraTile(tile)
 					}
 					else
 					{
@@ -303,6 +304,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	}
 
 	abstract fun drawExtraEntity(entity: Entity, deltaTime: Float)
+	abstract fun drawExtraTile(tile: AbstractTile)
 
 	abstract fun getPlayerPosition(deltaTime: Float?): Vector2
 
