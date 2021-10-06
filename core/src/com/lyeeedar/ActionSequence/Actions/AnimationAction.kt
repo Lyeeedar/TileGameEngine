@@ -1,11 +1,10 @@
 package com.lyeeedar.ActionSequence.Actions
 
 import com.lyeeedar.ActionSequence.ActionSequenceState
+import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
-import com.lyeeedar.Renderables.Animation.AlphaAnimation
-import com.lyeeedar.Renderables.Animation.BlinkAnimation
-import com.lyeeedar.Renderables.Animation.ExpandAnimation
-import com.lyeeedar.Renderables.Animation.SpinAnimation
+import com.lyeeedar.Direction
+import com.lyeeedar.Renderables.Animation.*
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.DataClass
@@ -21,7 +20,8 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 		EXPAND,
 		SPIN,
 		FADE,
-		FLASH
+		FLASH,
+		BUMP
 	}
 
 	lateinit var anim: Animation
@@ -57,6 +57,7 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 				Animation.SPIN -> SpinAnimation.obtain().set(duration, spinAngle)
 				Animation.FADE -> AlphaAnimation.obtain().set(duration, startFade, endFade)
 				Animation.FLASH -> BlinkAnimation.obtain().set(targetColour, sourceRenderable.colour, duration)
+				Animation.BUMP -> BumpAnimation.obtain().set(duration, Direction.getDirection(source.get()!!.position()!!.position, state.targets.get(0)))
 			}
 		}
 	}
