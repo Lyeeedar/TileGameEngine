@@ -1,33 +1,21 @@
 package com.lyeeedar.Renderables.Renderer
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.VertexAttribute
-import com.badlogic.gdx.graphics.VertexAttributes
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.BigMesh
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.graphics.glutils.ShaderProgram
-import com.badlogic.gdx.math.Matrix4
-import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.*
-import com.lyeeedar.BlendMode
-import com.lyeeedar.Direction
+import com.badlogic.gdx.utils.Disposable
+import com.badlogic.gdx.utils.IntMap
+import com.badlogic.gdx.utils.ObjectSet
+import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.Renderables.Light
-import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.Renderer.RenderSprite
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.Renderables.Sprite.TilingSprite
-import com.lyeeedar.Util.*
-import ktx.collections.set
-import ktx.collections.toGdxArray
-import squidpony.squidmath.LightRNG
+import com.lyeeedar.Util.Colour
+import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.Statics
 
 // ----------------------------------------------------------------------
 class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, val layers: Int, val alwaysOnscreen: Boolean) : Disposable

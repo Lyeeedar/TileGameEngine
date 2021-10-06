@@ -1,6 +1,5 @@
 package com.lyeeedar.Renderables.Animation
 
-import com.badlogic.gdx.graphics.Color
 import com.lyeeedar.Util.Colour
 
 /**

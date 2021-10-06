@@ -1,13 +1,14 @@
 package com.lyeeedar.ActionSequence.Actions
 
 import com.lyeeedar.ActionSequence.ActionSequenceState
-import com.lyeeedar.Components.*
+import com.lyeeedar.Components.position
+import com.lyeeedar.Components.renderable
+import com.lyeeedar.Components.transient
+import com.lyeeedar.Components.transientParticleArchetype
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
-import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Random
-import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Renderable", name = "OneShotFX")

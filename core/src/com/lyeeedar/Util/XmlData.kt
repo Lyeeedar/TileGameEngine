@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.XmlReader
 import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
-import java.util.*
 import ktx.collections.set
+import java.util.*
 
 class XmlData
 {

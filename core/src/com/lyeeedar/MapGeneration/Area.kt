@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
-import java.lang.StringBuilder
 
 class Area()
 {

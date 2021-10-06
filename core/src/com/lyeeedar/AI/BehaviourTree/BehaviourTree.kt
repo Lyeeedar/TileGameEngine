@@ -2,19 +2,15 @@ package com.lyeeedar.AI.BehaviourTree
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
-import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.Entity
 import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.*
-import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.XmlDataClassLoader
-import java.lang.RuntimeException
-import java.util.*
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
+import java.util.*
 
 class BehaviourTreeState
 {

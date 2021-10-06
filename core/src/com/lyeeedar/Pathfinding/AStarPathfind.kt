@@ -3,7 +3,6 @@ package com.lyeeedar.Pathfinding
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.BinaryHeap
-import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.Direction
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D

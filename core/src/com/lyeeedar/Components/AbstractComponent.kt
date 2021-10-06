@@ -5,7 +5,6 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClass
-import com.lyeeedar.Util.XmlDataClassLoader
 
 abstract class AbstractComponentData : XmlDataClass()
 {

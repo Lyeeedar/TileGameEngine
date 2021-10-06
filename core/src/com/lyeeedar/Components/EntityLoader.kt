@@ -1,10 +1,6 @@
 package com.lyeeedar.Components
 
-import com.badlogic.gdx.utils.ObjectMap
-import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Util.directory
 import com.lyeeedar.Util.getXml
-import java.util.*
 
 class EntityLoader()
 {

@@ -2,8 +2,6 @@ package com.lyeeedar.Components
 
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Util.XmlData
-import java.util.*
-import ktx.collections.addAll
 
 class MetaRegionComponent : DataComponent()
 {

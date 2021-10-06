@@ -3,11 +3,9 @@ package com.lyeeedar.MapGeneration.Nodes
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
-import com.lyeeedar.MapGeneration.Area
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
-import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Other", colour = "252,248,131")

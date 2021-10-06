@@ -2,7 +2,6 @@ package com.lyeeedar.Renderables.Sprite
 
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.Random
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 import squidpony.squidmath.LightRNG

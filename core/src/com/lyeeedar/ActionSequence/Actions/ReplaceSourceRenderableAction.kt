@@ -1,15 +1,14 @@
 package com.lyeeedar.ActionSequence.Actions
 
 import com.lyeeedar.ActionSequence.ActionSequenceState
-import com.lyeeedar.Components.*
+import com.lyeeedar.Components.AdditionalRenderableComponent
+import com.lyeeedar.Components.ComponentType
+import com.lyeeedar.Components.RenderableComponent
+import com.lyeeedar.Components.renderable
 import com.lyeeedar.Renderables.Animation.AlphaAnimation
 import com.lyeeedar.Renderables.Animation.ColourChangeAnimation
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.DataClass
-import com.lyeeedar.Util.Future
-import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.*
 import ktx.collections.set
 
 @DataClass(category = "Renderable", name = "ReplaceSprite")

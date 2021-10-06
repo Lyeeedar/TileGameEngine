@@ -2,8 +2,8 @@ package com.lyeeedar.Renderables.Animation
 
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Pool
-import com.lyeeedar.Util.Colour
 import com.lyeeedar.Renderables.HSLColour
+import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.XmlData
 
 /**

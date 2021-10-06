@@ -2,14 +2,13 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectFloatMap
 import com.badlogic.gdx.utils.ObjectMap
-import com.lyeeedar.MapGeneration.*
+import com.lyeeedar.MapGeneration.Area
+import com.lyeeedar.MapGeneration.IMapGeneratorSymbol
+import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.XmlDataClass
-import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.copy
-import java.util.*
 import squidpony.squidmath.LightRNG
 
 abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>()

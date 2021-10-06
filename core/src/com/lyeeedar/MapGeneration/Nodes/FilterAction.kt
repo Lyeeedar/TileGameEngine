@@ -2,15 +2,17 @@ package com.lyeeedar.MapGeneration.Nodes
 
 import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.Direction
-import com.lyeeedar.MapGeneration.*
+import com.lyeeedar.MapGeneration.IMapGeneratorSymbol
+import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
+import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.DataValue
 import com.lyeeedar.Util.XmlData
-import java.util.*
 import ktx.collections.toGdxArray
+import java.util.*
 
 @DataClass(category = "Point", colour = "193,49,199")
 class FilterAction : AbstractMapGenerationAction()

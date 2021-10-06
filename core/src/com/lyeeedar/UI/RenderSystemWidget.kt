@@ -1,27 +1,19 @@
 package com.lyeeedar.UI
 
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.Actions
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.delay
-import com.badlogic.gdx.scenes.scene2d.actions.Actions.removeActor
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Widget
 import com.badlogic.gdx.utils.Array
-import com.lyeeedar.Components.*
-import com.lyeeedar.Renderables.Light
+import com.lyeeedar.Components.EntityReference
+import com.lyeeedar.Components.position
+import com.lyeeedar.Components.renderable
 import com.lyeeedar.Systems.AbstractRenderSystem
-import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Statics
-import kotlinx.coroutines.delay
-import ktx.actors.then
 
 class RenderSystemWidget(val world: World<*>) : Widget()
 {

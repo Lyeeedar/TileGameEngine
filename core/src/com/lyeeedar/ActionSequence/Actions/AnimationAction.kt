@@ -5,11 +5,7 @@ import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Animation.*
-import com.lyeeedar.Util.AssetManager
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.DataClass
-import com.lyeeedar.Util.DataValue
-import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.*
 import java.util.*
 
 @DataClass(category = "Renderable", name = "Anim")

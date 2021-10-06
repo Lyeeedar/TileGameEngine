@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
-import com.lyeeedar.Util.EnumBitflag
 import com.lyeeedar.Util.Point
 import kotlin.math.abs
 

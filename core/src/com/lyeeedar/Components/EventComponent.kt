@@ -1,7 +1,6 @@
 package com.lyeeedar.Components
 
 import com.lyeeedar.Util.Event0Arg
-import com.lyeeedar.Util.XmlData
 
 class EventComponent : AbstractComponent()
 {

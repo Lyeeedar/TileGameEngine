@@ -1,19 +1,16 @@
 package com.lyeeedar.Systems
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
-import com.badlogic.gdx.utils.IntSet
-import com.badlogic.gdx.utils.ObjectSet
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
-import com.lyeeedar.Renderables.ShadowCastCache
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.SpaceSlotType
-import com.lyeeedar.Util.*
-import java.awt.Color
+import com.lyeeedar.Util.Colour
+import com.lyeeedar.Util.Statics
+import com.lyeeedar.Util.round
 
 abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
 {

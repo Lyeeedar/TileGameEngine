@@ -7,7 +7,6 @@ import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.XmlDataClassLoader
 
 @DataClass(category = "Flow Control")
 class NodeBehaviourAction : AbstractBehaviourAction()

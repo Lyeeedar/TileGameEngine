@@ -1,15 +1,10 @@
 package com.lyeeedar.Components
 
-import com.esotericsoftware.kryo.Kryo
-import com.esotericsoftware.kryo.io.Input
-import com.esotericsoftware.kryo.io.Output
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
-import com.lyeeedar.Util.round
-import ktx.collections.set
 
 inline fun Entity.sprite(): Sprite? = this.renderable()?.renderable as? Sprite
 inline fun Entity.renderOffset() = this.renderable()?.renderable?.animation?.renderOffset(false)

@@ -4,7 +4,6 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.Array2D
 import com.lyeeedar.Util.Point
-import java.lang.RuntimeException
 
 class PathfindCache<T: IPathfindingTile>(val maxUses: Int = 10)
 {

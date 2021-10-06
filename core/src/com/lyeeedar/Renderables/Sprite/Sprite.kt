@@ -3,12 +3,10 @@ package com.lyeeedar.Renderables.Sprite
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Renderables.Animation.AbstractColourAnimation
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.Renderer.SpriteDrawerer
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Random
 
