@@ -8,6 +8,7 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.copy
 import squidpony.squidmath.LightRNG
 

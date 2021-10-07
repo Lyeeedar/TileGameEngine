@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.AI.BehaviourTree.AbstractBehaviourTreeItem
 import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.XmlDataClassLoader
 
 abstract class AbstractBehaviourAction : AbstractBehaviourTreeItem()
 {

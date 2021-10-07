@@ -11,8 +11,8 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.DataValue
 import com.lyeeedar.Util.XmlData
-import ktx.collections.toGdxArray
 import java.util.*
+import ktx.collections.toGdxArray
 
 @DataClass(category = "Point", colour = "193,49,199")
 class FilterAction : AbstractMapGenerationAction()

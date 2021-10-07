@@ -2,6 +2,7 @@ package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.*
+import com.badlogic.gdx.graphics.Mesh.VertexDataType
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.GL30FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
@@ -11,6 +12,7 @@ import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.NumberUtils
 import com.badlogic.gdx.utils.Pool
 import com.lyeeedar.Renderables.writeInstanceData
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Statics
 
@@ -25,8 +27,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		var offset = -1
 		var count = -1
 		lateinit var texture: Texture
-		var blendSrc: Int = -1
-		var blendDst: Int = -1
+		var blendSrc: Int = -2
+		var blendDst: Int = -2
 
 		init
 		{
@@ -75,6 +77,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 	}
 
+	private val precomputedVertexShader: ShaderProgram
+	private val precomputedMesh: Mesh
+	private val precomputedVertices: FloatArray
+	private val precomputedIndices: ShortArray
+	private var precomputedVertexCount = 0
+	private var precomputedIndexCount = 0
+	private val activePrecomputedVertexBuffer: VertexBuffer = VertexBuffer()
+
 	init
 	{
 		val billboardVertices = floatArrayOf(-1f, +1f, -1f, -1f, +1f, -1f, +1f, +1f)
@@ -117,6 +127,14 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		                                   VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
 		                                   VertexAttribute(VertexAttributes.Usage.Generic, 2, "a_region_offset_count"))
 
+		val maxPrecomputedVertices = 2000
+		precomputedMesh = Mesh(VertexDataType.VertexBufferObjectWithVAO, false, maxPrecomputedVertices, maxPrecomputedVertices * 2 * 3,
+			VertexAttribute(VertexAttributes.Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+			VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+			VertexAttribute(VertexAttributes.Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"))
+		precomputedVertices = FloatArray(maxPrecomputedVertices * 5)
+		precomputedIndices = ShortArray(maxPrecomputedVertices * 2 * 3)
+
 		geometryInstanceData = FloatArray(maxInstances * instanceDataSize)
 		lightInstanceData = FloatArray(10000 * (4 + 1))
 		shadowLightInstanceData = FloatArray(100 * (4 + 1 + 2))
@@ -125,6 +143,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader = createShader()
 		lightShader = createLightShader()
 		shadowLightShader = createShadowLightShader()
+		precomputedVertexShader = createPrecomputedVertexShader()
 
 		createFBO()
 	}
@@ -135,12 +154,15 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		staticGeometryMesh.dispose()
 		lightMesh.dispose()
 		lightFBO.dispose()
+		shadowLightMesh.dispose()
 		shader.dispose()
 		lightShader.dispose()
 		shadowLightShader.dispose()
+		precomputedVertexShader.dispose()
+		precomputedMesh.dispose()
 	}
 
-	fun updateFBO()
+	private fun updateFBO()
 	{
 		val width = Statics.stage.viewport.screenWidth / 2
 		val height = Statics.stage.viewport.screenHeight / 2
@@ -152,7 +174,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 	}
 
-	fun createFBO()
+	private fun createFBO()
 	{
 		val width = Statics.stage.viewport.screenWidth / 2
 		val height = Statics.stage.viewport.screenHeight / 2
@@ -402,16 +424,151 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 	}
 
+	private fun fillPrecomputedVertexBuffer(rs: RenderSprite)
+	{
+		val texture = rs.texture!!.texture
+		val blendSrc = rs.blend.src
+		val blendDst = rs.blend.dst
+
+		val currentBuffer = activePrecomputedVertexBuffer
+		if (precomputedVertexCount == 0 ||
+			currentBuffer.texture != texture ||
+			currentBuffer.blendSrc != blendSrc ||
+			currentBuffer.blendDst != blendDst)
+		{
+			renderPrecomputedVertices()
+			currentBuffer.reset(blendSrc, blendDst, texture)
+		}
+
+		val vertices = rs.precomputedVertices!!
+		val indices = rs.precomputedIndices!!
+
+		val startIndex = precomputedVertexCount / 5
+		for (i in 0 until indices.size)
+		{
+			precomputedIndices[precomputedVertexCount++] = (indices[i] + startIndex).toShort()
+		}
+
+		System.arraycopy(vertices, 0, precomputedVertices, precomputedVertexCount, vertices.size)
+		precomputedVertexCount += vertices.size
+	}
+
+	private fun renderPrecomputedVertices()
+	{
+		if (precomputedVertexCount == 0) return
+		val buffer = activePrecomputedVertexBuffer
+
+		val shader = precomputedVertexShader
+
+		Gdx.gl.glEnable(GL20.GL_BLEND)
+		Gdx.gl.glDepthMask(false)
+
+		shader.bind()
+
+		shader.setUniformMatrix("u_projTrans", combinedMatrix)
+		shader.setUniformi("u_texture", 0)
+		shader.setUniformi("u_lightTexture", 1)
+		shader.setUniformf("u_lightTextureSize", lightFBOSize)
+
+		lightFBO.colorBufferTexture!!.bind(1)
+		buffer.texture.bind(0)
+
+		Gdx.gl.glBlendFunc(buffer.blendSrc, buffer.blendDst)
+
+		// draw
+		precomputedMesh.setVertices(precomputedVertices, 0, precomputedVertexCount)
+		precomputedMesh.setIndices(precomputedIndices, 0, precomputedIndexCount)
+
+		precomputedMesh.bind(shader)
+		precomputedMesh.render(shader, GL20.GL_TRIANGLES, 0, precomputedIndexCount)
+		precomputedMesh.unbind(shader)
+
+		precomputedVertexCount = 0
+		precomputedIndexCount = 0
+
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+	}
+
 	private fun renderVertices()
 	{
-		if (currentBuffer == null && staticBuffers.size == 0 && queuedBuffers.size == 0) return
+		if (currentBuffer == null && queuedBuffers.size == 0) return
 
 		val offsetx = renderer.offsetx
 		val offsety = renderer.offsety
 
 		Gdx.gl.glEnable(GL20.GL_BLEND)
 		Gdx.gl.glDepthMask(false)
-		shader.begin()
+
+		shader.bind()
+
+		shader.setUniformMatrix("u_projTrans", combinedMatrix)
+		shader.setUniformf("u_offset", offsetx, offsety)
+		shader.setUniformi("u_texture", 0)
+		shader.setUniformi("u_lightTexture", 1)
+		shader.setUniformf("u_lightTextureSize", lightFBOSize)
+
+		lightFBO.colorBufferTexture!!.bind(1)
+
+		if (currentBuffer != null)
+		{
+			queuedBuffers.add(currentBuffer!!)
+			currentBuffer = null
+		}
+
+		var lastBlendSrc = -1
+		var lastBlendDst = -1
+		var lastTexture: Texture? = null
+
+		fun drawBuffer(buffer: VertexBuffer, mesh: Mesh)
+		{
+			if (buffer.texture != lastTexture)
+			{
+				buffer.texture.bind(0)
+				lastTexture = buffer.texture
+			}
+
+			if (buffer.blendSrc != lastBlendSrc || buffer.blendDst != lastBlendDst)
+			{
+				Gdx.gl.glBlendFunc(buffer.blendSrc, buffer.blendDst)
+
+				lastBlendSrc = buffer.blendSrc
+				lastBlendDst = buffer.blendDst
+			}
+
+			mesh.render(shader, GL20.GL_TRIANGLES, 0, 6)
+		}
+
+		if (queuedBuffers.size > 0)
+		{
+			for (buffer in queuedBuffers)
+			{
+				geometryMesh.setInstanceData(geometryInstanceData, buffer.offset, buffer.count)
+				geometryMesh.bind(shader)
+
+				drawBuffer(buffer, geometryMesh)
+				bufferPool.free(buffer)
+
+				geometryMesh.unbind(shader)
+			}
+			queuedBuffers.clear()
+		}
+
+		currentGeometryInstanceIndex = 0
+
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+	}
+
+	private fun renderStatic()
+	{
+		if (staticBuffers.size == 0) return
+
+		val offsetx = renderer.offsetx
+		val offsety = renderer.offsety
+
+		Gdx.gl.glEnable(GL20.GL_BLEND)
+		Gdx.gl.glDepthMask(false)
+
+		shader.bind()
 
 		shader.setUniformMatrix("u_projTrans", combinedMatrix)
 		shader.setUniformf("u_offset", offsetx, offsety)
@@ -462,27 +619,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			staticGeometryMesh.unbind(shader)
 		}
 
-		if (queuedBuffers.size > 0)
-		{
-			for (buffer in queuedBuffers)
-			{
-				geometryMesh.setInstanceData(geometryInstanceData, buffer.offset, buffer.count)
-				geometryMesh.bind(shader)
-
-				drawBuffer(buffer, geometryMesh)
-				bufferPool.free(buffer)
-
-				geometryMesh.unbind(shader)
-			}
-			queuedBuffers.clear()
-		}
-
-		Gdx.gl.glDepthMask(true)
-		Gdx.gl.glDisable(GL20.GL_BLEND)
 		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
-		shader.end()
-
-		currentGeometryInstanceIndex = 0
 	}
 
 	internal fun draw(batch: Batch?)
@@ -500,15 +637,31 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 
 		// begin rendering
+		if (!renderer.inStaticBegin)
+		{
+			renderStatic()
+		}
+
 		for (i in 0 until renderer.queuedSprites)
 		{
 			val rs = renderer.spriteArray[i]!!
 
-			fillVertexBuffer(rs)
-
-			if (!renderer.inStaticBegin && currentGeometryInstanceIndex + instanceDataSize >= maxInstances * instanceDataSize)
+			if (rs.precomputedVertices != null)
 			{
 				renderVertices()
+
+				fillPrecomputedVertexBuffer(rs)
+			}
+			else
+			{
+				renderPrecomputedVertices()
+
+				fillVertexBuffer(rs)
+
+				if (!renderer.inStaticBegin && currentGeometryInstanceIndex + instanceDataSize >= maxInstances * instanceDataSize)
+				{
+					renderVertices()
+				}
 			}
 		}
 
@@ -519,11 +672,16 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		else
 		{
 			renderVertices()
+			renderPrecomputedVertices()
 
 			//batch?.begin()
 			//batch?.draw(lightFBO.colorBufferTexture, 0f, 0f, Gdx.graphics.backBufferWidth.toFloat(), Gdx.graphics.backBufferHeight.toFloat())
 			//batch?.end()
 		}
+
+		Gdx.gl.glDepthMask(true)
+		Gdx.gl.glDisable(GL20.GL_BLEND)
+		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 	}
 
 	companion object
@@ -567,7 +725,18 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			return shader
 		}
 
-		fun getLightVertex(): String
+		fun createPrecomputedVertexShader(): ShaderProgram
+		{
+			val vertexShader = getPrecomputedGeometryVertex()
+			val fragmentShader = getGeometryFragment()
+
+			val shader = ShaderProgram(vertexShader, fragmentShader)
+			if (!shader.isCompiled) throw IllegalArgumentException("Error compiling shader: " + shader.log)
+
+			return shader
+		}
+
+		private fun getLightVertex(): String
 		{
 			return """
 #version 300 es
@@ -607,7 +776,7 @@ void main()
 			""".trimIndent()
 		}
 
-		fun getLightFragment(): String
+		private fun getLightFragment(): String
 		{
 			return """
 #version 300 es
@@ -639,7 +808,7 @@ void main()
 			""".trimIndent()
 		}
 
-		fun getShadowLightVertex(): String
+		private fun getShadowLightVertex(): String
 		{
 			return """
 #version 300 es
@@ -683,7 +852,7 @@ void main()
 			""".trimIndent()
 		}
 
-		fun getShadowLightFragment(): String
+		private fun getShadowLightFragment(): String
 		{
 			return """
 #version 300 es
@@ -763,7 +932,7 @@ void main()
 			""".trimIndent()
 		}
 
-		fun getGeometryVertex(): String
+		private fun getGeometryVertex(): String
 		{
 			val vertexShader = """
 #version 300 es
@@ -828,7 +997,47 @@ void main()
 			return vertexShader
 		}
 
-		fun getGeometryFragment(): String
+		private fun getPrecomputedGeometryVertex(): String
+		{
+			val vertexShader = """
+#version 300 es
+
+in vec4 ${ShaderProgram.POSITION_ATTRIBUTE};
+in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
+in vec2 ${ShaderProgram.TEXCOORD_ATTRIBUTE}0;
+
+uniform mat4 u_projTrans;
+
+out vec4 v_color;
+out vec2 v_lightSamplePos;
+
+out vec2 v_texCoords1;
+out vec2 v_texCoords2;
+
+out float v_blendAlpha;
+out float v_isLit;
+out float v_alphaRef;
+
+void main()
+{
+	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
+	v_texCoords1 = ${ShaderProgram.TEXCOORD_ATTRIBUTE}0;
+	gl_Position =  u_projTrans * ${ShaderProgram.POSITION_ATTRIBUTE};
+	
+	v_lightSamplePos = gl_Position.xy;
+	
+	v_texCoords2 = vec2(0.0, 0.0);
+	
+	v_blendAlpha = 0.0;
+	v_isLit = 1.0;
+	v_alphaRef = 0.0;
+}
+"""
+
+			return vertexShader
+		}
+
+		private fun getGeometryFragment(): String
 		{
 			val fragmentShader = """
 #version 300 es

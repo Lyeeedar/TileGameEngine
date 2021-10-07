@@ -30,14 +30,29 @@ class RenderSprite(val parentBlock: RenderSpriteBlock, val parentBlockIndex: Int
 	internal var blend: BlendMode = BlendMode.MULTIPLICATIVE
 	internal var isLit: Boolean = true
 	internal var alphaRef: Float = 0f
+	internal var precomputedVertices: FloatArray? = null
+	internal var precomputedIndices: ShortArray? = null
 
-	val tempColour = Colour()
-	val tlCol = Colour()
-	val trCol = Colour()
-	val blCol = Colour()
-	val brCol = Colour()
 
 	internal var comparisonVal: Int = 0
+
+	// ----------------------------------------------------------------------
+	operator fun set(precomputedVertices: FloatArray, precomputedIndices: ShortArray, texture: TextureRegion,
+	                 x: Float, y: Float,
+	                 colour: Colour, blend: BlendMode,
+	                 comparisonVal: Int): RenderSprite
+	{
+		this.precomputedVertices = precomputedVertices
+		this.precomputedIndices = precomputedIndices
+		this.x = x
+		this.y = y
+		this.colour.set(colour)
+		this.blend = blend
+		this.comparisonVal = comparisonVal
+		this.texture = texture
+
+		return this
+	}
 
 	// ----------------------------------------------------------------------
 	operator fun set(sprite: Sprite?, tilingSprite: TilingSprite?, texture: TextureRegion?,
@@ -84,7 +99,22 @@ class RenderSprite(val parentBlock: RenderSpriteBlock, val parentBlockIndex: Int
 	}
 
 	// ----------------------------------------------------------------------
-	internal fun free() = parentBlock.free(this)
+	fun reset()
+	{
+		sprite = null
+		tilingSprite = null
+		texture = null
+		nextTexture = null
+		precomputedVertices = null
+		precomputedIndices = null
+	}
+
+	// ----------------------------------------------------------------------
+	internal fun free()
+	{
+		reset()
+		parentBlock.free(this)
+	}
 
 	// ----------------------------------------------------------------------
 	companion object

@@ -5,11 +5,11 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import java.util.*
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SectionDungeonGenerator
 import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.RNG
-import java.util.*
 
 @DataClass(category = "Squidlib", colour = "89,255,11")
 class SquidlibSectionGeneratorAction : AbstractMapGenerationAction()

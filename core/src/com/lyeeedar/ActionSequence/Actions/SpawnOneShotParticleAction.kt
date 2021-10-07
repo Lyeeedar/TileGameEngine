@@ -8,7 +8,9 @@ import com.lyeeedar.Components.transientParticleArchetype
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Renderable", name = "OneShotFX")

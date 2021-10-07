@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import java.util.*
 
 @DataClass(category = "Area", colour = "80,170,230")

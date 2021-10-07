@@ -9,6 +9,8 @@ import com.lyeeedar.Renderables.Animation.AlphaAnimation
 import com.lyeeedar.Renderables.Animation.ColourChangeAnimation
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.AssetManager
+import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
 @DataClass(category = "Renderable", name = "ReplaceSprite")

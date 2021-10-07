@@ -10,6 +10,7 @@ import com.lyeeedar.Renderables.Light
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
+import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.Renderables.Sprite.TilingSprite
@@ -223,6 +224,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		if (renderable is Sprite) queueSprite(renderable, ix, iy, layer, index, colour, width, height)
 		else if (renderable is TilingSprite) queueSprite(renderable, ix, iy, layer, index, colour, width, height)
 		else if (renderable is ParticleEffect) queueParticle(renderable, ix, iy, layer, index, colour, width, height)
+		else if (renderable is SkeletonRenderable) queueSkeleton(renderable, ix, iy, layer, index, colour, width, height)
 		else throw Exception("Unknown renderable type! " + renderable.javaClass)
 	}
 
@@ -263,6 +265,12 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	{
 		if (!inBegin && !inStaticBegin) throw Exception("Queue called before begin!")
 		sorter.queueTexture(texture, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
+	}
+
+	fun queueSkeleton(skeleton: SkeletonRenderable, ix: Float, iy: Float, layer: Int = 0, index: Int = 0, colour: Colour = Colour.WHITE, width: Float = 1f, height: Float = 1f, scaleX: Float = 1f, scaleY: Float = 1f, lit: Boolean = true, sortX: Float? = null, sortY: Float? = null, rotation: Float? = null)
+	{
+		if (!inBegin && !inStaticBegin) throw Exception("Queue called before begin!")
+		sorter.queueSkeleton(skeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
 	}
 
 	//endregion

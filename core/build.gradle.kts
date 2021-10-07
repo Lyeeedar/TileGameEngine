@@ -27,6 +27,8 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
 
 	testImplementation("junit:junit:4.13")
+
+	implementation("com.esotericsoftware.spine:spine-libgdx:3.5.51.1")
 }
 
 java {

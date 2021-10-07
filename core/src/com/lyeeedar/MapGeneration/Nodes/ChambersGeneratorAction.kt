@@ -5,6 +5,7 @@ import com.lyeeedar.Direction
 import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
 import squidpony.squidmath.LightRNG
 
 @DataClass(category = "Generators", colour = "47,222,209")

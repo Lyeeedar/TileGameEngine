@@ -1,14 +1,23 @@
 package com.lyeeedar.Renderables.Renderer
 
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.utils.Array
+import com.esotericsoftware.spine.Skeleton
+import com.esotericsoftware.spine.SkeletonMeshRenderer
+import com.esotericsoftware.spine.Slot
+import com.esotericsoftware.spine.attachments.MeshAttachment
+import com.esotericsoftware.spine.attachments.RegionAttachment
+import com.esotericsoftware.spine.attachments.SkeletonAttachment
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
+import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.Util.*
@@ -34,6 +43,8 @@ class SpriteSorter(val renderer: SortedRenderer)
 	private val LAYER_BLOCK_SIZE = INDEX_BLOCK_SIZE * MAX_INDEX
 	private val X_BLOCK_SIZE = LAYER_BLOCK_SIZE * MAX_LAYER
 	private val Y_BLOCK_SIZE = X_BLOCK_SIZE * renderer.width.toInt()
+
+	private val quadTriangles = shortArrayOf(0, 1, 2, 2, 3, 0)
 
 	internal fun updateBatchID()
 	{
@@ -102,7 +113,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 			renderer.spriteArray = renderer.spriteArray.copyOf(renderer.spriteArray.size * 2)
 		}
 
-		if (renderSprite.texture == null && renderSprite.sprite == null && renderSprite.tilingSprite == null)
+		if (renderSprite.texture == null && renderSprite.sprite == null && renderSprite.tilingSprite == null && renderSprite.precomputedVertices == null)
 		{
 			throw RuntimeException("Queued a sprite with nothing to render!")
 		}
@@ -450,6 +461,104 @@ class SpriteSorter(val renderer: SortedRenderer)
 		val rs = RenderSprite.obtain().set(null, null, texture, x, y, ix, iy, colour, width, height, rotation ?: 0f, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 
 		storeRenderSprite(rs)
+	}
+
+	internal fun queueSkeleton(skeleton: SkeletonRenderable, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?, rotation: Float?)
+	{
+		val tileSize = renderer.tileSize
+
+		val lx = ix - width
+		val ly = iy - height
+
+		val x = ix * tileSize
+		val y = iy * tileSize
+
+		// check if onscreen
+
+		val localx = x + renderer.offsetx
+		val localy = y + renderer.offsety
+		val localw = width * tileSize
+		val localh = height * tileSize
+
+		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
+
+		skeleton.skeleton.setPosition(localx, localy)
+		update(skeleton)
+		queueSkeleton(skeleton.skeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
+	}
+
+	private fun queueSkeleton(skeleton: Skeleton, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?, rotation: Float?)
+	{
+		val tileSize = renderer.tileSize
+
+		val lx = ix - width
+		val ly = iy - height
+
+		val x = ix * tileSize
+		val y = iy * tileSize
+
+		// check if onscreen
+
+		val localx = x + renderer.offsetx
+		val localy = y + renderer.offsety
+		val localw = width * tileSize
+		val localh = height * tileSize
+
+		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
+
+		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
+
+		val drawOrder: Array<Slot> = skeleton.drawOrder
+		for (i in 0 until drawOrder.size)
+		{
+			var vertices: FloatArray? = null
+			var triangles: ShortArray? = null
+			var texture: TextureRegion? = null
+
+			val slot = drawOrder[i]
+			val attachment = slot.attachment
+			if (attachment is RegionAttachment)
+			{
+				val region = attachment
+				vertices = region.updateWorldVertices(slot, false)
+				triangles = quadTriangles
+				texture = region.region
+			}
+			else if (attachment is MeshAttachment)
+			{
+				val mesh = attachment
+				vertices = mesh.updateWorldVertices(slot, false)
+				triangles = mesh.triangles
+				texture = mesh.region
+			}
+			else if (attachment is SkeletonAttachment)
+			{
+				val attachmentSkeleton = attachment.skeleton ?: continue
+				val bone = slot.bone
+				val rootBone = attachmentSkeleton.rootBone
+				val oldScaleX = rootBone.scaleX
+				val oldScaleY = rootBone.scaleY
+				val oldRotation = rootBone.rotation
+
+				attachmentSkeleton.setPosition(bone.worldX, bone.worldY)
+				rootBone.rotation = oldRotation + bone.worldRotationX
+
+				attachmentSkeleton.updateWorldTransform()
+
+				queueSkeleton(attachmentSkeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
+
+				attachmentSkeleton.setPosition(0f, 0f)
+				rootBone.scaleX = oldScaleX
+				rootBone.scaleY = oldScaleY
+				rootBone.rotation = oldRotation
+			}
+
+			if (texture != null)
+			{
+				val rs = RenderSprite.obtain().set(vertices!!, triangles!!, texture, x, y, colour, BlendMode.MULTIPLICATIVE, comparisonVal)
+				storeRenderSprite(rs)
+			}
+		}
 	}
 
 	private fun isSpriteOnscreen(sprite: Sprite, x: Float, y: Float, width: Float, height: Float, scaleX: Float = 1f, scaleY: Float = 1f): Boolean
