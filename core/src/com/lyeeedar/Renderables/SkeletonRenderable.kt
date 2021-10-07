@@ -10,6 +10,7 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 	{
 		state.update(delta)
 		state.apply(skeleton)
+		skeleton.updateWorldTransform()
 
 		val complete = animation?.update(delta) ?: true
 		if (complete)

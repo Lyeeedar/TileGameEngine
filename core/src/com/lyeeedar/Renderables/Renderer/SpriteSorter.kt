@@ -1,6 +1,7 @@
 package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
@@ -467,13 +468,21 @@ class SpriteSorter(val renderer: SortedRenderer)
 	{
 		val tileSize = renderer.tileSize
 
-		val lx = ix - width
-		val ly = iy - height
-
-		val x = ix * tileSize
-		val y = iy * tileSize
+		var x = ix * tileSize
+		var y = iy * tileSize
 
 		// check if onscreen
+
+		if ( skeleton.animation != null )
+		{
+			val offset = skeleton.animation?.renderOffset(false)
+
+			if (offset != null)
+			{
+				x += offset[0] * tileSize
+				y += offset[1] * tileSize
+			}
+		}
 
 		val localx = x + renderer.offsetx
 		val localy = y + renderer.offsety
@@ -482,7 +491,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
 
-		skeleton.skeleton.setPosition(localx, localy)
+		skeleton.skeleton.setPosition(localx + tileSize * 0.5f, localy + tileSize * 0.5f)
 		update(skeleton)
 		queueSkeleton(skeleton.skeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
 	}

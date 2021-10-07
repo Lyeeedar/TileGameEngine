@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.Mesh.VertexDataType
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.GL30FrameBuffer
 import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.math.Matrix4
@@ -69,6 +71,8 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 	private val shader: ShaderProgram
 
 	private val combinedMatrix: Matrix4 = Matrix4()
+
+	private val polygonSpriteBatch = PolygonSpriteBatch()
 
 	private val bufferPool: Pool<VertexBuffer> = object : Pool<VertexBuffer>() {
 		override fun newObject(): VertexBuffer
@@ -446,7 +450,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		val startIndex = precomputedVertexCount / 5
 		for (i in 0 until indices.size)
 		{
-			precomputedIndices[precomputedVertexCount++] = (indices[i] + startIndex).toShort()
+			precomputedIndices[precomputedIndexCount++] = (indices[i] + startIndex).toShort()
 		}
 
 		System.arraycopy(vertices, 0, precomputedVertices, precomputedVertexCount, vertices.size)
