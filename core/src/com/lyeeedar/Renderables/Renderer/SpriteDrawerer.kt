@@ -1036,8 +1036,7 @@ void main()
 	v_isLit = 1.0;
 	v_alphaRef = 0.0;
 }
-"""
-
+""".trimIndent()
 			return vertexShader
 		}
 
