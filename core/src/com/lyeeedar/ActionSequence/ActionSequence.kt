@@ -373,6 +373,8 @@ class ExitTrigger(action: AbstractActionSequenceAction) : AbstractActionSequence
 {
 	override fun executeTrigger(state: ActionSequenceState): Boolean
 	{
+		if (action.isDelayed(state)) return true
+
 		action.exit(state)
 		val blocked = action.isBlocked(state)
 		if (!blocked)

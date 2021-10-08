@@ -20,6 +20,7 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	abstract fun enter(state: ActionSequenceState)
 	abstract fun exit(state: ActionSequenceState)
 	open fun isBlocked(state: ActionSequenceState): Boolean = false
+	open fun isDelayed(state: ActionSequenceState): Boolean = false
 
 	open fun cancel(state: ActionSequenceState)
 	{
