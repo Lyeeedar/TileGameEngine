@@ -518,7 +518,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
 		skeleton.skeleton.setPosition(localx + localw * 0.5f, localy)
-		skeleton.skeleton.setScale(lScaleX * width * skeleton.size[0], lScaleY * height * skeleton.size[1])
+		skeleton.skeleton.setScale(lScaleX * width * skeleton.size[0] * (tileSize / 40f), lScaleY * height * skeleton.size[1] * (tileSize / 40f))
 		skeleton.skeleton.color = colour.color()
 		update(skeleton)
 		queueSkeleton(skeleton.skeleton, comparisonVal)
