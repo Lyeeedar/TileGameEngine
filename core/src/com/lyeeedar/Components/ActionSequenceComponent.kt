@@ -10,6 +10,8 @@ class ActionSequenceComponent : AbstractComponent()
 	lateinit var actionSequence: ActionSequence
 	val actionSequenceState: ActionSequenceState = ActionSequenceState()
 
+	fun isBlocked() = actionSequence.isBlocked(actionSequenceState)
+
 	fun set(sequence: ActionSequence): ActionSequenceComponent
 	{
 		this.actionSequence = sequence

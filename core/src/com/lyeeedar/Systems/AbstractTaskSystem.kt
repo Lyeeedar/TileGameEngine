@@ -57,7 +57,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 				val entity = actionSequenceEntities.entities[i]
 				val sequence = entity.actionSequence()!!
 
-				if (!sequence.actionSequenceState.blocked)
+				if (!sequence.isBlocked())
 				{
 					canUpdate = false
 					break
@@ -157,7 +157,7 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 	{
 		if (entity.isMarkedForDeletion()) return ProcessEntityState.SKIPPED
 		if (world.player != null && entity.position()!!.position.dist(world.player!!.position()!!.position) > 40) return ProcessEntityState.SKIPPED
-		if (entity.actionSequence()?.actionSequenceState?.blocked == false) return ProcessEntityState.DELAYED
+		if (entity.actionSequence()?.isBlocked() == false) return ProcessEntityState.DELAYED
 
 		val task = entity.task()!!
 

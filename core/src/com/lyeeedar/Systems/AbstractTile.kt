@@ -49,7 +49,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 			{
 				val stateRef = itr.next()
 				val state = stateRef.get()
-				if (state == null || state.blocked || state.completed)
+				if (state == null || state.sequence.isBlocked(state) || state.completed)
 				{
 					itr.remove()
 				}

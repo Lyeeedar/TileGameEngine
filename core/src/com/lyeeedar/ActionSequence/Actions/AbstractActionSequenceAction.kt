@@ -21,6 +21,11 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	abstract fun exit(state: ActionSequenceState)
 	open fun isBlocked(state: ActionSequenceState): Boolean = false
 
+	open fun cancel(state: ActionSequenceState)
+	{
+
+	}
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{

@@ -70,6 +70,7 @@ class ActionSequenceState
 	lateinit var source: EntityReference
 	lateinit var sourcePoint: Point
 	lateinit var world: World<*>
+	lateinit var sequence: ActionSequence
 
 	val enteredActions: ObjectSet<AbstractActionSequenceAction> = ObjectSet()
 	val targets: Array<Point> = Array(1)
@@ -78,25 +79,27 @@ class ActionSequenceState
 
 	var rng = LightRNG()
 
-	var blocked = false
 	var currentTime: Float = 0f
 	var index = 0
 	var completed = false
 
+	var detached = false
+
 	var data = ObjectMap<String, Any?>()
 	var uid = 0
 
-	fun set(source: EntityReference, world: World<*>, seed: Long): ActionSequenceState
+	fun set(source: EntityReference, sequence: ActionSequence, world: World<*>, seed: Long): ActionSequenceState
 	{
 		uid = Random.sharedRandom.nextInt()
 
 		this.source = source
 		this.world = world
+		this.sequence = sequence
 
 		sourcePoint = source.get()?.position()?.position ?: Point.ONE
 
 		targets.clear()
-		targets.add(source.entity.position()!!.position)
+		targets.add(source.get()!!.position()!!.position)
 
 		rng.setSeed(seed)
 
@@ -112,7 +115,6 @@ class ActionSequenceState
 		lockedEntityTargets.clear()
 		facing = Direction.NORTH
 
-		blocked = false
 		completed = false
 		currentTime = 0f
 		index = 0
@@ -175,30 +177,18 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun preTurn(state: ActionSequenceState)
 	{
-		var anyBlocked = false
 		for (action in state.enteredActions)
 		{
 			action.preTurn(state)
-			if (action.isBlocked(state))
-			{
-				anyBlocked = true
-			}
 		}
-		state.blocked = anyBlocked
 	}
 
 	fun onTurn(state: ActionSequenceState)
 	{
-		var anyBlocked = false
 		for (action in state.enteredActions)
 		{
 			action.onTurn(state)
-			if (action.isBlocked(state))
-			{
-				anyBlocked = true
-			}
 		}
-		state.blocked = anyBlocked
 	}
 
 	fun removeFromTiles(state: ActionSequenceState)
@@ -219,9 +209,22 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		}
 	}
 
+	fun isBlocked(state: ActionSequenceState): Boolean
+	{
+		for (action in state.enteredActions)
+		{
+			if (action.isBlocked(state))
+			{
+				return true
+			}
+		}
+
+		return false
+	}
+
 	fun update(delta: Float, state: ActionSequenceState): Boolean
 	{
-		if (state.blocked)
+		if (isBlocked(state))
 		{
 			return false
 		}
@@ -263,7 +266,6 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 				val blocked = trigger.executeTrigger(state)
 				if (blocked)
 				{
-					state.blocked = true
 					state.currentTime = trigger.time
 					break
 				}
@@ -291,6 +293,7 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 	{
 		for (action in state.enteredActions)
 		{
+			action.cancel(state)
 			action.exit(state)
 		}
 		state.enteredActions.clear()
