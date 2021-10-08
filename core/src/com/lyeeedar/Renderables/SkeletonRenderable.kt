@@ -6,8 +6,20 @@ import com.esotericsoftware.spine.Skeleton
 
 class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Renderable()
 {
+	var timeInAnimation = -1f
+
 	override fun doUpdate(delta: Float): Boolean
 	{
+		if (timeInAnimation > 0f)
+		{
+			timeInAnimation -= delta
+
+			if (timeInAnimation <= 0f)
+			{
+				state.addAnimation(0, "idle", true, 0f)
+			}
+		}
+
 		state.update(delta)
 		state.apply(skeleton)
 		skeleton.updateWorldTransform()
@@ -20,6 +32,16 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		}
 
 		return complete
+	}
+
+	fun setAnimation(anim: String, duration: Float)
+	{
+		val current = state.getCurrent(0)
+		if (current.animation.name != anim)
+		{
+			state.setAnimation(0, anim, true)
+		}
+		timeInAnimation = duration
 	}
 
 	override fun doRender(batch: Batch, x: Float, y: Float, tileSize: Float)
