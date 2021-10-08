@@ -28,7 +28,7 @@ dependencies {
 
 	testImplementation("junit:junit:4.13")
 
-	implementation("com.esotericsoftware.spine:spine-libgdx:3.5.51.1")
+	implementation("com.esotericsoftware.spine:spine-libgdx:3.7.94.1")
 }
 
 java {

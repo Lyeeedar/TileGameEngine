@@ -1,17 +1,22 @@
 package com.lyeeedar.Renderables.Renderer
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.utils.NumberUtils
 import com.esotericsoftware.spine.Skeleton
-import com.esotericsoftware.spine.SkeletonMeshRenderer
+import com.esotericsoftware.spine.SkeletonRenderer
+import com.esotericsoftware.spine.SkeletonRenderer.VertexEffect
 import com.esotericsoftware.spine.Slot
+import com.esotericsoftware.spine.attachments.ClippingAttachment
 import com.esotericsoftware.spine.attachments.MeshAttachment
 import com.esotericsoftware.spine.attachments.RegionAttachment
 import com.esotericsoftware.spine.attachments.SkeletonAttachment
+import com.esotericsoftware.spine.utils.SkeletonClipping
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.Emitter
@@ -429,11 +434,11 @@ class SpriteSorter(val renderer: SortedRenderer)
 		}
 
 		// check if onscreen
-		if (!renderer.alwaysOnscreen && !isSpriteOnscreen(sprite, x, y, width, height, scaleX, scaleY)) return
+		if (!renderer.alwaysOnscreen && !isSpriteOnscreen(sprite, x, y, width, height, lScaleX, lScaleY)) return
 
 		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
-		val rs = RenderSprite.obtain().set(sprite, null, null, x, y, ix, iy, colour, width, height, rotation, scaleX, scaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
+		val rs = RenderSprite.obtain().set(sprite, null, null, x, y, ix, iy, colour, width, height, rotation, lScaleX, lScaleY, false, false, BlendMode.MULTIPLICATIVE, lit, comparisonVal)
 
 		storeRenderSprite(rs)
 	}
@@ -471,101 +476,254 @@ class SpriteSorter(val renderer: SortedRenderer)
 		var x = ix * tileSize
 		var y = iy * tileSize
 
+		var lx = ix - width
+		var ly = iy - height
+
+		var lScaleX = scaleX
+		var lScaleY = scaleY
+
 		// check if onscreen
 
-		if ( skeleton.animation != null )
+		if (skeleton.animation != null)
 		{
-			val offset = skeleton.animation?.renderOffset(false)
+			val offset = skeleton.animation!!.renderOffset(false)
 
 			if (offset != null)
 			{
 				x += offset[0] * tileSize
 				y += offset[1] * tileSize
+
+				lx += offset[0]
+				ly += offset[1]
+			}
+
+			val scale = skeleton.animation!!.renderScale()
+			if (scale != null)
+			{
+				lScaleX *= scale[0]
+				lScaleY *= scale[1]
 			}
 		}
 
-		val localx = x + renderer.offsetx
-		val localy = y + renderer.offsety
-		val localw = width * tileSize
-		val localh = height * tileSize
-
-		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
-
-		skeleton.skeleton.setPosition(localx + tileSize * 0.5f, localy + tileSize * 0.5f)
-		update(skeleton)
-		queueSkeleton(skeleton.skeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
-	}
-
-	private fun queueSkeleton(skeleton: Skeleton, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?, rotation: Float?)
-	{
-		val tileSize = renderer.tileSize
-
-		val lx = ix - width
-		val ly = iy - height
-
-		val x = ix * tileSize
-		val y = iy * tileSize
-
-		// check if onscreen
+		lx = lx + 0.5f - (0.5f * lScaleX)
+		ly = ly + 0.5f - (0.5f * lScaleY)
 
 		val localx = x + renderer.offsetx
 		val localy = y + renderer.offsety
-		val localw = width * tileSize
-		val localh = height * tileSize
+		val localw = width * tileSize * skeleton.size[1]
+		val localh = height * tileSize * skeleton.size[1]
 
 		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
 
 		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 
-		val drawOrder: Array<Slot> = skeleton.drawOrder
-		for (i in 0 until drawOrder.size)
-		{
-			var vertices: FloatArray? = null
-			var triangles: ShortArray? = null
-			var texture: TextureRegion? = null
+		skeleton.skeleton.setPosition(localx + localw * 0.5f, localy)
+		skeleton.skeleton.setScale(lScaleX * width * skeleton.size[0], lScaleY * height * skeleton.size[1])
+		skeleton.skeleton.color = colour.color()
+		update(skeleton)
+		queueSkeleton(skeleton.skeleton, comparisonVal)
+	}
 
-			val slot = drawOrder[i]
+	private val vertices = com.badlogic.gdx.utils.FloatArray(32)
+	private val clipper = SkeletonClipping()
+	private val vertexEffect: VertexEffect? = null
+	private val temp = Vector2()
+	private val temp2 = Vector2()
+	private val temp3 = Color()
+	private val temp4 = Color()
+	private val temp5 = Color()
+	private val temp6 = Color()
+	private fun queueSkeleton(skeleton: Skeleton, comparisonVal: Int)
+	{
+		val tempPosition: Vector2 = this.temp
+		val tempUV: Vector2 = this.temp2
+		val tempLight1: Color = this.temp3
+		val tempDark1: Color = this.temp4
+		val tempLight2: Color = this.temp5
+		val tempDark2: Color = this.temp6
+		val vertexEffect: VertexEffect? = this.vertexEffect
+		vertexEffect?.begin(skeleton)
+
+		var blendMode: com.esotericsoftware.spine.BlendMode? = null
+		var verticesLength = 0
+		var vertices: FloatArray? = null
+		var uvs: FloatArray? = null
+		var triangles: ShortArray? = null
+		var color: Color? = null
+		val skeletonColor = skeleton.color
+		val r = skeletonColor.r
+		val g = skeletonColor.g
+		val b = skeletonColor.b
+		val a = skeletonColor.a
+		val drawOrder = skeleton.drawOrder
+		for (i in 0 until skeleton.drawOrder.size)
+		{
+			val slot = drawOrder[i] as Slot
+			var texture: TextureRegion? = null
+			val vertexSize = if (clipper.isClipping) 2 else 5
 			val attachment = slot.attachment
 			if (attachment is RegionAttachment)
 			{
 				val region = attachment
-				vertices = region.updateWorldVertices(slot, false)
+				verticesLength = vertexSize shl 2
+				vertices = this.vertices.items
+				region.computeWorldVertices(slot.bone, vertices, 0, vertexSize)
 				triangles = quadTriangles
 				texture = region.region
+				uvs = region.uVs
+				color = region.color
 			}
 			else if (attachment is MeshAttachment)
 			{
 				val mesh = attachment
-				vertices = mesh.updateWorldVertices(slot, false)
+				val count = mesh.worldVerticesLength
+				verticesLength = (count shr 1) * vertexSize
+				vertices = this.vertices.setSize(verticesLength)
+				mesh.computeWorldVertices(slot, 0, count, vertices, 0, vertexSize)
 				triangles = mesh.triangles
 				texture = mesh.region
+				uvs = mesh.uVs
+				color = mesh.color
+			}
+			else if (attachment is ClippingAttachment)
+			{
+				clipper.clipStart(slot, attachment)
+				continue
 			}
 			else if (attachment is SkeletonAttachment)
 			{
-				val attachmentSkeleton = attachment.skeleton ?: continue
-				val bone = slot.bone
-				val rootBone = attachmentSkeleton.rootBone
-				val oldScaleX = rootBone.scaleX
-				val oldScaleY = rootBone.scaleY
-				val oldRotation = rootBone.rotation
-
-				attachmentSkeleton.setPosition(bone.worldX, bone.worldY)
-				rootBone.rotation = oldRotation + bone.worldRotationX
-
-				attachmentSkeleton.updateWorldTransform()
-
-				queueSkeleton(attachmentSkeleton, ix, iy, layer, index, colour, width, height, scaleX, scaleY, lit, sortX, sortY, rotation)
-
-				attachmentSkeleton.setPosition(0f, 0f)
-				rootBone.scaleX = oldScaleX
-				rootBone.scaleY = oldScaleY
-				rootBone.rotation = oldRotation
+				val attachmentSkeleton = attachment.skeleton
+				queueSkeleton(attachmentSkeleton, comparisonVal)
 			}
 
 			if (texture != null)
 			{
-				val rs = RenderSprite.obtain().set(vertices!!, triangles!!, texture, x, y, colour, BlendMode.MULTIPLICATIVE, comparisonVal)
-				storeRenderSprite(rs)
+				val slotColor = slot.color
+				val alpha = a * slotColor.a * color!!.a * 255
+				val multiplier: Float = 255f
+				val slotBlendMode = slot.data.blendMode
+				if (slotBlendMode != blendMode)
+				{
+					blendMode = slotBlendMode
+				}
+				val c = NumberUtils.intToFloatColor(
+					alpha.toInt() shl 24 //
+						or ((b * slotColor.b * color.b * multiplier).toInt() shl 16 //
+						) or ((g * slotColor.g * color.g * multiplier).toInt() shl 8 //
+						) or (r * slotColor.r * color.r * multiplier).toInt()
+				                                   )
+				if (clipper.isClipping)
+				{
+					clipper.clipTriangles(vertices, verticesLength, triangles, triangles!!.size, uvs, c, 0f, false)
+					val clippedVertices = clipper.clippedVertices
+					val clippedTriangles = clipper.clippedTriangles
+					if (vertexEffect != null)
+					{
+						applyVertexEffect(clippedVertices.items, clippedVertices.size, 5, c, 0f)
+					}
+
+					val rs = RenderSprite.obtain().set(clippedVertices!!.items, clippedTriangles!!.items, texture, BlendMode.MULTIPLICATIVE, comparisonVal)
+					storeRenderSprite(rs)
+				}
+				else
+				{
+					if (vertexEffect != null)
+					{
+						tempLight1.set(NumberUtils.floatToIntColor(c))
+						tempDark1.set(0)
+						var v = 0
+						var u = 0
+						while (v < verticesLength)
+						{
+							tempPosition.x = vertices!![v]
+							tempPosition.y = vertices[v + 1]
+							tempLight2.set(tempLight1)
+							tempDark2.set(tempDark1)
+							tempUV.x = uvs!![u]
+							tempUV.y = uvs[u + 1]
+							vertexEffect.transform(tempPosition, tempUV, tempLight2, tempDark2)
+							vertices[v] = tempPosition.x
+							vertices[v + 1] = tempPosition.y
+							vertices[v + 2] = tempLight2.toFloatBits()
+							vertices[v + 3] = tempUV.x
+							vertices[v + 4] = tempUV.y
+							v += 5
+							u += 2
+						}
+					}
+					else
+					{
+						var v = 2
+						var u = 0
+						while (v < verticesLength)
+						{
+							vertices!![v] = c
+							vertices[v + 1] = uvs!![u]
+							vertices[v + 2] = uvs[u + 1]
+							v += 5
+							u += 2
+						}
+					}
+					val rs = RenderSprite.obtain().set(vertices!!, triangles!!, texture, BlendMode.MULTIPLICATIVE, comparisonVal)
+					storeRenderSprite(rs)
+				}
+			}
+			clipper.clipEnd(slot)
+		}
+		clipper.clipEnd()
+		vertexEffect?.end()
+	}
+
+	private fun applyVertexEffect(vertices: FloatArray, verticesLength: Int, stride: Int, light: Float, dark: Float)
+	{
+		val tempPosition: Vector2 = this.temp
+		val tempUV: Vector2 = this.temp2
+		val tempLight1: Color = this.temp3
+		val tempDark1: Color = this.temp4
+		val tempLight2: Color = this.temp5
+		val tempDark2: Color = this.temp6
+		val vertexEffect: VertexEffect = this.vertexEffect!!
+		tempLight1.set(NumberUtils.floatToIntColor(light))
+		tempDark1.set(NumberUtils.floatToIntColor(dark))
+		if (stride == 5)
+		{
+			var v = 0
+			while (v < verticesLength)
+			{
+				tempPosition.x = vertices[v]
+				tempPosition.y = vertices[v + 1]
+				tempUV.x = vertices[v + 3]
+				tempUV.y = vertices[v + 4]
+				tempLight2.set(tempLight1)
+				tempDark2.set(tempDark1)
+				vertexEffect.transform(tempPosition, tempUV, tempLight2, tempDark2)
+				vertices[v] = tempPosition.x
+				vertices[v + 1] = tempPosition.y
+				vertices[v + 2] = tempLight2.toFloatBits()
+				vertices[v + 3] = tempUV.x
+				vertices[v + 4] = tempUV.y
+				v += stride
+			}
+		}
+		else
+		{
+			var v = 0
+			while (v < verticesLength)
+			{
+				tempPosition.x = vertices[v]
+				tempPosition.y = vertices[v + 1]
+				tempUV.x = vertices[v + 4]
+				tempUV.y = vertices[v + 5]
+				tempLight2.set(tempLight1)
+				tempDark2.set(tempDark1)
+				vertexEffect.transform(tempPosition, tempUV, tempLight2, tempDark2)
+				vertices[v] = tempPosition.x
+				vertices[v + 1] = tempPosition.y
+				vertices[v + 2] = tempLight2.toFloatBits()
+				vertices[v + 3] = tempDark2.toFloatBits()
+				vertices[v + 4] = tempUV.x
+				vertices[v + 5] = tempUV.y
+				v += stride
 			}
 		}
 	}
