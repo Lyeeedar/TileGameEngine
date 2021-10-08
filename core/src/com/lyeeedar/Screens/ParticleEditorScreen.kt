@@ -324,7 +324,7 @@ class ParticleEditorScreen : AbstractScreen()
 	{
 		val files = directory.listFiles()!!
 		if (files.isEmpty()) return directory.lastModified()
-		return files.map { it.lastModified() }.max()!!
+		return files.maxOf { it.lastModified() }
 	}
 
 	var stoppedTimer = 0f

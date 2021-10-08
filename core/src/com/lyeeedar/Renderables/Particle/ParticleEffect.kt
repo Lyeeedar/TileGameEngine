@@ -102,13 +102,13 @@ class ParticleEffect(val description: ParticleEffectDescription) : Renderable()
 		set(value) { throw Exception("Cannot set particle light!") }
 
 	val time: Float
-		get() = (animation?.time() ?: emitters.minBy { it.time }!!.time)
+		get() = (animation?.time() ?: emitters.minByOrNull { it.time }!!.time)
 
 	val lifetime: Float
-		get() = (animation?.duration() ?: emitters.maxBy { it.lifetime() }!!.lifetime())
+		get() = (animation?.duration() ?: emitters.maxByOrNull { it.lifetime() }!!.lifetime())
 
 	val blockinglifetime: Float
-		get() = (animation?.duration() ?: emitters.filter { it.isBlockingEmitter }.maxBy { it.lifetime() }!!.lifetime())
+		get() = (animation?.duration() ?: emitters.filter { it.isBlockingEmitter }.maxByOrNull { it.lifetime() }!!.lifetime())
 
 	fun start()
 	{

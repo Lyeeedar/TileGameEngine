@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Pools
 import ktx.collections.gdxArrayOf
 
 
-
 fun Vector2.lerp(targetx: Float, targety: Float, alpha: Float): Vector2
 {
 	val invAlpha = 1.0f - alpha
@@ -31,16 +30,17 @@ fun min(v1: Float, v2: Float): Float = if (v1 < v2) v1 else v2
 fun max(v1: Int, v2: Int): Int = if (v1 > v2) v1 else v2
 fun min(v1: Int, v2: Int): Int = if (v1 < v2) v1 else v2
 
-fun maxAll(vararg v: Float) = v.max()!!
-fun minAll(vararg v: Float) = v.min()!!
+fun maxAll(vararg v: Float) = v.maxOrNull()!!
+fun minAll(vararg v: Float) = v.minOrNull()!!
 
-fun maxAll(vararg v: Int) = v.max()!!
-fun minAll(vararg v: Int) = v.min()!!
+fun maxAll(vararg v: Int) = v.maxOrNull()!!
+fun minAll(vararg v: Int) = v.minOrNull()!!
 
 class Smoothstep() : Interpolation()
 {
-	override fun apply(a: Float): Float = a * a * ( 3f - 2f * a )
+	override fun apply(a: Float): Float = a * a * (3f - 2f * a)
 }
+
 val smoothStep = Smoothstep()
 
 class Leap() : Interpolation()
@@ -56,9 +56,10 @@ class Leap() : Interpolation()
 		return 2.0f * t * t + 0.5f
 	}
 }
+
 val leap = Leap()
 
-inline fun vectorToAngle(x: Float, y: Float) : Float
+inline fun vectorToAngle(x: Float, y: Float): Float
 {
 	// basis vector 0,1
 	val dot = 0f * x + 1f * y // dot product
@@ -68,7 +69,7 @@ inline fun vectorToAngle(x: Float, y: Float) : Float
 	return angle
 }
 
-fun getRotation(p1: Point, p2: Point) : Float
+fun getRotation(p1: Point, p2: Point): Float
 {
 	val vec = Pools.obtain(Vector2::class.java)
 	vec.x = (p2.x - p1.x).toFloat()
@@ -82,7 +83,7 @@ fun getRotation(p1: Point, p2: Point) : Float
 	return angle
 }
 
-fun getRotation(p1: Vector2, p2: Vector2) : Float
+fun getRotation(p1: Vector2, p2: Vector2): Float
 {
 	val vec = Pools.obtain(Vector2::class.java)
 	vec.x = (p2.x - p1.x).toFloat()
@@ -104,7 +105,7 @@ fun Float.abs() = Math.abs(this)
 fun Float.ciel() = MathUtils.ceil(this)
 fun Float.floor() = MathUtils.floor(this)
 fun Float.round() = MathUtils.round(this)
-fun Float.clamp(min: Float, max: Float) = MathUtils.clamp(this, min , max)
+fun Float.clamp(min: Float, max: Float) = MathUtils.clamp(this, min, max)
 
 inline fun Float.lerp(target: Float, alpha: Float) = this + (target - this) * alpha
 

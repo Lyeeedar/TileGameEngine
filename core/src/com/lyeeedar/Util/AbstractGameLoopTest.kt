@@ -6,10 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.WidgetGroup
 import com.lyeeedar.Game.newGame
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 abstract class AbstractGameLoopTest(val completionCallback: ()->Unit) {
 	val delayMS = 1000L
@@ -17,7 +17,7 @@ abstract class AbstractGameLoopTest(val completionCallback: ()->Unit) {
 	fun run() {
 		Statics.test = true
 
-		GlobalScope.launch {
+		runBlocking  {
 			Statics.logger.logDebug("###################################################################")
 			Statics.logger.logDebug("Beginning Game Loop Test")
 			Statics.logger.logDebug("###################################################################")

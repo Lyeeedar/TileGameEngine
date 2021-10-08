@@ -28,8 +28,8 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 		val spawnedParticles = Array<Entity>()
 		if (spawnSingleParticle)
 		{
-			val min = state.targets.minBy(Point::hashCode)!!
-			val max = state.targets.maxBy(Point::hashCode)!!
+			val min = state.targets.minByOrNull(Point::hashCode)!!
+			val max = state.targets.maxByOrNull(Point::hashCode)!!
 
 			val entity = nonTransientParticleArchetype.build()
 

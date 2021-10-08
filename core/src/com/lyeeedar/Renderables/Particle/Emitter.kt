@@ -120,7 +120,7 @@ class Emitter(val particleEffect: ParticleEffect)
 	val currentOffset = Vector2()
 	val tempOffset = Vector2()
 
-	fun lifetime() = keyframes.last().time + particles.maxBy { it.lifetime.v2 }!!.lifetime.v2
+	fun lifetime() = keyframes.last().time + particles.maxByOrNull { it.lifetime.v2 }!!.lifetime.v2
 	fun complete(): Boolean
 	{
 		if (singleBurst)

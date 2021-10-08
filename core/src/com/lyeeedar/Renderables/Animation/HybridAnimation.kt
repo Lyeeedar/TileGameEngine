@@ -20,16 +20,16 @@ class HybridAnimation(): AbstractAnimation()
 	var rotationData = 0f
 
 	override fun duration(): Float = maxAll(
-			offsets.maxBy { it.duration() }?.duration() ?: 0f,
-			scales.maxBy { it.duration() }?.duration() ?: 0f,
-			colours.maxBy { it.duration() }?.duration() ?: 0f,
-			rotations.maxBy { it.duration() }?.duration() ?: 0f)
+			offsets.maxByOrNull { it.duration() }?.duration() ?: 0f,
+			scales.maxByOrNull { it.duration() }?.duration() ?: 0f,
+			colours.maxByOrNull { it.duration() }?.duration() ?: 0f,
+			rotations.maxByOrNull { it.duration() }?.duration() ?: 0f)
 
 	override fun time(): Float = minAll(
-			offsets.minBy { it.time() }?.time() ?: duration(),
-			scales.minBy { it.time() }?.time() ?: duration(),
-			colours.minBy { it.time() }?.time() ?: duration(),
-			rotations.minBy { it.time() }?.time() ?: duration())
+			offsets.minByOrNull { it.time() }?.time() ?: duration(),
+			scales.minByOrNull { it.time() }?.time() ?: duration(),
+			colours.minByOrNull { it.time() }?.time() ?: duration(),
+			rotations.minByOrNull { it.time() }?.time() ?: duration())
 
 	override fun renderOffset(screenPositionMode: Boolean): FloatArray?
 	{

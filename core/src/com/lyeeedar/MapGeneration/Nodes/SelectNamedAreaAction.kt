@@ -96,7 +96,11 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 				}
 			}
 			Mode.CLOSEST -> {
-				val sorted = tempArray.sortedBy { it.getAllPoints().map<Pos, Float>{ ap -> args.area.getAllPoints().map<Pos, Float>{ tp -> tp.dst2(ap) }.min()!! }.min()!! }
+				val sorted = tempArray.sortedBy {
+					it.getAllPoints().minOf { ap ->
+						args.area.getAllPoints().minOf { tp -> tp.dst2(ap) }
+					}
+				}
 				for (i in 0 until count)
 				{
 					val area = sorted[i]
@@ -110,7 +114,11 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 				}
 			}
 			Mode.FURTHEST -> {
-				val sorted = tempArray.sortedByDescending { it.getAllPoints().map<Pos, Float>{ ap -> args.area.getAllPoints().map<Pos, Float>{ tp -> tp.dst2(ap) }.min()!! }.min()!! }
+				val sorted = tempArray.sortedByDescending {
+					it.getAllPoints().minOf { ap ->
+						args.area.getAllPoints().minOf { tp -> tp.dst2(ap) }
+					}
+				}
 				for (i in 0 until count)
 				{
 					val area = sorted[i]

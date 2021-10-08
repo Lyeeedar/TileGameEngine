@@ -43,8 +43,8 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 		if (state.targets.size == 0) return
 
-		val min = state.targets.minBy(Point::hashCode)!!
-		val max = state.targets.maxBy(Point::hashCode)!!
+		val min = state.targets.minByOrNull(Point::hashCode)!!
+		val max = state.targets.maxByOrNull(Point::hashCode)!!
 
 		if (spawnSingleParticle)
 		{
@@ -89,7 +89,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 		}
 		else
 		{
-			val furthest = state.targets.maxBy { it.dist(sourceTile) }!!
+			val furthest = state.targets.maxByOrNull{ it.dist(sourceTile) }!!
 
 			for (point in state.targets)
 			{
