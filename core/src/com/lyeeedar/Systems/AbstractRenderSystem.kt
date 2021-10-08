@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Components.*
+import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
 import com.lyeeedar.SpaceSlot
@@ -231,6 +232,12 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		}
 		else
 		{
+			renderable.flipX = when (pos.facing)
+			{
+				Direction.NORTH, Direction.WEST -> true
+				else -> false
+			}
+
 			renderable.size[0] = pos.size
 			renderable.size[1] = pos.size
 		}
