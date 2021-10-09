@@ -72,8 +72,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	private val combinedMatrix: Matrix4 = Matrix4()
 
-	private val polygonSpriteBatch = PolygonSpriteBatch()
-
 	private val bufferPool: Pool<VertexBuffer> = object : Pool<VertexBuffer>() {
 		override fun newObject(): VertexBuffer
 		{

@@ -36,6 +36,12 @@ class TextureCompressor
 		println("")
 		println("")
 
+		val outputFolder = File("CompressedData")
+		if (!outputFolder.exists())
+		{
+			outputFolder.mkdirs()
+		}
+
 		val cacheFilePath = File("../caches/textureCompressionCache")
 		if (cacheFilePath.exists())
 		{

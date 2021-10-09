@@ -28,6 +28,11 @@ class XmlCompressor
 
 		// clear out existing data
 		val outputFolder = File("CompressedData")
+		if (!outputFolder.exists())
+		{
+			outputFolder.mkdirs()
+		}
+
 		for (file in outputFolder.list())
 		{
 			if (file.endsWith(".xmldata"))
