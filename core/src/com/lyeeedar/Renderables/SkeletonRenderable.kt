@@ -44,6 +44,11 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		timeInAnimation = duration
 	}
 
+	fun layerAnimation(anim: String)
+	{
+		state.addAnimation(1, anim, false, 0f)
+	}
+
 	override fun doRender(batch: Batch, x: Float, y: Float, tileSize: Float)
 	{
 		TODO("Not yet implemented")
