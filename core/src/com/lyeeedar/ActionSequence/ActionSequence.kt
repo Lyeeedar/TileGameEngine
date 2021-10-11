@@ -85,6 +85,8 @@ class ActionSequenceState
 
 	var cachedDelayedState = false
 
+	var delay = 0f
+
 	var detached = false
 
 	var data = ObjectMap<String, Any?>()
@@ -107,6 +109,8 @@ class ActionSequenceState
 
 		rng.setSeed(seed)
 
+		delay = 0f
+
 		usageID++
 
 		return this
@@ -122,6 +126,8 @@ class ActionSequenceState
 		completed = false
 		currentTime = 0f
 		index = 0
+		delay = 0f
+		cachedDelayedState = false
 
 		data.clear()
 
@@ -258,6 +264,12 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		{
 			cancel(state)
 			return true
+		}
+
+		if (state.delay > 0f)
+		{
+			state.delay -= delta
+			return false
 		}
 
 		removeFromTiles(state)
