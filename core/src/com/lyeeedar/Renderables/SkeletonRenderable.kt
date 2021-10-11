@@ -21,8 +21,6 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		}
 
 		state.update(delta)
-		state.apply(skeleton)
-		skeleton.updateWorldTransform()
 
 		val complete = animation?.update(delta) ?: true
 		if (complete)
@@ -46,7 +44,8 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 
 	fun layerAnimation(anim: String)
 	{
-		state.addAnimation(1, anim, false, 0f)
+		val entry = state.setAnimation(1, anim, false)
+		entry.alpha = 0.5f
 	}
 
 	override fun doRender(batch: Batch, x: Float, y: Float, tileSize: Float)

@@ -36,7 +36,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 		queuedActions.add(DelayedAction.obtain().set(function, delay, this))
 	}
 
-	fun tileContainsDelayedAction(): Boolean
+	fun tileContainsDelayedAction(self: ActionSequenceReference? = null): Boolean
 	{
 		if (queuedActions.size > 0) return true
 
@@ -53,7 +53,7 @@ abstract class AbstractTile(x: Int, y: Int) : Point(x, y), IPathfindingTile
 				{
 					itr.remove()
 				}
-				else
+				else if (stateRef != self && !state.cachedDelayedState)
 				{
 					hasSequence = true
 				}

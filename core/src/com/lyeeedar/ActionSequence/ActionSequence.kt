@@ -83,6 +83,8 @@ class ActionSequenceState
 	var index = 0
 	var completed = false
 
+	var cachedDelayedState = false
+
 	var detached = false
 
 	var data = ObjectMap<String, Any?>()
@@ -95,6 +97,8 @@ class ActionSequenceState
 		this.source = source
 		this.world = world
 		this.sequence = sequence
+
+		this.cachedDelayedState = false
 
 		sourcePoint = source.get()?.position()?.position ?: Point.ONE
 
@@ -214,6 +218,19 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 		for (action in state.enteredActions)
 		{
 			if (action.isBlocked(state))
+			{
+				return true
+			}
+		}
+
+		return false
+	}
+
+	fun isDelayed(state: ActionSequenceState): Boolean
+	{
+		for (action in state.enteredActions)
+		{
+			if (action.isDelayed(state))
 			{
 				return true
 			}

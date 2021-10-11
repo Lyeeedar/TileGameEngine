@@ -14,6 +14,12 @@ abstract class AbstractAnimation
 
 	var isBlocking = true
 
+	fun setNonBlocking(): AbstractAnimation
+	{
+		isBlocking = false
+		return this
+	}
+
 	abstract fun renderOffset(screenPositionMode: Boolean): FloatArray?
 	abstract fun renderScale(): FloatArray?
 	abstract fun renderColour(): Colour?

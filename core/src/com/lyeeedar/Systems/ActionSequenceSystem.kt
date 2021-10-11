@@ -4,6 +4,17 @@ import com.lyeeedar.Components.*
 
 class ActionSequenceSystem(world: World<*>) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.ActionSequence).get())
 {
+	override fun beforeUpdate(deltaTime: Float)
+	{
+		for (i in 0 until entitySignature.entities.size)
+		{
+			val entity = entitySignature.entities[i]
+			val actionSequence = entity.actionSequence()!!
+
+			actionSequence.actionSequenceState.cachedDelayedState = actionSequence.actionSequence.isDelayed(actionSequence.actionSequenceState)
+		}
+	}
+
 	override fun updateEntity(entity: Entity, deltaTime: Float)
 	{
 		val actionSequence = entity.actionSequence()!!

@@ -19,6 +19,7 @@ import com.esotericsoftware.spine.attachments.SkeletonAttachment
 import com.esotericsoftware.spine.utils.SkeletonClipping
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
+import com.lyeeedar.Renderables.CurveRenderable
 import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
@@ -471,6 +472,9 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 	internal fun queueSkeleton(skeleton: SkeletonRenderable, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?, rotation: Float?)
 	{
+		update(skeleton)
+		val colour = tempCol.set(colour).mul(skeleton.colour)
+
 		val tileSize = renderer.tileSize
 
 		var x = ix * tileSize
@@ -503,6 +507,12 @@ class SpriteSorter(val renderer: SortedRenderer)
 				lScaleX *= scale[0]
 				lScaleY *= scale[1]
 			}
+
+			val col = skeleton.animation?.renderColour()
+			if (col != null)
+			{
+				colour.mul(col);
+			}
 		}
 
 		lx = lx + 0.5f - (0.5f * lScaleX)
@@ -523,7 +533,14 @@ class SpriteSorter(val renderer: SortedRenderer)
 		skeleton.skeleton.setPosition(localx + localw * 0.5f, localy)
 		skeleton.skeleton.setScale(lScaleX * width * skeleton.size[0] * (tileSize / 40f), lScaleY * height * skeleton.size[1] * (tileSize / 40f))
 		skeleton.skeleton.color = colour.color()
-		update(skeleton)
+		skeleton.state.apply(skeleton.skeleton)
+		skeleton.skeleton.updateWorldTransform()
+
+		if (colour.a == 0f)
+		{
+			return
+		}
+
 		queueSkeleton(skeleton.skeleton, comparisonVal)
 	}
 
@@ -729,6 +746,61 @@ class SpriteSorter(val renderer: SortedRenderer)
 				v += stride
 			}
 		}
+	}
+
+	internal fun queueCurve(curve: CurveRenderable, ix: Float, iy: Float, layer: Int, index: Int, colour: Colour, width: Float, height: Float, scaleX: Float, scaleY: Float, lit: Boolean, sortX: Float?, sortY: Float?)
+	{
+		update(curve)
+
+		val colour = tempCol.set(colour).mul(curve.colour)
+
+		val tileSize = renderer.tileSize
+
+		var x = ix * tileSize
+		var y = iy * tileSize
+
+		var lx = ix - width
+		var ly = iy - height
+
+		var lScaleX = scaleX
+		var lScaleY = scaleY
+
+		if (curve.animation != null)
+		{
+			val offset = curve.animation!!.renderOffset(false)
+
+			if (offset != null)
+			{
+				x += offset[0] * tileSize
+				y += offset[1] * tileSize
+
+				lx += offset[0]
+				ly += offset[1]
+			}
+
+			val scale = curve.animation!!.renderScale()
+			if (scale != null)
+			{
+				lScaleX *= scale[0]
+				lScaleY *= scale[1]
+			}
+
+			val col = curve.animation?.renderColour()
+			if (col != null)
+			{
+				colour.mul(col);
+			}
+		}
+
+		lx = lx + 0.5f - (0.5f * lScaleX)
+		ly = ly + 0.5f - (0.5f * lScaleY)
+
+		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
+
+		curve.computeVertices(renderer.offsetx, renderer.offsety, tileSize, colour)
+
+		val rs = RenderSprite.obtain().set(curve.vertices, curve.indices, curve.texture, BlendMode.MULTIPLICATIVE, comparisonVal)
+		storeRenderSprite(rs)
 	}
 
 	private fun isSpriteOnscreen(sprite: Sprite, x: Float, y: Float, width: Float, height: Float, scaleX: Float = 1f, scaleY: Float = 1f): Boolean
