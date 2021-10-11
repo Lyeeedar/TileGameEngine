@@ -72,9 +72,9 @@ class ActionSequenceState
 	lateinit var world: World<*>
 	lateinit var sequence: ActionSequence
 
-	val enteredActions: ObjectSet<AbstractActionSequenceAction> = ObjectSet()
-	val targets: Array<Point> = Array(1)
-	val lockedEntityTargets: Array<EntityReference> = Array(1)
+	val enteredActions: Array<AbstractActionSequenceAction> = Array(false, 2)
+	val targets: Array<Point> = Array(false, 1)
+	val lockedEntityTargets: Array<EntityReference> = Array(false, 1)
 	var facing: Direction = Direction.NORTH
 
 	var rng = LightRNG()
@@ -135,7 +135,7 @@ class ActionSequenceState
 		for (entry in data)
 		{
 			val value = entry.value
-			map[entry.key.toLowerCase(Locale.ENGLISH)] = when (value)
+			map[entry.key.lowercase(Locale.ENGLISH)] = when (value)
 			{
 				is Float -> value
 				is Int -> value.toFloat()
@@ -171,8 +171,10 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	override fun afterLoad()
 	{
-		for (action in rawActions)
+		for (i in 0 until rawActions.size)
 		{
+			val action = rawActions[i]
+
 			triggers.add(EnterTrigger(action))
 			triggers.add(ExitTrigger(action))
 		}
@@ -181,24 +183,27 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun preTurn(state: ActionSequenceState)
 	{
-		for (action in state.enteredActions)
+		for (i in 0 until state.enteredActions.size)
 		{
+			val action = state.enteredActions[i]
 			action.preTurn(state)
 		}
 	}
 
 	fun onTurn(state: ActionSequenceState)
 	{
-		for (action in state.enteredActions)
+		for (i in 0 until state.enteredActions.size)
 		{
+			val action = state.enteredActions[i]
 			action.onTurn(state)
 		}
 	}
 
 	fun removeFromTiles(state: ActionSequenceState)
 	{
-		for (point in state.targets)
+		for (i in 0 until state.targets.size)
 		{
+			val point = state.targets[i]
 			val tile = state.world.grid.tryGet(point, null) ?: continue
 			tile.runningSequences.remove(state.getRef())
 		}
@@ -206,8 +211,9 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun addToTiles(state: ActionSequenceState)
 	{
-		for (point in state.targets)
+		for (i in 0 until state.targets.size)
 		{
+			val point = state.targets[i]
 			val tile = state.world.grid.tryGet(point, null) ?: continue
 			tile.runningSequences.add(state.getRef())
 		}
@@ -215,8 +221,9 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun isBlocked(state: ActionSequenceState): Boolean
 	{
-		for (action in state.enteredActions)
+		for (i in 0 until state.enteredActions.size)
 		{
+			val action = state.enteredActions[i]
 			if (action.isBlocked(state))
 			{
 				return true
@@ -228,8 +235,9 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun isDelayed(state: ActionSequenceState): Boolean
 	{
-		for (action in state.enteredActions)
+		for (i in 0 until state.enteredActions.size)
 		{
+			val action = state.enteredActions[i]
 			if (action.isDelayed(state))
 			{
 				return true
@@ -308,8 +316,9 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun cancel(state: ActionSequenceState)
 	{
-		for (action in state.enteredActions)
+		for (i in 0 until state.enteredActions.size)
 		{
+			val action = state.enteredActions[i]
 			action.cancel(state)
 			action.exit(state)
 		}
@@ -396,7 +405,7 @@ class ExitTrigger(action: AbstractActionSequenceAction) : AbstractActionSequence
 		val blocked = action.isBlocked(state)
 		if (!blocked)
 		{
-			state.enteredActions.remove(action)
+			state.enteredActions.removeValue(action, true)
 		}
 
 		return blocked
