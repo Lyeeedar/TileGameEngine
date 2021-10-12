@@ -3,6 +3,25 @@ package com.lyeeedar.Renderables
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.esotericsoftware.spine.AnimationState
 import com.esotericsoftware.spine.Skeleton
+import com.lyeeedar.Util.*
+import com.lyeeedar.Util.XmlData
+
+@DataClass(name = "Skeleton", global = true)
+class SkeletonData : XmlDataClass()
+{
+	@DataFileReference(allowedFileTypes = "json", basePath = "../assets/")
+	lateinit var path: String
+
+	var scale: Float = 1f
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		path = xmlData.get("Path")
+		scale = xmlData.getFloat("Scale", 1f)
+	}
+	//endregion
+}
 
 class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Renderable()
 {

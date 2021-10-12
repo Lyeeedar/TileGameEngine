@@ -17,7 +17,7 @@ val assetManagerLoadedTypes = setOf("ParticleEffect", "ParticleEffectDescription
                                     "Colour",
                                     "Light",
                                     "Texture", "TextureRegion",
-                                    "Renderable")
+                                    "Renderable", "Skeleton")
 class VariableDescription(val variableType: VariableType, val name: String, val type: String, val defaultValue: String, val raw: String, val annotations: ArrayList<AnnotationDescription>)
 {
 	val dataName: String
@@ -892,7 +892,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			{
 				"ParticleEffectDescription" -> "ParticleEffect,ParticleEffectTemplate"
 				"Sprite" -> if (annotations.any { it.name == "DataLayeredSprite" }) "RenderedLayeredSprite" else "Sprite"
-				"Renderable" -> "Sprite,TilingSprite,ParticleEffect"
+				"Renderable" -> "Sprite,TilingSprite,ParticleEffect,Skeleton"
 				else -> type
 			}
             builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")

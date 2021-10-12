@@ -12,18 +12,19 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
+import com.esotericsoftware.spine.*
+import com.esotericsoftware.spine.SkeletonData
 import com.lyeeedar.BlendMode
+import com.lyeeedar.Renderables.*
 import com.lyeeedar.Renderables.Animation.AbstractAnimation
-import com.lyeeedar.Renderables.Light
-import com.lyeeedar.Renderables.LightAnimation
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Particle.TextureOverride
-import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Sprite.DirectionalSprite
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.Renderables.Sprite.TilingSprite
+import ktx.collections.set
 import java.util.*
 
 class AssetManager
@@ -112,9 +113,11 @@ class AssetManager
 			return sound
 		}
 
+		private val loadedSkeletons = ObjectMap<String, SkeletonData>()
+
 		private var prepackedAtlas = TextureAtlas(Gdx.files.internal("CompressedData/SpriteAtlas.atlas")!!)
 
-		private val loadedTextureRegions = HashMap<String, TextureRegion?>()
+		private val loadedTextureRegions = ObjectMap<String, TextureRegion?>()
 
 		@JvmStatic fun loadTextureRegion(path: String): TextureRegion?
 		{
@@ -589,6 +592,7 @@ class AssetManager
 				"SPRITE" -> AssetManager.loadSprite(xml)
 				"PARTICLEEFFECT", "PARTICLE", "PARTICLEEFFECTTEMPLATE" -> AssetManager.loadParticleEffect(xml).getParticleEffect()
 				"TILINGSPRITE" -> AssetManager.loadTilingSprite(xml)
+				"SKELETON" -> AssetManager.loadSkeleton(xml)
 				else -> throw Exception("Unknown renderable type '$type'!")
 			};
 		}
@@ -597,6 +601,40 @@ class AssetManager
 		{
 			if (xml == null) return null
 			return loadRenderable(xml)
+		}
+
+		fun loadSkeleton(xml: XmlData): SkeletonRenderable
+		{
+			val path = xml.get("path")
+			val scale = xml.getFloat("scale", 1f)
+
+			val key = path + scale
+
+			var skeletonData = loadedSkeletons.get(key)
+			if (skeletonData == null)
+			{
+				val atlas = TextureAtlas(Gdx.files.internal("$path.atlas"))
+				val json = SkeletonJson(atlas)
+				json.scale = scale * (48f / 256f)
+				skeletonData = json.readSkeletonData(Gdx.files.internal("$path.json"))
+
+				loadedSkeletons[key] = skeletonData
+			}
+
+			val skeleton = Skeleton(skeletonData)
+			val stateData = AnimationStateData(skeletonData)
+			stateData.defaultMix = 0.1f
+			val state = AnimationState(stateData)
+			val entry = state.setAnimation(0, "idle", true)
+			entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
+
+			return SkeletonRenderable(skeleton, state)
+		}
+
+		fun tryLoadSkeleton(xml: XmlData?): SkeletonRenderable?
+		{
+			if (xml == null) return null
+			return loadSkeleton(xml)
 		}
 	}
 }
