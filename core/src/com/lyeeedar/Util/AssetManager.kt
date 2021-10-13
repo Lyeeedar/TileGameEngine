@@ -37,6 +37,7 @@ class AssetManager
 			loadedSounds.clear()
 			loadedTextureRegions.clear()
 			loadedTextures.clear()
+			loadedSkeletons.clear()
 
 			SpriteWrapper.loaded.clear()
 
@@ -151,7 +152,7 @@ class AssetManager
 			var rawpath = path
 			if (!rawpath.endsWith(".png")) rawpath += ".png"
 
-			val path = "CompressedData/" + rawpath.hashCode() + ".ktx"
+			val path = rawpath//"CompressedData/" + rawpath.hashCode() + ".ktx"
 
 			if (loadedTextures.containsKey(path))
 			{

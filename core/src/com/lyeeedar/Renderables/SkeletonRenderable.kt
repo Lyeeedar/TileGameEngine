@@ -2,6 +2,7 @@ package com.lyeeedar.Renderables
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.esotericsoftware.spine.AnimationState
+import com.esotericsoftware.spine.AnimationStateData
 import com.esotericsoftware.spine.Skeleton
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
@@ -74,6 +75,15 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 
 	override fun copy(): Renderable
 	{
+		val skeletonData = skeleton.data
+
+		val skeleton = Skeleton(skeletonData)
+		val stateData = AnimationStateData(skeletonData)
+		stateData.defaultMix = 0.1f
+		val state = AnimationState(stateData)
+		val entry = state.setAnimation(0, "idle", true)
+		entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
+
 		return SkeletonRenderable(skeleton, state)
 	}
 }

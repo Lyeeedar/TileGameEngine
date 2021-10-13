@@ -75,6 +75,14 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
         {
 	        imports.add("import java.util.*")
         }
+		else if (type.startsWith("Array2D<"))
+        {
+	        val arrayType = type.replace("Array2D<", "").dropLast(1)
+	        if (arrayType == "Char" && annotations.any { it.name == "DataAsciiGrid" })
+	        {
+		        imports.add("import com.lyeeedar.Util.toCharGrid")
+	        }
+        }
 		else if (type.startsWith("Array<"))
 		{
 			val arrayType = type.replace("Array<", "").dropLast(1)
@@ -268,14 +276,19 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				loadExtension = ""
 			}
 
+	        val toLoad = if (sourceElName != null)
+				sourceElName
+	        else
+				"xmlData.getChildByName(\"$dataName\")"
+
             if (variableType == VariableType.LATEINIT)
             {
-                val loadLine = "$name = AssetManager.load$loadName(xmlData.getChildByName(\"$dataName\")!!)"
+                val loadLine = "$name = AssetManager.load$loadName($toLoad!!)"
                 builder.appendln(indentation, "$loadLine$loadExtension")
             }
             else if (variableType == VariableType.VAR)
             {
-                var loadLine = "$name = AssetManager.tryLoad$loadName(xmlData.getChildByName(\"$dataName\"))"
+                var loadLine = "$name = AssetManager.tryLoad$loadName($toLoad)"
                 if (!nullable)
                 {
                     loadLine += "!!"
@@ -361,6 +374,30 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\", ${defaultValue}.toString())!!.toUpperCase(Locale.ENGLISH))")
 			}
 		}
+		else if (type.startsWith("Array2D<"))
+        {
+	        val arrayType = type.replace("Array2D<", "").dropLast(1)
+
+	        val elName = name+"El"
+	        builder.appendln(indentation, "val $elName = xmlData.getChildByName(\"$dataName\")")
+
+	        if (arrayType == "Char")
+	        {
+		        if (annotations.any { it.name == "DataAsciiGrid" })
+		        {
+			        builder.appendln(indentation, "if ($elName != null) $name = $elName.toCharGrid()")
+			        builder.appendln(indentation, "else $name = Array2D<Char>(0,0){_,_->' '}")
+		        }
+		        else
+		        {
+			        throw RuntimeException("Non-ascii grid arrays of chars not supported")
+		        }
+	        }
+	        else
+	        {
+				throw RuntimeException("Unsupported Array2D type $arrayType")
+	        }
+        }
 		else if (type.startsWith("Array<"))
 		{
 			val arrayType = type.replace("Array<", "").dropLast(1)
@@ -945,6 +982,26 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 
             builder.appendlnFix(indentation, """<Data Name="$dataName" EnumValues="$enumVals" $defaultStr $skipIfDefault $visibleIfStr meta:RefKey="Enum" />""")
 		}
+		else if (type.startsWith("Array2D<"))
+        {
+	        val arrayType = type.replace("Array2D<", "").dropLast(1)
+
+	        if (arrayType == "Char")
+	        {
+		        if (annotations.any { it.name == "DataAsciiGrid" })
+		        {
+			        builder.appendlnFix(indentation, """<Data Name="$dataName" Default="." ElementPerLine="True" IsAsciiGrid="True" $visibleIfStr meta:RefKey="MultilineString"/>""")
+		        }
+		        else
+		        {
+			        throw RuntimeException("Not supported")
+		        }
+	        }
+	        else
+	        {
+		        throw RuntimeException("Not supported")
+	        }
+        }
 		else if (type.startsWith("Array<"))
 		{
 			val arrayType = type.replace("Array<", "").dropLast(1)

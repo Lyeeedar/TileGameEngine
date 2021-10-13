@@ -21,14 +21,18 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
+import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.UI.addClickListener
 import com.lyeeedar.Util.*
-import ktx.collections.set
-import ktx.collections.toGdxArray
+import com.lyeeedar.Util.AssetManager
+import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.toCharGrid
 import java.io.File
 import javax.swing.JColorChooser
+import ktx.collections.set
+import ktx.collections.toGdxArray
 
 /**
  * Created by Philip on 14-Aug-16.
@@ -56,7 +60,7 @@ class ParticleEditorScreen : AbstractScreen()
 	var backgroundType = BackgroundType.MAP
 	lateinit var particle: ParticleEffect
 	val batch = SpriteBatch()
-	lateinit var background: Array2D<Symbol>
+	lateinit var background: Array2D<ParticleEditorSymbol>
 	lateinit var collision: Array2D<Boolean>
 	var tileSize = 32f
 	lateinit var spriteRender: SortedRenderer
@@ -221,23 +225,19 @@ class ParticleEditorScreen : AbstractScreen()
 
 	fun loadLevel()
 	{
-		val xml = getXml("Particles/ParticleTestLevel")
+		val particleTestLevel = ParticleTestLevel()
+		particleTestLevel.load(getXml("Particles/ParticleTestLevel"))
 
-		val symbolsEl = xml.getChildByName("Symbols")!!
-		val symbolMap = ObjectMap<Char, Symbol>()
+		val symbolMap = ObjectMap<Char, ParticleEditorSymbol>()
 
-		for (i in 0..symbolsEl.childCount-1)
+		for (symbol in particleTestLevel.symbols)
 		{
-			val el = symbolsEl.getChild(i)
-			val symbol = Symbol.load(el)
 			symbolMap[symbol.char] = symbol
 		}
 
-		val rowsEl = xml.getChildByName("Rows")!!
-		val width = rowsEl.getChild(0).text.length
-		val height = rowsEl.childCount
-
-		background = Array2D(width, height) { x, y -> symbolMap[rowsEl.getChild(height - y - 1).text[x]].copy() }
+		val width = particleTestLevel.grid.width
+		val height = particleTestLevel.grid.height
+		background = Array2D(width, height) { x, y -> symbolMap.get(particleTestLevel.grid[x, y]).copy() }
 		collision = Array2D(width, height) { x, y -> background[x, y].isWall }
 
 		val tilex = Statics.resolution.x.toFloat() / width.toFloat()
@@ -373,14 +373,7 @@ class ParticleEditorScreen : AbstractScreen()
 						var i = 0
 						for (renderable in symbol.sprites)
 						{
-							if (renderable is Sprite)
-							{
-								spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, col)
-							}
-							else if (renderable is TilingSprite)
-							{
-								spriteRender.queueSprite(renderable, x.toFloat(), y.toFloat(), 0, i++, col)
-							}
+							spriteRender.queue(renderable, x.toFloat(), y.toFloat(), 0, i++, col)
 						}
 					}
 					BackgroundType.WHITE -> {
@@ -423,15 +416,15 @@ class ParticleEditorScreen : AbstractScreen()
 	}
 }
 
-class Symbol
+class ParticleEditorSymbol : XmlDataClass()
 {
 	var char: Char = ' '
 	val sprites: Array<Renderable> = Array()
 	var isWall: Boolean = false
 
-	fun copy(): Symbol
+	fun copy(): ParticleEditorSymbol
 	{
-		val symbol = Symbol()
+		val symbol = ParticleEditorSymbol()
 		symbol.char = char
 		for (sprite in sprites)
 		{
@@ -442,35 +435,51 @@ class Symbol
 		return symbol
 	}
 
-	companion object
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		fun load(xml: XmlData) : Symbol
+		char = xmlData.get("Char", " ")!![0]
+		val spritesEl = xmlData.getChildByName("Sprites")
+		if (spritesEl != null)
 		{
-			val symbol = Symbol()
-			symbol.isWall = xml.getAttributeBoolean("IsWall", false)
-
-			for (i in 0..xml.childCount-1)
+			for (el in spritesEl.children)
 			{
-				val el = xml.getChild(i)
-				if (el.name == "Char") symbol.char = el.text[0]
-				else
-				{
-					if (el.name == "Sprite")
-					{
-						symbol.sprites.add(AssetManager.loadSprite(el))
-					}
-					else if (el.name == "TilingSprite")
-					{
-						symbol.sprites.add(AssetManager.loadTilingSprite(el))
-					}
-					else
-					{
-						throw RuntimeException("Invalid symbol data type '${el.name}'!")
-					}
-				}
+				val objsprites: Renderable
+				objsprites = AssetManager.tryLoadRenderable(el)!!
+				sprites.add(objsprites)
 			}
-
-			return symbol
 		}
+		isWall = xmlData.getBoolean("IsWall", false)
 	}
+	//endregion
+}
+
+@DataFile
+class ParticleTestLevel : XmlDataClass()
+{
+	val symbols: Array<ParticleEditorSymbol> = Array()
+
+	@DataAsciiGrid
+	lateinit var grid: Array2D<Char>
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		val symbolsEl = xmlData.getChildByName("Symbols")
+		if (symbolsEl != null)
+		{
+			for (el in symbolsEl.children)
+			{
+				val objsymbols: ParticleEditorSymbol
+				val objsymbolsEl = el
+				objsymbols = ParticleEditorSymbol()
+				objsymbols.load(objsymbolsEl)
+				symbols.add(objsymbols)
+			}
+		}
+		val gridEl = xmlData.getChildByName("Grid")
+		if (gridEl != null) grid = gridEl.toCharGrid()
+		else grid = Array2D<Char>(0,0){_,_->' '}
+	}
+	//endregion
 }

@@ -71,13 +71,13 @@ class TilingSprite() : Renderable()
 			val overhangElement = xml.getChildByName("Overhang")
 			if (overhangElement != null)
 			{
-				val composedTopName = topElement.get("Name") + ": Overhang :" + overhangElement.get("Name")
+				val composedTopName = topElement.get("Name") + "_Overhang_" + overhangElement.get("Name")
 				val overhangTopSprite = AssetManager.loadSprite(composedTopName)
 				overhangTopSprite.drawActualSize = true
 				overhangTopSprite.referenceSize = 48f
 				sprites.put(NORTH, overhangTopSprite)
 
-				val composedFrontName = frontElement.get("Name") + ": Overhang :" + overhangElement.get("Name")
+				val composedFrontName = frontElement.get("Name") + "_Overhang_" + overhangElement.get("Name")
 				val overhangFrontSprite = AssetManager.loadSprite(composedFrontName)
 				overhangFrontSprite.drawActualSize = true
 				overhangFrontSprite.referenceSize = 48f

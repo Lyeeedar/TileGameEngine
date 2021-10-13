@@ -501,7 +501,7 @@ class AtlasCreator
 
 	private fun packOverhang(topName: String, overhangName: String) : Boolean
 	{
-		val composedName = topName + ": Overhang :" + overhangName
+		val composedName = "${topName}_Overhang_$overhangName"
 
 		// File exists on disk, no need to compose
 		if (tryPackSprite(composedName))
