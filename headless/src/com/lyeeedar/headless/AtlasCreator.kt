@@ -3,6 +3,7 @@ package com.lyeeedar.headless
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.PixmapIO
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.tools.texturepacker.TexturePacker
 import com.badlogic.gdx.utils.Array
@@ -10,6 +11,8 @@ import com.badlogic.gdx.utils.ObjectMap
 import com.badlogic.gdx.utils.ObjectSet
 import com.badlogic.gdx.utils.XmlReader
 import com.lyeeedar.Direction
+import com.lyeeedar.Renderables.ImageLayer
+import com.lyeeedar.Renderables.RenderedLayeredSprite
 import com.lyeeedar.Renderables.Sprite.DirectedSprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.Util.*
@@ -743,10 +746,9 @@ class AtlasCreator
 		}
 
 		val pixmap = Pixmap(fileHandle)
-		val grayScale = ImageUtils.grayscale(pixmap)
-		val image = ImageUtils.pixmapToImage(grayScale)
+		val image = ImageUtils.pixmapToImage(pixmap)
+		ImageUtils.grayscale(image)
 
-		grayScale.dispose()
 		pixmap.dispose()
 
 		localGeneratedImages[name] = image
@@ -759,37 +761,10 @@ class AtlasCreator
 
 	private fun processLayeredSprite(spriteElement: XmlReader.Element): Boolean
 	{
-		val layers = Array<ImageUtils.ImageLayer>()
+		val renderedLayeredSprite = RenderedLayeredSprite()
+		renderedLayeredSprite.load(XmlData.loadFromElement(spriteElement))
 
-		val layersEl = spriteElement.getChildByName("Layers")!!
-		for (el in layersEl.children())
-		{
-			val name = el.get("Name")
-			val fileHandle = Gdx.files.internal("../assetsraw/Sprites/$name.png")
-			if (!fileHandle.exists())
-			{
-				System.err.println("Failed to find sprite layer: $name")
-				return false
-			}
-
-			val drawActualSize = el.getBoolean("DrawActualSize", false)
-			val clip = el.getBoolean("Clip", false)
-			val colour = Color.WHITE.cpy()
-			val colEl = el.getChildByName("Tint")
-			if (colEl != null)
-			{
-				val cols = colEl.text.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-				colour.r = java.lang.Float.parseFloat(cols[0]) / 255.0f
-				colour.g = java.lang.Float.parseFloat(cols[1]) / 255.0f
-				colour.b = java.lang.Float.parseFloat(cols[2]) / 255.0f
-				colour.a = if (cols.size > 3) cols[3].toFloat() / 255.0f else 1f
-			}
-			val scale = el.getFloat("Scale", 1f)
-
-			layers.add(ImageUtils.ImageLayer(name, drawActualSize, clip, colour, scale))
-		}
-
-		val mergedName = layers.joinToString("+")
+		val mergedName = renderedLayeredSprite.toString()
 
 		if (tryPackSprite(mergedName))
 		{
@@ -797,18 +772,23 @@ class AtlasCreator
 			return true
 		}
 
-		for (layer in layers)
+		for (layer in renderedLayeredSprite.layers)
 		{
 			val fileHandle = Gdx.files.internal("../assetsraw/Sprites/${layer.path}.png")
+			if (!fileHandle.exists())
+			{
+				System.err.println("Failed to find sprite layer: ${layer.path}")
+				return false
+			}
 
 			layer.pixmap = Pixmap(fileHandle)
 		}
 
-		val merged = ImageUtils.mergeImages(layers)
+		val merged = ImageUtils.mergeImages(renderedLayeredSprite.layers)
 
 		val image = ImageUtils.pixmapToImage(merged)
 		merged.dispose()
-		for (layer in layers)
+		for (layer in renderedLayeredSprite.layers)
 		{
 			layer.pixmap.dispose()
 		}

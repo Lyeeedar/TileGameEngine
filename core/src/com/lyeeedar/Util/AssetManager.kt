@@ -509,35 +509,15 @@ class AssetManager
 
 		fun loadLayeredSprite(xml: XmlData): Sprite
 		{
-			val layers = Array<String>(1)
-			var anyDrawActualSize = false
+			val renderedLayeredSprite = RenderedLayeredSprite()
+			renderedLayeredSprite.load(xml)
 
-			val layersEl = xml.getChildByName("Layers")!!
-			for (layerEl in layersEl.children)
-			{
-				val name = layerEl.get("Name")
-				val drawActualSize = layerEl.getBoolean("DrawActualSize", false)
-				anyDrawActualSize = anyDrawActualSize || drawActualSize
-
-				val clip = layerEl.getBoolean("Clip", false)
-				var colour = Color.WHITE
-				val colEl = layerEl.getChildByName("Tint")
-				if (colEl != null)
-				{
-					colour = loadColour(colEl).color()
-				}
-				val scale = layerEl.getFloat("Scale", 1f)
-
-				val layer = ImageUtils.ImageLayer(name, drawActualSize, clip, colour, scale)
-				layers.add(layer.toString())
-			}
-
-			val mergedName = layers.joinToString("+")
+			val mergedName = renderedLayeredSprite.toString()
 			val tex = loadTextureRegion("Sprites/$mergedName.png")
 					  ?: throw RuntimeException("Cant find any textures for layered sprite $mergedName!")
 
 			val sprite = Sprite(tex)
-			sprite.drawActualSize = anyDrawActualSize
+			sprite.drawActualSize = renderedLayeredSprite.layers.any { it.drawActualSize }
 
 			val lightEl = xml.getChildByName("Light")
 			if (lightEl != null)
