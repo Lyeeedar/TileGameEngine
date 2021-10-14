@@ -80,12 +80,12 @@ fun Actor.addClickListenerFull(func: (InputEvent?, Float, Float) -> Unit)
 	})
 }
 
-fun Actor.addTapToolTip(content: String): Actor
+fun Actor.addTapToolTip(provider: () -> String): Actor
 {
 	this.addClickListenerFull { event, x, y ->
 
 		val table = Table()
-		val label = Label(content, Statics.skin)
+		val label = Label(provider.invoke(), Statics.skin)
 		label.setWrap(true)
 		table.add(label).grow().pad(10f).prefWidth(200f).center()
 
@@ -108,6 +108,11 @@ fun Actor.addTapToolTip(content: String): Actor
 	}
 
 	return this
+}
+
+fun Actor.addTapToolTip(content: String): Actor
+{
+	return addTapToolTip { content }
 }
 
 fun Actor.addToolTip(title: String, body: String, stage: Stage): Actor

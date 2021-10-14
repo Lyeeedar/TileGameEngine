@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Scaling
 import com.lyeeedar.Renderables.Sprite.Sprite
 
-class SpriteWidget(val drawable: Sprite, val originalWidth: Float, val originalHeight: Float, val fixHeight: Boolean = false, val align: Int = Align.center) : Widget()
+class SpriteWidget(var drawable: Sprite, val originalWidth: Float, val originalHeight: Float, val fixHeight: Boolean = false, val align: Int = Align.center) : Widget()
 {
 	constructor(textureRegion: TextureRegion) : this(Sprite(textureRegion), textureRegion.regionWidth.toFloat(), textureRegion.regionHeight.toFloat())
 	constructor(sprite: Sprite) : this(sprite, sprite.textures[0].regionWidth.toFloat(), sprite.textures[0].regionHeight.toFloat())
