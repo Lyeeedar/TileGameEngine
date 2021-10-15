@@ -519,12 +519,6 @@ class AssetManager
 			val sprite = Sprite(tex)
 			sprite.drawActualSize = renderedLayeredSprite.layers.any { it.drawActualSize }
 
-			val lightEl = xml.getChildByName("Light")
-			if (lightEl != null)
-			{
-				sprite.light = loadLight(lightEl)
-			}
-
 			return sprite
 		}
 
