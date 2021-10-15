@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage
 import java.util.*
 
 @DataClass(global = true)
+@DataClassCollection
 class RenderedLayeredSprite : XmlDataClass()
 {
 	val layers: Array<ImageLayer> = Array()
@@ -23,7 +24,7 @@ class RenderedLayeredSprite : XmlDataClass()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		val layersEl = xmlData.getChildByName("Layers")
+		val layersEl = xmlData
 		if (layersEl != null)
 		{
 			for (el in layersEl.children)
