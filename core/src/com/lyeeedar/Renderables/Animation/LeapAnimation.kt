@@ -41,7 +41,7 @@ class LeapAnimation : AbstractMoveAnimation
 
 		offset[0] = temp.x
 		offset[1] = temp.y + height * halpha
-		
+
 		offsetMoveOnly[0] = temp.x
 		offsetMoveOnly[1] = temp.y
 

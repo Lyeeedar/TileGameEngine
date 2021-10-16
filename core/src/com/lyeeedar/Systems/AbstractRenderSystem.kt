@@ -9,6 +9,7 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.SpaceSlotType
+import com.lyeeedar.UI.RenderSystemWidget
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Statics
 import com.lyeeedar.Util.round
@@ -62,11 +63,16 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		playerOffsetX = playerOffset.x
 		playerOffsetY = playerOffset.y
 
-		val screenTileWidth = (Statics.resolution.xFloat / tileSize).toInt() + 4
-		val screenTileHeight = (Statics.resolution.yFloat / tileSize).toInt() + 4
+		val screenX = RenderSystemWidget.instance!!.x
+		val screenY = RenderSystemWidget.instance!!.y
+		val screenWidth = RenderSystemWidget.instance!!.width
+		val screenHeight = RenderSystemWidget.instance!!.height
 
-		offsetx = (Statics.resolution.x * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f)
-		offsety = (Statics.resolution.y * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f)
+		val screenTileWidth = (screenWidth / tileSize).toInt() + 4
+		val screenTileHeight = (screenHeight / tileSize).toInt() + 4
+
+		offsetx = (screenWidth * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f) + screenX
+		offsety = (screenHeight * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f) + screenY
 
 		val xs = playerOffsetX.toInt()-screenTileWidth/2
 		val xe = playerOffsetX.toInt()+screenTileWidth/2

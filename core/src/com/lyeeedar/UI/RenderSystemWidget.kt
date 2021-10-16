@@ -10,8 +10,10 @@ import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Systems.AbstractRenderSystem
+import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
 import com.lyeeedar.Util.AssetManager
+import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Statics
 
@@ -77,20 +79,23 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 
 		val tileSize = world.tileSize
 
-		val offsetx = Statics.resolution.x * 0.5f - playerPos.x * tileSize - tileSize * 0.5f
-		val offsety = Statics.resolution.y * 0.5f - playerPos.y * tileSize - tileSize * 2f
+		val offsetx = Statics.resolution.x * 0.5f - playerPos.x * tileSize - tileSize * 0.5f + x
+		val offsety = Statics.resolution.y * 0.5f - playerPos.y * tileSize - tileSize * 2f + y
 
 		offsetVec.set(offsetx, offsety)
 		return offsetVec
 	}
 
+	val tmp = Vector2()
 	fun screenspaceToPoint(x: Float, y: Float): Point
 	{
+		val stagePos = localToStageCoordinates(tmp.set(x, y))
+
 		val offset = getPlayerOffset()
 		val tileSize = world.tileSize
 
-		val xp = x - offset.x
-		val yp = y - offset.y
+		val xp = stagePos.x - offset.x
+		val yp = stagePos.y - offset.y
 
 		val sx = (xp / tileSize).toInt()
 		val sy = (yp / tileSize).toInt()
@@ -108,7 +113,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 		val offset = getPlayerOffset()
 		val tileSize = world.tileSize
 
-		return Vector2(offset.x + x * tileSize, offset.y + y * tileSize)
+		return Vector2(offset.x + x * tileSize, offset.y + y * tileSize - this.y)
 	}
 
 	fun addAttachedToEntityWidget(entity: EntityReference, widget: Widget)
