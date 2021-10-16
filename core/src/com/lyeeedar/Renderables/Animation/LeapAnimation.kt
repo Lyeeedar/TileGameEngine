@@ -12,8 +12,9 @@ class LeapAnimation : AbstractMoveAnimation
 
 	override fun time(): Float = time
 
-	override fun renderOffset(screenPositionMode: Boolean): FloatArray? = offset
+	override fun renderOffset(screenPositionMode: Boolean): FloatArray? = if (screenPositionMode) offsetMoveOnly else offset
 
+	private val offsetMoveOnly = floatArrayOf(0f, 0f)
 	private val offset = floatArrayOf(0f, 0f)
 	private var duration: Float = 0f
 	private var time: Float = 0f
@@ -40,6 +41,9 @@ class LeapAnimation : AbstractMoveAnimation
 
 		offset[0] = temp.x
 		offset[1] = temp.y + height * halpha
+		
+		offsetMoveOnly[0] = temp.x
+		offsetMoveOnly[1] = temp.y
 
 		return time >= duration
 	}
