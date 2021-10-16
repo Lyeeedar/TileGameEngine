@@ -1,5 +1,6 @@
 package com.lyeeedar.UI
 
+import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -8,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.lyeeedar.Util.Statics
 
@@ -80,6 +82,20 @@ fun Actor.addClickListenerFull(func: (InputEvent?, Float, Float) -> Unit)
 	})
 }
 
+fun Actor.addHoldListenerFull(func: (Actor?, Float, Float) -> Unit)
+{
+	this.touchable = Touchable.enabled
+	this.addListener(object : ActorGestureListener() {
+		override fun longPress(actor: Actor?, x: Float, y: Float): Boolean
+		{
+			super.longPress(actor, x, y)
+			func(actor, x, y)
+			return true
+		}
+	})
+}
+
+
 fun Actor.addTapToolTip(provider: () -> String): Actor
 {
 	this.addClickListenerFull { event, x, y ->
@@ -102,7 +118,7 @@ fun Actor.addTapToolTip(provider: () -> String): Actor
 		Statics.stage.addActor(fullscreenTable)
 
 		tooltip.toFront()
-		tooltip.show(event, x, y)
+		tooltip.show(event?.listenerActor, x, y)
 
 		event?.handle()
 	}
@@ -132,6 +148,34 @@ fun Actor.addToolTip(title: String, body: String, stage: Stage): Actor
 	return this
 }
 
+fun Actor.addHoldToolTip(provider: () -> String): Actor
+{
+	this.addHoldListenerFull { actor, x, y ->
+
+		val table = Table()
+		val label = Label(provider.invoke(), Statics.skin)
+		label.wrap = true
+		table.add(label).grow().pad(10f).prefWidth(200f).center()
+
+		val tooltip = Tooltip(table, Statics.skin, Statics.stage)
+
+		val fullscreenTable = Table()
+		fullscreenTable.touchable = Touchable.enabled
+		fullscreenTable.setFillParent(true)
+		fullscreenTable.addClickListener {
+			tooltip.remove()
+			Tooltip.openTooltip = null
+			fullscreenTable.remove()
+		}
+		Statics.stage.addActor(fullscreenTable)
+
+		tooltip.toFront()
+		tooltip.show(actor, x, y)
+	}
+
+	return this
+}
+
 fun String.showTooltip(event: InputEvent?, x: Float, y: Float)
 {
 	val table = Table()
@@ -152,5 +196,5 @@ fun String.showTooltip(event: InputEvent?, x: Float, y: Float)
 	Statics.stage.addActor(fullscreenTable)
 
 	tooltip.toFront()
-	tooltip.show(event, x, y)
+	tooltip.show(event?.listenerActor, x, y)
 }

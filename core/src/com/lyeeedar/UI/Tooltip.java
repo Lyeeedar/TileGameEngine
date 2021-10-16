@@ -1,7 +1,7 @@
 package com.lyeeedar.UI;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -57,10 +57,14 @@ public class Tooltip extends Table
 		setBackground( m_style.background );
 	}
 
-	public void show( InputEvent event, float x, float y )
+	public void show( Actor actor, float x, float y )
 	{
 		Vector2 tmp = new Vector2( x, y );
-		event.getListenerActor().localToStageCoordinates( tmp );
+
+		if (actor != null) {
+			actor.localToStageCoordinates( tmp );
+		}
+
 		show( tmp.x, tmp.y );
 	}
 

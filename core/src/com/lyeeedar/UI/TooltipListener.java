@@ -23,13 +23,13 @@ public class TooltipListener extends InputListener
 	@Override
 	public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor)
 	{
-		tooltip.show( event, x, y );
+		tooltip.show( event.getListenerActor(), x, y );
 	}
 
 	@Override
 	public boolean mouseMoved (InputEvent event, float x, float y)
 	{
-		tooltip.show( event, x, y );
+		tooltip.show( event.getListenerActor(), x, y );
 
 		return false;
 	}
