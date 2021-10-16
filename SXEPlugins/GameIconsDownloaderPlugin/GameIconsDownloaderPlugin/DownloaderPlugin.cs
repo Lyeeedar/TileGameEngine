@@ -113,8 +113,8 @@ namespace GameIconsDownloaderPlugin
 			foreach (var svgFile in Directory.EnumerateFiles(extractLocation, "*.svg", SearchOption.AllDirectories))
 			{
 				var svgDoc = SvgDocument.Open<SvgDocument>(svgFile, null);
-				svgDoc.Width = 48;
-				svgDoc.Height = 48;
+				svgDoc.Width = 64;
+				svgDoc.Height = 64;
 
 				var bitmap = svgDoc.Draw();
 

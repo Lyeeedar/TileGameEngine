@@ -24,3 +24,4 @@ bin
 obj
 .vs
 *.user
+SXEPlugins/GameIconsDownloaderPlugin/GameIconsDownloaderPlugin/Properties/PublishProfiles/FolderProfile.pubxml
