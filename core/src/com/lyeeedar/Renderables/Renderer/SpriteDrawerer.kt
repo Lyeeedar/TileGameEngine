@@ -675,10 +675,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		{
 			renderVertices()
 			renderPrecomputedVertices()
-
-			//batch?.begin()
-			//batch?.draw(lightFBO.colorBufferTexture, 0f, 0f, Gdx.graphics.backBufferWidth.toFloat(), Gdx.graphics.backBufferHeight.toFloat())
-			//batch?.end()
 		}
 
 		Gdx.gl.glDepthMask(true)

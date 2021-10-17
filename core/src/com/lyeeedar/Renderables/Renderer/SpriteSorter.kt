@@ -480,8 +480,8 @@ class SpriteSorter(val renderer: SortedRenderer)
 		var x = ix * tileSize
 		var y = iy * tileSize
 
-		var lx = ix - width
-		var ly = iy - height
+		var lx = ix
+		var ly = iy
 
 		var lScaleX = scaleX
 		var lScaleY = scaleY
