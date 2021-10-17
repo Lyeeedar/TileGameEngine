@@ -99,27 +99,7 @@ fun Actor.addHoldListenerFull(func: (Actor?, Float, Float) -> Unit)
 fun Actor.addTapToolTip(provider: () -> String): Actor
 {
 	this.addClickListenerFull { event, x, y ->
-
-		val table = Table()
-		val label = Label(provider.invoke(), Statics.skin)
-		label.setWrap(true)
-		table.add(label).grow().pad(10f).prefWidth(200f).center()
-
-		val tooltip = Tooltip(table, Statics.skin, Statics.stage)
-
-		val fullscreenTable = Table()
-		fullscreenTable.touchable = Touchable.enabled
-		fullscreenTable.setFillParent(true)
-		fullscreenTable.addClickListener {
-			tooltip.remove()
-			Tooltip.openTooltip = null
-			fullscreenTable.remove()
-		}
-		Statics.stage.addActor(fullscreenTable)
-
-		tooltip.toFront()
-		tooltip.show(event?.listenerActor, x, y)
-
+		event?.listenerActor?.showTooltip(provider.invoke(), x, y)
 		event?.handle()
 	}
 
@@ -152,25 +132,7 @@ fun Actor.addHoldToolTip(provider: () -> String): Actor
 {
 	this.addHoldListenerFull { actor, x, y ->
 
-		val table = Table()
-		val label = Label(provider.invoke(), Statics.skin)
-		label.wrap = true
-		table.add(label).grow().pad(10f).prefWidth(200f).center()
-
-		val tooltip = Tooltip(table, Statics.skin, Statics.stage)
-
-		val fullscreenTable = Table()
-		fullscreenTable.touchable = Touchable.enabled
-		fullscreenTable.setFillParent(true)
-		fullscreenTable.addClickListener {
-			tooltip.remove()
-			Tooltip.openTooltip = null
-			fullscreenTable.remove()
-		}
-		Statics.stage.addActor(fullscreenTable)
-
-		tooltip.toFront()
-		tooltip.show(actor, x, y)
+		actor?.showTooltip(provider.invoke(), x, y)
 	}
 
 	return this
@@ -178,9 +140,14 @@ fun Actor.addHoldToolTip(provider: () -> String): Actor
 
 fun String.showTooltip(event: InputEvent?, x: Float, y: Float)
 {
+	event!!.listenerActor.showTooltip(this, x, y)
+}
+
+fun Actor.showTooltip(content: String, x: Float, y: Float)
+{
 	val table = Table()
-	val label = Label(this, Statics.skin)
-	label.setWrap(true)
+	val label = Label(content, Statics.skin)
+	label.wrap = true
 	table.add(label).grow().pad(10f).prefWidth(200f).center()
 
 	val tooltip = Tooltip(table, Statics.skin, Statics.stage)
@@ -196,5 +163,5 @@ fun String.showTooltip(event: InputEvent?, x: Float, y: Float)
 	Statics.stage.addActor(fullscreenTable)
 
 	tooltip.toFront()
-	tooltip.show(event?.listenerActor, x, y)
+	tooltip.show(this, x, y)
 }
