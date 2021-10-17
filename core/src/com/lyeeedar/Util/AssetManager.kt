@@ -580,18 +580,18 @@ class AssetManager
 
 		fun loadSkeleton(xml: XmlData): SkeletonRenderable
 		{
-			val path = xml.get("path")
-			val scale = xml.getFloat("scale", 1f)
+			val data = com.lyeeedar.Renderables.SkeletonData()
+			data.load(xml)
 
-			val key = path + scale
+			val key = data.path + data.scale
 
 			var skeletonData = loadedSkeletons.get(key)
 			if (skeletonData == null)
 			{
-				val atlas = TextureAtlas(Gdx.files.internal("$path.atlas"))
+				val atlas = TextureAtlas(Gdx.files.internal("${data.path}.atlas"))
 				val json = SkeletonJson(atlas)
-				json.scale = scale * (48f / 256f)
-				skeletonData = json.readSkeletonData(Gdx.files.internal("$path.json"))
+				json.scale = data.scale * (48f / 256f)
+				skeletonData = json.readSkeletonData(Gdx.files.internal("${data.path}.json"))
 
 				loadedSkeletons[key] = skeletonData
 			}
@@ -603,7 +603,9 @@ class AssetManager
 			val entry = state.setAnimation(0, "idle", true)
 			entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
 
-			return SkeletonRenderable(skeleton, state)
+			val renderable = SkeletonRenderable(skeleton, state)
+			renderable.colour = data.colour ?: Colour.WHITE
+			return renderable
 		}
 
 		fun tryLoadSkeleton(xml: XmlData?): SkeletonRenderable?

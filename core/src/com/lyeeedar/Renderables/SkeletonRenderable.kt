@@ -5,6 +5,7 @@ import com.esotericsoftware.spine.AnimationState
 import com.esotericsoftware.spine.AnimationStateData
 import com.esotericsoftware.spine.Skeleton
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.XmlData
 
 @DataClass(name = "Skeleton", global = true)
@@ -15,11 +16,14 @@ class SkeletonData : XmlDataClass()
 
 	var scale: Float = 1f
 
+	var colour: Colour? = Colour.WHITE
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
 		path = xmlData.get("Path")
 		scale = xmlData.getFloat("Scale", 1f)
+		colour = AssetManager.tryLoadColour(xmlData.getChildByName("Colour"))
 	}
 	//endregion
 }
@@ -84,6 +88,8 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		val entry = state.setAnimation(0, "idle", true)
 		entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
 
-		return SkeletonRenderable(skeleton, state)
+		val renderable = SkeletonRenderable(skeleton, state)
+		renderable.colour.set(colour)
+		return renderable
 	}
 }
