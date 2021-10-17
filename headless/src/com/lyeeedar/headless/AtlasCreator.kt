@@ -44,6 +44,13 @@ class AtlasCreator
 		println("")
 		println("")
 
+		val atlasFile = File("CompressedData/SpriteAtlas.atlas")
+		if (!atlasFile.exists())
+		{
+			atlasFile.parentFile.mkdirs()
+			atlasFile.createNewFile()
+		}
+
 		var start = System.currentTimeMillis()
 
 		buildTilingMasksArray()
