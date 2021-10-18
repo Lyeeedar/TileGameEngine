@@ -1,6 +1,5 @@
 package com.lyeeedar.UI
 
-import com.badlogic.gdx.input.GestureDetector
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -12,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.lyeeedar.Util.Statics
+
+val longPressDuration = 0.5f
 
 fun Actor.getBounds(): Rectangle
 {
@@ -85,7 +86,7 @@ fun Actor.addClickListenerFull(func: (InputEvent?, Float, Float) -> Unit)
 fun Actor.addHoldListenerFull(func: (Actor?, Float, Float) -> Unit)
 {
 	this.touchable = Touchable.enabled
-	this.addListener(object : ActorGestureListener() {
+	this.addListener(object : ActorGestureListener(20f, 0.4f, longPressDuration, Int.MAX_VALUE.toFloat()) {
 		override fun longPress(actor: Actor?, x: Float, y: Float): Boolean
 		{
 			super.longPress(actor, x, y)
