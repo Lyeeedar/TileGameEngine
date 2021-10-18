@@ -8,6 +8,11 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "252,102,9", name = "PickSelf")
 class SelectSelfAction : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	override fun enter(state: ActionSequenceState)
 	{
 		state.targets.clear()

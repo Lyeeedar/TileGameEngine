@@ -11,6 +11,11 @@ import ktx.collections.toGdxArray
 @DataClass(category = "Permute", colour = "252,102,9")
 class StoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	lateinit var key: String
 
 	override fun enter(state: ActionSequenceState)
@@ -31,6 +36,11 @@ class StoreTargetsAction : AbstractOneShotActionSequenceAction()
 @DataClass(category = "Permute", colour = "252,102,9")
 class RestoreTargetsAction : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	lateinit var key: String
 
 	override fun enter(state: ActionSequenceState)

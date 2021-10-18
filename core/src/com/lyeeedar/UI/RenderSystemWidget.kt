@@ -1,6 +1,7 @@
 package com.lyeeedar.UI
 
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -9,6 +10,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
+import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Systems.AbstractRenderSystem
 import com.lyeeedar.Systems.AbstractTile
 import com.lyeeedar.Systems.World
@@ -115,7 +117,8 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 		val offset = getPlayerOffset()
 		val tileSize = world.tileSize
 
-		return Vector2(offset.x + x * tileSize, offset.y + y * tileSize - this.y)
+		val local = Vector2(offset.x + x * tileSize, offset.y + y * tileSize - this.y)
+		return localToStageCoordinates(local)
 	}
 
 	fun addAttachedToEntityWidget(entity: EntityReference, widget: Widget)

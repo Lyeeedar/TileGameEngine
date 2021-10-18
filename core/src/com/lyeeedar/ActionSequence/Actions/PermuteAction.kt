@@ -13,6 +13,11 @@ import kotlin.math.roundToInt
 @DataClass(category = "Permute", colour = "247,176,78")
 class PermuteAction() : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	var appendTargets: Boolean = false
 
 	@DataAsciiGrid

@@ -11,6 +11,8 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	@DataNumericRange(min = 0f)
 	var time: Float = 0f
 
+	var permutesTargets = false
+
 	//region non-data
 	abstract val end: Float
 	//endregion

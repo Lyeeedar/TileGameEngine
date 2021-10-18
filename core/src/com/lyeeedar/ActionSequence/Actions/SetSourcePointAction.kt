@@ -7,6 +7,11 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "247,176,78", name = "SetSource")
 class SetSourcePointAction : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	override fun enter(state: ActionSequenceState)
 	{
 		if (state.targets.size > 0)

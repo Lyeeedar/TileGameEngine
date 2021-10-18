@@ -11,6 +11,11 @@ import com.lyeeedar.Util.XmlData
 @DataClass(category = "Permute", colour = "242,154,33", name = "PickTiles")
 class SelectTilesAction : AbstractOneShotActionSequenceAction()
 {
+	init
+	{
+		permutesTargets = true
+	}
+
 	@DataCompiledExpression(knownVariables = "count", default = "count")
 	lateinit var coverage: CompiledExpression
 
