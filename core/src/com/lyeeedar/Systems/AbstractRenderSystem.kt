@@ -200,7 +200,16 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val px = pos.position.xFloat + pos.offset.x
 		val py = pos.position.yFloat + pos.offset.y
 
-		val tile = world.grid.tryGet(px.round(), py.round(), null) ?: return
+		val tile = world.grid.tryGet(px.round(), py.round(), null)
+		if (tile == null)
+		{
+			if (entity.hasComponent(ComponentType.Transient))
+			{
+				entity.markForDeletion(0f, "Off map")
+			}
+			return
+		}
+
 		val tileCol = tile.getRenderCol()
 
 		val tilesHeight = Statics.resolution[1] / tileSize
@@ -226,6 +235,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 
 		if (renderable is ParticleEffect)
 		{
+
 			if (renderable.completed && entity.hasComponent(ComponentType.Transient) && renderable.complete())
 			{
 				entity.markForDeletion(0f, "completed")
