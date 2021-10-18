@@ -25,6 +25,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 	val selectedPoint: Point
 		get() = screenspaceToPoint(mousePos.x, mousePos.y)
 	var isSelected = false
+	var clickConsumed = false
 
 	var attachedToEntityWidgets = Array<AttachedToEntityWidget>(false, 4)
 
@@ -40,6 +41,7 @@ class RenderSystemWidget(val world: World<*>) : Widget()
 			            {
 				            mousePos.set(x, y)
 				            isSelected = true
+				            clickConsumed = false
 
 				            super.touchDown(event, x, y, pointer, button)
 				            return true
