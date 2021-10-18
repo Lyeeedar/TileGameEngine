@@ -390,22 +390,25 @@ class Localiser
 			for (el in englishFile.children())
 			{
 				val id = el.getAttribute("ID")
+				val context = el.getAttribute("Context", null)
 
 				if (el.text == null)
 				{
-					throw RuntimeException("ID had no content!\nID: $id\nFile: ${file.path}")
+					throw RuntimeException("ID had no content!\nID: $id\nContext: $context\nFile: ${file.path}")
 				}
 				val text = el.text
 
 				if (allFoundIds.contains(id))
 				{
-					throw RuntimeException("Duplicate id found!\nID: $id\nText: $text\nFile: ${file.path}")
+					throw RuntimeException("Duplicate id found!\nID: $id\n" +
+						                       "Context: $context\nText: $text\nFile: ${file.path}")
 				}
 				allFoundIds.add(id)
 
 				if (needsSentenceAnalysis)
 				{
-					val context = "ID: $id\nText: $text\nFile: ${file.path}\nLine: $i"
+					val context = "ID: $id\n" +
+						"Context: $context\nText: $text\nFile: ${file.path}\nLine: $i"
 					doSentenceAnalysis(text, context)
 
 					val lastChar = text.last()
