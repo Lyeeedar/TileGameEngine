@@ -10,6 +10,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Area", colour = "112,109,201")
 class ScaleAction : AbstractMapGenerationAction()

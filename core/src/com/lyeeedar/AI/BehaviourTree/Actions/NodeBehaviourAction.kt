@@ -8,6 +8,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
+import ktx.collections.set
 
 @DataClass(category = "Flow Control")
 class NodeBehaviourAction : AbstractBehaviourAction()

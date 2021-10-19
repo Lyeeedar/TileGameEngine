@@ -9,6 +9,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataCompiledExpression
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Area", colour = "135,131,245")
 class RotateAction : AbstractMapGenerationAction()

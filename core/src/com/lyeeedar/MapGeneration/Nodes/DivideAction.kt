@@ -8,6 +8,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Area", colour = "80,170,230")
 class DivideAction : AbstractMapGenerationAction()

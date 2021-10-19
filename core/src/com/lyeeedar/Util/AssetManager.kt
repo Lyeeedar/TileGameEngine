@@ -38,6 +38,7 @@ class AssetManager
 			loadedTextureRegions.clear()
 			loadedTextures.clear()
 			loadedSkeletons.clear()
+			loadedAnimGraphs.clear()
 
 			SpriteWrapper.loaded.clear()
 
@@ -115,6 +116,7 @@ class AssetManager
 		}
 
 		private val loadedSkeletons = ObjectMap<String, SkeletonData>()
+		private val loadedAnimGraphs = ObjectMap<String, AnimationGraph>()
 
 		private var prepackedAtlas = TextureAtlas(Gdx.files.internal("CompressedData/SpriteAtlas.atlas")!!)
 
@@ -585,6 +587,14 @@ class AssetManager
 
 			val key = data.path + data.scale
 
+			var animationGraph = loadedAnimGraphs.get(data.animGraph)
+			if (animationGraph == null)
+			{
+				animationGraph = AnimationGraph()
+				animationGraph.load(getXml(data.animGraph))
+				loadedAnimGraphs[data.animGraph] = animationGraph
+			}
+
 			var skeletonData = loadedSkeletons.get(key)
 			if (skeletonData == null)
 			{
@@ -600,10 +610,8 @@ class AssetManager
 			val stateData = AnimationStateData(skeletonData)
 			stateData.defaultMix = 0.1f
 			val state = AnimationState(stateData)
-			val entry = state.setAnimation(0, "idle", true)
-			entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
 
-			val renderable = SkeletonRenderable(skeleton, state)
+			val renderable = SkeletonRenderable(skeleton, state, animationGraph)
 			renderable.colour = data.colour ?: Colour.WHITE
 			return renderable
 		}

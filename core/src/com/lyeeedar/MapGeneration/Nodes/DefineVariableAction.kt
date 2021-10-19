@@ -7,6 +7,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Setup", colour = "255,246,20")
 class DefineVariableAction : AbstractMapGenerationAction()

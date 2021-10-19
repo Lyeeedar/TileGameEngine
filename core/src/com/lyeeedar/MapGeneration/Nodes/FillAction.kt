@@ -5,6 +5,7 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Write", colour = "214,252,1")
 class FillAction : AbstractMapGenerationAction()

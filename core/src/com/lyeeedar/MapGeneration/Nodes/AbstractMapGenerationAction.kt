@@ -10,6 +10,7 @@ import com.lyeeedar.Util.GraphXmlDataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.copy
+import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
 abstract class AbstractMapGenerationAction : GraphXmlDataClass<MapGeneratorNode>()

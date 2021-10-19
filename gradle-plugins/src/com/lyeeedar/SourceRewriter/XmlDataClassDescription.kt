@@ -99,6 +99,7 @@ class XmlDataClassDescription(val name: String, val defLine: String, val classIn
 	    if (graphNodeType != null)
 	    {
 		    imports.add("import com.badlogic.gdx.utils.ObjectMap")
+		    imports.add("import ktx.collections.set")
 
 		    val graphNodeClass = classRegister.getClass(graphNodeType.first, graphNodeType.second)!!
 		    imports.add("import " + graphNodeClass.fullName)

@@ -6,6 +6,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Other", colour = "255,0,0")
 class DeferAction : AbstractMapGenerationAction()

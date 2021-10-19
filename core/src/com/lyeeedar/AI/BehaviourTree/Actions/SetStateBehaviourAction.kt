@@ -10,6 +10,7 @@ import com.lyeeedar.Util.FastEnumMap
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Flow Control")
 class SetStateBehaviourAction : AbstractBehaviourAction()

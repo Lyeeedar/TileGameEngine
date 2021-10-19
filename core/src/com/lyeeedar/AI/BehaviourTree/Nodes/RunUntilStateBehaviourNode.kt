@@ -11,6 +11,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Until")
 class RunUntilStateBehaviourNode : AbstractBehaviourNode()

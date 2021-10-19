@@ -10,6 +10,7 @@ import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
 import com.lyeeedar.Util.removeRandom
+import ktx.collections.set
 
 @DataClass(category = "Other")
 class RunOneRandomlyBehaviourNode : AbstractBehaviourNode()

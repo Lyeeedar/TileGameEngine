@@ -8,6 +8,7 @@ import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Other", colour = "252,248,131")
 class ConditionAction : AbstractMapGenerationAction()

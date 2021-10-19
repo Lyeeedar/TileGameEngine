@@ -7,6 +7,7 @@ import com.lyeeedar.AI.BehaviourTree.Nodes.AbstractBehaviourNode
 import com.lyeeedar.Components.markForDeletion
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Action")
 class KillBehaviourAction : AbstractBehaviourAction()

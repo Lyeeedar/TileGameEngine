@@ -9,6 +9,7 @@ import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Rooms", colour = "255,196,0")
 class SelectNamedAreaAction : AbstractMapGenerationAction()

@@ -12,6 +12,7 @@ import com.lyeeedar.Util.DataGraphReference
 import com.lyeeedar.Util.DataValue
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 import ktx.collections.toGdxArray
 
 @DataClass(category = "Point", colour = "193,49,199")

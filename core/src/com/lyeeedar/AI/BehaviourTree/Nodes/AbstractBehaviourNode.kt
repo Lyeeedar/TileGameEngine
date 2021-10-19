@@ -9,6 +9,7 @@ import com.lyeeedar.Util.DataClassCollection
 import com.lyeeedar.Util.DataGraphNode
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
+import ktx.collections.set
 
 @DataGraphNode
 @DataClassCollection

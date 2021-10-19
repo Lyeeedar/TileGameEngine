@@ -8,6 +8,7 @@ import com.lyeeedar.Components.EntityReference
 import com.lyeeedar.Components.position
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Data")
 class ConvertToPositionBehaviourAction : AbstractBehaviourAction()

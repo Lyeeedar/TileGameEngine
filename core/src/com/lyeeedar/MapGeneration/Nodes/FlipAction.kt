@@ -5,6 +5,7 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 
 @DataClass(category = "Area", colour = "102,110,232")
 class FlipAction : AbstractMapGenerationAction()

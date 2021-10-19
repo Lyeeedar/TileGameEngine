@@ -8,6 +8,7 @@ import com.lyeeedar.MapGeneration.Nodes.NodeArguments
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
+import ktx.collections.set
 
 @DataClass(colour = "209,209,143")
 @DataClassCollection

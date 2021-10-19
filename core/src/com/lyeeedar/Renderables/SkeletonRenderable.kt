@@ -14,6 +14,9 @@ class SkeletonData : XmlDataClass()
 	@DataFileReference(allowedFileTypes = "json", basePath = "../assets/")
 	lateinit var path: String
 
+	@DataFileReference(resourceType = "AnimationGraph")
+	lateinit var animGraph: String
+
 	var scale: Float = 1f
 
 	var colour: Colour? = Colour.WHITE
@@ -22,29 +25,21 @@ class SkeletonData : XmlDataClass()
 	override fun load(xmlData: XmlData)
 	{
 		path = xmlData.get("Path")
+		animGraph = xmlData.get("AnimGraph")
 		scale = xmlData.getFloat("Scale", 1f)
 		colour = AssetManager.tryLoadColour(xmlData.getChildByName("Colour"))
 	}
 	//endregion
 }
 
-class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Renderable()
+class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val graph: AnimationGraph) : Renderable()
 {
-	var timeInAnimation = -1f
+	val animationGraphState = AnimationGraphState(this, graph)
 
 	override fun doUpdate(delta: Float): Boolean
 	{
-		if (timeInAnimation > 0f)
-		{
-			timeInAnimation -= delta
-
-			if (timeInAnimation <= 0f)
-			{
-				state.addAnimation(0, "idle", true, 0f)
-			}
-		}
-
 		state.update(delta)
+		graph.update(delta, animationGraphState)
 
 		val complete = animation?.update(delta) ?: true
 		if (complete)
@@ -56,20 +51,21 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		return complete
 	}
 
-	fun setAnimation(anim: String, duration: Float)
-	{
-		val current = state.getCurrent(0)
-		if (current.animation.name != anim)
-		{
-			state.setAnimation(0, anim, true)
-		}
-		timeInAnimation = duration
-	}
-
 	fun layerAnimation(anim: String)
 	{
 		val entry = state.setAnimation(1, anim, false)
 		entry.alpha = 0.5f
+	}
+
+	fun setAnimationState(state: String)
+	{
+		animationGraphState.setTargetState(state)
+	}
+
+	fun setAnimationState(state: String, duration: Float, nextState: String)
+	{
+		animationGraphState.setTargetState(state)
+		animationGraphState.setNextTargetState(nextState, duration)
 	}
 
 	override fun doRender(batch: Batch, x: Float, y: Float, tileSize: Float)
@@ -85,10 +81,8 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState) : Re
 		val stateData = AnimationStateData(skeletonData)
 		stateData.defaultMix = 0.1f
 		val state = AnimationState(stateData)
-		val entry = state.setAnimation(0, "idle", true)
-		entry.trackTime = Random.sharedRandom.nextFloat() * entry.animationEnd
 
-		val renderable = SkeletonRenderable(skeleton, state)
+		val renderable = SkeletonRenderable(skeleton, state, graph)
 		renderable.colour.set(colour)
 		return renderable
 	}

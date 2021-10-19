@@ -5,6 +5,7 @@ import com.lyeeedar.MapGeneration.MapGenerator
 import com.lyeeedar.MapGeneration.MapGeneratorNode
 import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.XmlData
+import ktx.collections.set
 import squidpony.squidgrid.mapping.DungeonUtility
 import squidpony.squidgrid.mapping.SymmetryDungeonGenerator
 import squidpony.squidmath.RNG

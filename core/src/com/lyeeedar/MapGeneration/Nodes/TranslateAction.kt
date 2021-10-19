@@ -8,6 +8,7 @@ import com.lyeeedar.MapGeneration.Pos
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import java.util.*
+import ktx.collections.set
 
 @DataClass(category = "Area", colour = "128,100,227")
 class TranslateAction : AbstractMapGenerationAction()
