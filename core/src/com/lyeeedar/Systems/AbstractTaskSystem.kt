@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 import com.lyeeedar.Components.*
 import com.lyeeedar.Renderables.Particle.ParticleEffect
+import com.lyeeedar.Renderables.SkeletonRenderable
 
 abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 {
@@ -34,6 +35,11 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 					renderable.renderable.animation = null
 				}
 
+				canUpdate = false
+				break
+			}
+			else if (renderable.renderable is SkeletonRenderable && (renderable.renderable as SkeletonRenderable).animationGraphState.currentTargetState != null)
+			{
 				canUpdate = false
 				break
 			}

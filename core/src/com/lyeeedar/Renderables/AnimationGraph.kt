@@ -14,9 +14,9 @@ import ktx.collections.set
 class AnimationGraphState(val renderable: SkeletonRenderable, val graph: AnimationGraph)
 {
 	var current: AbstractAnimationGraphNode? = null
-	var currentTargetState: String = ""
+	var currentTargetState: String? = null
 	var nextStateTime: Float = 0f
-	var nextTargetState: String = ""
+	var nextTargetState: String? = null
 
 	var trackEntry: AnimationState.TrackEntry? = null
 
@@ -37,9 +37,10 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 	fun setTargetState(state: String)
 	{
 		if (!graph.root.reachableNodes.containsKey(state)) throw RuntimeException("State $state does not exist in graph")
+
 		currentTargetState = state
 
-		nextTargetState = ""
+		nextTargetState = null
 		nextStateTime = -1f
 	}
 
@@ -74,25 +75,32 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 			state.transitionTo(root)
 		}
 
-		if (state.nextTargetState.isNotEmpty())
+		if (state.nextTargetState != null)
 		{
 			state.nextStateTime -= delta
 			if (state.nextStateTime <= 0f)
 			{
-				state.currentTargetState = state.nextTargetState
-				state.nextTargetState = ""
+				state.setTargetState(state.nextTargetState!!)
 			}
 		}
 
 		val current = state.current!!
 		current.update(delta, state)
 
-		if (state.currentTargetState.isNotEmpty() && current is LoopAnimationGraphNode && current.name != state.currentTargetState)
+		if (state.currentTargetState != null && current is LoopAnimationGraphNode)
 		{
-			val next = current.transitions.minByOrNull { it.next.reachableNodes.get(state.currentTargetState, Int.MAX_VALUE) }!!.next
-			state.transitionTo(next)
+			if (current.name != state.currentTargetState)
+			{
+				val next = current.transitions.minByOrNull {
+					it.next.reachableNodes.get(state.currentTargetState, Int.MAX_VALUE)
+				}!!.next
+				state.transitionTo(next)
+			}
 
-			state.currentTargetState = ""
+			if (state.current?.name == state.currentTargetState)
+			{
+				state.currentTargetState = null
+			}
 		}
 	}
 

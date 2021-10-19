@@ -41,12 +41,14 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 		state.update(delta)
 		graph.update(delta, animationGraphState)
 
-		val complete = animation?.update(delta) ?: true
+		var complete = animation?.update(delta) ?: true
 		if (complete)
 		{
 			animation?.free()
 			animation = null
 		}
+
+		complete = complete && animationGraphState.currentTargetState == null
 
 		return complete
 	}
@@ -57,12 +59,20 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 		entry.alpha = 0.5f
 	}
 
-	fun setAnimationState(state: String)
+	fun gotoState(state: String)
 	{
 		animationGraphState.setTargetState(state)
 	}
 
-	fun setAnimationState(state: String, duration: Float, nextState: String)
+	fun goFromStateToState(from: String, to: String)
+	{
+		if (animationGraphState.current?.name == from)
+		{
+			animationGraphState.setTargetState(to)
+		}
+	}
+
+	fun gotoStateForDuration(state: String, duration: Float, nextState: String)
 	{
 		animationGraphState.setTargetState(state)
 		animationGraphState.setNextTargetState(nextState, duration)
