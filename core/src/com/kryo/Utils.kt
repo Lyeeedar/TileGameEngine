@@ -24,66 +24,55 @@ fun serialize(obj: Any, path: String, kryo: Kryo? = null)
 {
 	val kryo = kryo ?: sharedKryo
 
-	val outputFile = Gdx.files.local(path)
-
-	var output: Output? = null
 	try
 	{
-		output = Output(outputFile.write(false))
+		Gdx.files.local(path).write(false).use {
+			Output(it).use {
+				kryo.writeObject(it, obj)
+			}
+		}
 	}
 	catch (e: Exception)
 	{
 		e.printStackTrace()
 		return
 	}
-
-	kryo.writeObject(output, obj)
-
-	output.close()
 }
 
 fun serialize(obj: Any, kryo: Kryo? = null): ByteArray
 {
 	val kryo = kryo ?: sharedKryo
 
-	val output: Output
 	try
 	{
-		output = Output(128, -1)
+		Output(128, -1).use {
+			kryo.writeObject(it, obj)
+
+			return it.buffer
+		}
 	}
 	catch (e: Exception)
 	{
 		e.printStackTrace()
 		throw e
 	}
-
-	kryo.writeObject(output, obj)
-
-	output.close()
-
-	return output.buffer
 }
 
 fun <T> deserialize(byteArray: ByteArray, clazz: Class<T>, kryo: Kryo? = null): T
 {
 	val kryo = kryo ?: sharedKryo
 
-	var input: Input? = null
-
 	val data: T
 	try
 	{
-		input = Input(byteArray)
-		data = kryo.readObject(input, clazz)
+		Input(byteArray).use {
+			data = kryo.readObject(it, clazz)
+		}
 	}
 	catch (e: Exception)
 	{
 		e.printStackTrace()
 		throw e
-	}
-	finally
-	{
-		input?.close()
 	}
 
 	return data
@@ -93,22 +82,19 @@ fun <T> deserialize(path: String, clazz: Class<T>, kryo: Kryo? = null): T?
 {
 	val kryo = kryo ?: sharedKryo
 
-	var input: Input? = null
-
 	var data: T?
 	try
 	{
-		input = Input(Gdx.files.local(path).read())
-		data = kryo.readObject(input, clazz)
+		Gdx.files.local(path).read().use {
+			Input(it).use {
+				data = kryo.readObject(it, clazz)
+			}
+		}
 	}
 	catch (e: Exception)
 	{
 		e.printStackTrace()
 		data = null
-	}
-	finally
-	{
-		input?.close()
 	}
 
 	return data

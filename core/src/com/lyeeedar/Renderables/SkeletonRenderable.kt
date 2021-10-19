@@ -11,7 +11,7 @@ import com.lyeeedar.Util.XmlData
 @DataClass(name = "Skeleton", global = true)
 class SkeletonData : XmlDataClass()
 {
-	@DataFileReference(allowedFileTypes = "json", basePath = "../assets/")
+	@DataFileReference(allowedFileTypes = "json")
 	lateinit var path: String
 
 	@DataFileReference(resourceType = "AnimationGraph")

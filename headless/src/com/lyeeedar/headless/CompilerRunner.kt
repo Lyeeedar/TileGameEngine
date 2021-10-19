@@ -20,10 +20,11 @@ object CompilerRunner
 			val start = System.currentTimeMillis()
 
 			val funcs = com.badlogic.gdx.utils.Array<Pair<String, ()->Any>>()
-			funcs.add(Pair("Oryx", { SpriteExtractor() }))
-			funcs.add(Pair("Atlas", { AtlasCreator() }))
-			funcs.add(Pair("Texture", { TextureCompressor() }))
-			funcs.add(Pair("Xml", { XmlCompressor() }))
+			funcs.add(Pair("Oryx") { SpriteExtractor() })
+			funcs.add(Pair("Atlas") { AtlasCreator() })
+			funcs.add(Pair("Skeleton") { SkeletonCompressor() })
+			funcs.add(Pair("Texture") { TextureCompressor() })
+			funcs.add(Pair("Xml") { XmlCompressor() })
 
 			val timings = com.badlogic.gdx.utils.Array<Pair<String, Long>>()
 			for (func in funcs)

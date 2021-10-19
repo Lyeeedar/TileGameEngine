@@ -14,6 +14,8 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.esotericsoftware.spine.*
 import com.esotericsoftware.spine.SkeletonData
+import com.kryo.deserialize
+import com.kryo.sharedKryo
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Renderables.*
 import com.lyeeedar.Renderables.Animation.AbstractAnimation
@@ -585,8 +587,6 @@ class AssetManager
 			val data = com.lyeeedar.Renderables.SkeletonData()
 			data.load(xml)
 
-			val key = data.path + data.scale
-
 			var animationGraph = loadedAnimGraphs.get(data.animGraph)
 			if (animationGraph == null)
 			{
@@ -595,13 +595,17 @@ class AssetManager
 				loadedAnimGraphs[data.animGraph] = animationGraph
 			}
 
+			val key = data.path + data.scale
 			var skeletonData = loadedSkeletons.get(key)
 			if (skeletonData == null)
 			{
-				val atlas = TextureAtlas(Gdx.files.internal("${data.path}.atlas"))
+				var filepath = data.path.replace("\\", "/")
+				filepath = "CompressedData/" + filepath.hashCode()
+
+				val atlas = TextureAtlas(Gdx.files.internal("${filepath}.atlas"))
 				val json = SkeletonJson(atlas)
 				json.scale = data.scale * (48f / 256f)
-				skeletonData = json.readSkeletonData(Gdx.files.internal("${data.path}.json"))
+				skeletonData = json.readSkeletonData(Gdx.files.internal("${filepath}.json"))
 
 				loadedSkeletons[key] = skeletonData
 			}

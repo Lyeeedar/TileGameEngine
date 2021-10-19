@@ -242,10 +242,11 @@ class XmlData
 
 	fun save(path: String)
 	{
-		val outputFile = Gdx.files.local(path)
-		val output = Output(outputFile.write(false))
-		save(output)
-		output.close()
+		Gdx.files.local(path).write(false).use {
+			Output(it).use {
+				save(it)
+			}
+		}
 	}
 
 	fun save(output: Output)
@@ -311,9 +312,11 @@ class XmlData
 
 	fun load(handle: FileHandle)
 	{
-		val input = Input(handle.read())
-		load(input)
-		input.close()
+		handle.read().use {
+			Input(it).use {
+				load(it)
+			}
+		}
 	}
 
 	fun load(input: Input)
