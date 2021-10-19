@@ -762,6 +762,10 @@ class SpriteSorter(val renderer: SortedRenderer)
 		var lx = ix - width
 		var ly = iy - height
 
+		val curveMiddle = curve.path.valueAt(temp, 0.5f)
+		lx = curveMiddle.x
+		ly = curveMiddle.y
+
 		var lScaleX = scaleX
 		var lScaleY = scaleY
 
