@@ -7,6 +7,7 @@ import com.lyeeedar.Components.*
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
+import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.SpaceSlotType
 import com.lyeeedar.UI.RenderSystemWidget
@@ -223,6 +224,10 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 				{
 					renderable.stop()
 				}
+			}
+			if (renderable is SkeletonRenderable)
+			{
+				renderable.animationGraphState.completeAnimations()
 			}
 
 			if (entity.hasComponent(ComponentType.Transient))

@@ -40,6 +40,12 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 			}
 			else if (renderable.renderable is SkeletonRenderable && (renderable.renderable as SkeletonRenderable).animationGraphState.currentTargetState != null)
 			{
+				if (turnTimeAccumulator > 2f)
+				{
+					// skip long running animations
+					(renderable.renderable as SkeletonRenderable).animationGraphState.completeAnimations()
+				}
+
 				canUpdate = false
 				break
 			}

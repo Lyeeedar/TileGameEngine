@@ -57,6 +57,21 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 		node.enter(this)
 		node.update(0f, this)
 	}
+
+	fun completeAnimations()
+	{
+		if (nextTargetState != null)
+		{
+			currentTargetState = nextTargetState
+			nextStateTime = -1f
+		}
+
+		if (currentTargetState != null)
+		{
+			transitionTo(graph.nodeMap.values().first { it.name == currentTargetState })
+			currentTargetState = null
+		}
+	}
 }
 
 @DataFile(colour = "200,255,100", icon = "Sprites/Oryx/uf_split/uf_heroes/wolf_red_1.png")
