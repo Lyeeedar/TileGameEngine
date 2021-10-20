@@ -1147,7 +1147,7 @@ void main()
 	v_texCoords1 = ${ShaderProgram.TEXCOORD_ATTRIBUTE}0;
 	gl_Position =  u_projTrans * ${ShaderProgram.POSITION_ATTRIBUTE};
 	
-	v_lightSamplePos = gl_Position.xy;
+	v_lightSamplePos = (gl_Position.xy + 1.0) / 2.0;
 	
 	v_texCoords2 = vec2(0.0, 0.0);
 	

@@ -70,8 +70,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 		val screenWidth = RenderSystemWidget.instance!!.width
 		val screenHeight = RenderSystemWidget.instance!!.height
 
-		val screenTileWidth = (screenWidth / tileSize).toInt() + 4
-		val screenTileHeight = (screenHeight / tileSize).toInt() + 4
+		val screenTileWidth = (Statics.stage.width / tileSize).toInt() + 8
+		val screenTileHeight = (Statics.stage.height / tileSize).toInt() + 8
 
 		offsetx = (screenWidth * 0.5f) - (playerOffsetX * tileSize) - (tileSize * 0.5f) + screenX
 		offsety = (screenHeight * 0.5f) - (playerOffsetY * tileSize) - (tileSize * 0.5f) + screenY

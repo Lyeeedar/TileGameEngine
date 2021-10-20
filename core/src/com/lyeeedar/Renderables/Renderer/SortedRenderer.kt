@@ -214,7 +214,9 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 	internal fun addShadow(shadow: Shadow, ix: Float, iy: Float)
 	{
-		if (!isShadowOnscreen(shadow, ix, iy)) return
+		val x = ix + shadow.offset.x
+		val y = iy + shadow.offset.y
+		if (!isShadowOnscreen(shadow, x, y)) return
 
 		if (shadow.queuedBatchID != sorter.batchID)
 		{
@@ -225,11 +227,11 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 
 		if (shadow.queuedPositions < shadow.positions.size)
 		{
-			shadow.positions[shadow.queuedPositions].set(Vector2(ix, iy))
+			shadow.positions[shadow.queuedPositions].set(x, y)
 		}
 		else
 		{
-			shadow.positions.add(Vector2(ix, iy))
+			shadow.positions.add(Vector2(x, y))
 		}
 		shadow.queuedPositions++
 	}

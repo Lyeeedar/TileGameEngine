@@ -13,6 +13,7 @@ class Shadow : XmlDataClass()
 	lateinit var texture: TextureRegion
 	lateinit var colour: Colour
 	var scale: Float = 1f
+	var offset: Vector2 = Vector2()
 
 	//region non-data
 	var positions = Array<Vector2>()
@@ -36,6 +37,8 @@ class Shadow : XmlDataClass()
 		texture = AssetManager.loadTextureRegion(xmlData.getChildByName("Texture")!!)
 		colour = AssetManager.loadColour(xmlData.getChildByName("Colour")!!)
 		scale = xmlData.getFloat("Scale", 1f)
+		val offsetRaw = xmlData.get("Offset", "0,0")!!.split(',')
+		offset = Vector2(offsetRaw[0].trim().toFloat(), offsetRaw[1].trim().toFloat())
 	}
 	//endregion
 }
