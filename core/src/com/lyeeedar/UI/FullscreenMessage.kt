@@ -31,7 +31,7 @@ class FullscreenMessage(val text: String, val style: String, val function: () ->
 		label.setWrap(true)
 
 		val labelTable = Table()
-		labelTable.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
+		labelTable.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
 		labelTable.add(label).expand().fill()
 
 		add(labelTable).width(Value.percentWidth(0.7f, this)).height(Value.percentHeight(0.7f, this))

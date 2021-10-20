@@ -189,7 +189,7 @@ class DebugConsole(val historyKey: String) : Table()
 		}
 		text.textFieldFilter = TextField.TextFieldFilter { textField, c -> c != '`' }
 
-		log.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/white.png")).tint(Color(0.2f, 0.2f, 0.2f, 0.6f))
+		log.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/white.png")).tint(Color(0.2f, 0.2f, 0.2f, 0.6f))
 
 		scroll = ScrollPane(log, Statics.skin)
 		scroll.setScrollingDisabled(true, false)

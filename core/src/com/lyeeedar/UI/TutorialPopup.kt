@@ -57,7 +57,7 @@ class TutorialPopup(val text: String, val emphasisSource: Any, val advance: () -
 			topGreyout = Table()
 			topGreyout.alpha = 0f
 			topGreyout.touchable = Touchable.enabled
-			topGreyout.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
+			topGreyout.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
 			topGreyout.setBounds(0f, 0f, Statics.stage.width, emphasis.y)
 			topGreyout.addAction(alpha(0f) then fadeIn(animSpeed))
 			Statics.stage.addActor(topGreyout)
@@ -65,7 +65,7 @@ class TutorialPopup(val text: String, val emphasisSource: Any, val advance: () -
 			bottomGreyout = Table()
 			bottomGreyout.alpha = 0f
 			bottomGreyout.touchable = Touchable.enabled
-			bottomGreyout.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
+			bottomGreyout.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
 			bottomGreyout.setBounds(0f, emphasis.y + emphasis.height, Statics.stage.width, Statics.stage.height - (emphasis.y + emphasis.height))
 			bottomGreyout.addAction(alpha(0f) then fadeIn(animSpeed))
 			Statics.stage.addActor(bottomGreyout)
@@ -73,7 +73,7 @@ class TutorialPopup(val text: String, val emphasisSource: Any, val advance: () -
 			leftGreyout = Table()
 			leftGreyout.alpha = 0f
 			leftGreyout.touchable = Touchable.enabled
-			leftGreyout.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
+			leftGreyout.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
 			leftGreyout.setBounds(0f, emphasis.y, emphasis.x, emphasis.height)
 			leftGreyout.addAction(alpha(0f) then fadeIn(animSpeed))
 			Statics.stage.addActor(leftGreyout)
@@ -81,7 +81,7 @@ class TutorialPopup(val text: String, val emphasisSource: Any, val advance: () -
 			rightGreyout = Table()
 			rightGreyout.alpha = 0f
 			rightGreyout.touchable = Touchable.enabled
-			rightGreyout.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
+			rightGreyout.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, greyoutalpha))
 			rightGreyout.setBounds(emphasis.x + emphasis.width, emphasis.y, Statics.stage.width - (emphasis.x + emphasis.width), emphasis.height)
 			rightGreyout.addAction(alpha(0f) then fadeIn(animSpeed))
 			Statics.stage.addActor(rightGreyout)
@@ -89,14 +89,14 @@ class TutorialPopup(val text: String, val emphasisSource: Any, val advance: () -
 			centerBlock = Table()
 			centerBlock.alpha = 0f
 			centerBlock.touchable = Touchable.enabled
-			centerBlock.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("GUI/border"), 8, 8, 8, 8)).tint(Color.GOLD)
+			centerBlock.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("GUI/border"), 8, 8, 8, 8)).tint(Color.GOLD)
 			centerBlock.setBounds(emphasis.x, emphasis.y, emphasis.width, emphasis.height)
 			if (emphasis.width != 0f && emphasis.height != 0f) centerBlock.addAction(alpha(0f) then fadeIn(animSpeed))
 			Statics.stage.addActor(centerBlock)
 		}
 
 		// add popup
-		background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24)).tint(Color(1f, 1f, 1f, 0.7f))
+		background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24)).tint(Color(1f, 1f, 1f, 0.7f))
 		touchable = Touchable.enabled
 
 		val label = Label(text, Statics.skin)

@@ -31,7 +31,9 @@ class LightComponentData : AbstractComponentData()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		light = AssetManager.loadLight(xmlData.getChildByName("Light")!!)
+		val lightEl = xmlData.getChildByName("Light")!!
+		light = Light()
+		light.load(lightEl)
 	}
 	override val classID: String = "Light"
 	//endregion

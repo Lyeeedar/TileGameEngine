@@ -49,9 +49,9 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 
 	var clickable = true
 
-	private val frontBackground = AssetManager.loadTextureRegion("GUI/CardBase")
-	private val frontBackgroundLarge = AssetManager.loadTextureRegion("GUI/CardBaseLarge")
-	private val cardBack = AssetManager.loadTextureRegion("GUI/CardBack")
+	private val frontBackground = AssetManager.tryLoadTextureRegion("GUI/CardBase")
+	private val frontBackgroundLarge = AssetManager.tryLoadTextureRegion("GUI/CardBaseLarge")
+	private val cardBack = AssetManager.tryLoadTextureRegion("GUI/CardBack")
 
 	init
 	{
@@ -417,7 +417,7 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 		// Background
 		background.touchable = Touchable.enabled
 		background.setFillParent(true)
-		background.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, 0.8f))
+		background.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, 0.8f))
 		background.addClickListener {
 
 			if (fullscreen)
@@ -454,9 +454,9 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 
 		val gradient = when(type)
 		{
-			DissolveType.BURN -> AssetManager.loadTextureRegion("GUI/burngradient")!!
-			DissolveType.HOLY -> AssetManager.loadTextureRegion("GUI/holygradient")!!
-			DissolveType.ACID -> AssetManager.loadTextureRegion("GUI/acidgradient")!!
+			DissolveType.BURN -> AssetManager.tryLoadTextureRegion("GUI/burngradient")!!
+			DissolveType.HOLY -> AssetManager.tryLoadTextureRegion("GUI/holygradient")!!
+			DissolveType.ACID -> AssetManager.tryLoadTextureRegion("GUI/acidgradient")!!
 		}
 
 		val cardDissolve = DissolveEffect(table, duration, gradient, smoothness)
@@ -469,7 +469,7 @@ class CardWidget(val frontTable: Table, val frontDetailTable: Table, val backIma
 
 	companion object
 	{
-		private val cardCircle = AssetManager.loadTextureRegion("GUI/CardCircle")!!
+		private val cardCircle = AssetManager.tryLoadTextureRegion("GUI/CardCircle")!!
 
 		fun createFrontTable(desc: FrontTableSimple): Table
 		{

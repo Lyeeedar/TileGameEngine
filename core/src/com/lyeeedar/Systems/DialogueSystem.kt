@@ -14,8 +14,8 @@ class DialogueSystem(world: World<*>) : AbstractEntitySystem(world, world.getEnt
 {
 	val layout = GlyphLayout()
 	val font = Statics.skin.getFont("default")
-	val speechBubbleBack = NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/SpeechBubble.png")!!, 10, 10, 10, 10)
-	val speechBubbleArrow = AssetManager.loadTextureRegion("Sprites/GUI/SpeechBubbleArrow.png")!!
+	val speechBubbleBack = NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/SpeechBubble.png")!!, 10, 10, 10, 10)
+	val speechBubbleArrow = AssetManager.tryLoadTextureRegion("Sprites/GUI/SpeechBubbleArrow.png")!!
 
 	val tileSize: Float
 		get() = world.tileSize

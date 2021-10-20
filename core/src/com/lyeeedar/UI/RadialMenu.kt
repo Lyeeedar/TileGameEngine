@@ -17,10 +17,10 @@ import com.lyeeedar.Util.Statics
 
 class RadialMenu(val closeAction: () -> Unit) : Widget()
 {
-	val circle = AssetManager.loadTextureRegion("Sprites/GUI/RadialMenuBorder")!!
-	val borderedcircle = AssetManager.loadTextureRegion("Sprites/borderedcircle")!!
-	val white = AssetManager.loadTextureRegion("Sprites/white")!!
-	val tick = AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_680")!!
+	val circle = AssetManager.tryLoadTextureRegion("Sprites/GUI/RadialMenuBorder")!!
+	val borderedcircle = AssetManager.tryLoadTextureRegion("Sprites/borderedcircle")!!
+	val white = AssetManager.tryLoadTextureRegion("Sprites/white")!!
+	val tick = AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_680")!!
 
 	var tooltip: Tooltip? = null
 
@@ -57,7 +57,7 @@ class RadialMenu(val closeAction: () -> Unit) : Widget()
 	var backgroundTable = Table()
 	fun show()
 	{
-		backgroundTable.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, 0.0f))
+		backgroundTable.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, 0.0f))
 		backgroundTable.touchable = Touchable.enabled
 		backgroundTable.setFillParent(true)
 

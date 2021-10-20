@@ -7,8 +7,8 @@ import com.lyeeedar.Util.Colour
 
 class PercentageBarWidget(var percentage: Float, var colour: Colour, val numPips: Int) : Widget()
 {
-	val white = AssetManager.loadTextureRegion("white")!!
-	val hp_border = AssetManager.loadTextureRegion("Sprites/GUI/health_border.png")!!
+	val white = AssetManager.tryLoadTextureRegion("white")!!
+	val hp_border = AssetManager.tryLoadTextureRegion("Sprites/GUI/health_border.png")!!
 
 	override fun draw(batch: Batch, parentAlpha: Float)
 	{

@@ -6,10 +6,53 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Renderables.Animation.AbstractColourAnimation
+import com.lyeeedar.Renderables.Light
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.*
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Statics.Companion.spriteTargetResolution
+import com.lyeeedar.Util.XmlData
+
+@DataClass(name = "Sprite", global = true)
+class SpriteData : XmlDataClass()
+{
+	@DataFileReference(basePath = "Sprites", allowedFileTypes = "png")
+	var name: String = "white"
+
+	var drawActualSize: Boolean = false
+
+	@DataNumericRange(min = 0f)
+	var updateRate: Float = 0.5f
+
+	var colour: Colour? = null
+
+	var light: Light? = null
+
+	var repeatDelay: Float = 0f
+	var blend: Boolean = false
+	var disableHDR: Boolean = false
+	var randomStart: Boolean = false
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		name = xmlData.get("Name", "white")!!
+		drawActualSize = xmlData.getBoolean("DrawActualSize", false)
+		updateRate = xmlData.getFloat("UpdateRate", 0.5f)
+		colour = AssetManager.tryLoadColour(xmlData.getChildByName("Colour"))
+		val lightEl = xmlData.getChildByName("Light")
+		if (lightEl != null)
+		{
+			light = Light()
+			light!!.load(lightEl)
+		}
+		repeatDelay = xmlData.getFloat("RepeatDelay", 0f)
+		blend = xmlData.getBoolean("Blend", false)
+		disableHDR = xmlData.getBoolean("DisableHDR", false)
+		randomStart = xmlData.getBoolean("RandomStart", false)
+	}
+	//endregion
+}
 
 class Sprite(val fileName: String, var animationDelay: Float, var textures: Array<TextureRegion>, colour: Colour, var drawActualSize: Boolean) : Renderable()
 {

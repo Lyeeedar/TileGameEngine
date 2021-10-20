@@ -257,7 +257,7 @@ class TilingSprite() : Renderable()
 			// If no masks then just return the original texture
 			if (masks.size == 0)
 			{
-				return AssetManager.loadTextureRegion("Sprites/$baseName.png")!!
+				return AssetManager.tryLoadTextureRegion("Sprites/$baseName.png")!!
 			}
 
 			// Build the mask suffix
@@ -269,7 +269,7 @@ class TilingSprite() : Renderable()
 
 			val maskedName = baseName + "_" + maskBaseName + mask + "_" + additive
 
-			val tex = AssetManager.loadTextureRegion("Sprites/$maskedName.png")
+			val tex = AssetManager.tryLoadTextureRegion("Sprites/$maskedName.png")
 
 			// We have the texture, so return it
 			if (tex != null)

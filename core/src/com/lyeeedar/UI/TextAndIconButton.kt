@@ -22,8 +22,8 @@ class TextAndIconButton(val text: String, val icon: Sprite, val font: BitmapFont
 	private var imageWidth: Float = 0f
 	private var imageHeight: Float = 0f
 
-	val borderedCircle = AssetManager.loadTextureRegion("borderedcircle")!!
-	val notificationImg = AssetManager.loadTextureRegion("Icons/generic_notification")!!
+	val borderedCircle = AssetManager.tryLoadTextureRegion("borderedcircle")!!
+	val notificationImg = AssetManager.tryLoadTextureRegion("Icons/generic_notification")!!
 	val redColour = Colour(0.85f, 0f, 0f, 1f)
 
 	var hasNotification = false

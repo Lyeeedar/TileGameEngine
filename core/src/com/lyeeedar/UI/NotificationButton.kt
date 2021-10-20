@@ -12,7 +12,7 @@ import com.lyeeedar.Util.Colour
 
 class NotificationButton(text: String, skin: Skin, val styleName: String = "default") : Table()
 {
-	val borderedCircle = AssetManager.loadTextureRegion("borderedcircle")!!
+	val borderedCircle = AssetManager.tryLoadTextureRegion("borderedcircle")!!
 	val redColour = Colour(0.85f, 0f, 0f, 1f)
 
 	val button = TextButton(text, skin, styleName)

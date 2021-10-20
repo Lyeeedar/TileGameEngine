@@ -20,11 +20,11 @@ class MaskedTextureData()
 
 	fun parse(xmlData: XmlData)
 	{
-		base = AssetManager.loadTextureRegion(xmlData.get("Base"))!!
-		glow = AssetManager.loadTextureRegion(xmlData.get("Glow"))!!
-		mask = AssetManager.loadTextureRegion(xmlData.get("Mask"))!!
-		layer1 = AssetManager.loadTextureRegion(xmlData.get("Layer1"))!!
-		layer2 = AssetManager.loadTextureRegion(xmlData.get("Layer2"))!!
-		layer3 = AssetManager.loadTextureRegion(xmlData.get("Layer3"))!!
+		base = AssetManager.tryLoadTextureRegion(xmlData.get("Base"))!!
+		glow = AssetManager.tryLoadTextureRegion(xmlData.get("Glow"))!!
+		mask = AssetManager.tryLoadTextureRegion(xmlData.get("Mask"))!!
+		layer1 = AssetManager.tryLoadTextureRegion(xmlData.get("Layer1"))!!
+		layer2 = AssetManager.tryLoadTextureRegion(xmlData.get("Layer2"))!!
+		layer3 = AssetManager.tryLoadTextureRegion(xmlData.get("Layer3"))!!
 	}
 }

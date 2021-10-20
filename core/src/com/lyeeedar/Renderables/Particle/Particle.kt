@@ -513,11 +513,11 @@ class Particle(val emitter: Emitter)
 						blend = desc.blendMode
 					}
 
-					Pair(desc.newName, AssetManager.loadTextureRegion(desc.newName)!!)
+					Pair(desc.newName, AssetManager.tryLoadTextureRegion(desc.newName)!!)
 				}
 				else
 				{
-					Pair(oldTexName, AssetManager.loadTextureRegion(oldTexName)!!)
+					Pair(oldTexName, AssetManager.tryLoadTextureRegion(oldTexName)!!)
 				}
 			}
 		}
@@ -590,11 +590,11 @@ class Particle(val emitter: Emitter)
 			val textureEls = xml.getChildByName("TextureKeyframes")
 			if (textureEls != null)
 			{
-				texture.parse(textureEls, { Pair(it, AssetManager.loadTextureRegion(it) ?: throw RuntimeException("Failed to find texture" + " $it!")) }, particle.lifetime.v2)
+				texture.parse(textureEls, { Pair(it, AssetManager.tryLoadTextureRegion(it) ?: throw RuntimeException("Failed to find texture" + " $it!")) }, particle.lifetime.v2)
 			}
 			else
 			{
-				texture[0, 0f] = Pair("white", AssetManager.loadTextureRegion("white")!!)
+				texture[0, 0f] = Pair("white", AssetManager.tryLoadTextureRegion("white")!!)
 			}
 
 			if (loopKeyframes && loopDuration > 0f)

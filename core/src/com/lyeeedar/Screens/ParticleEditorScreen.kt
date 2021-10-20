@@ -21,9 +21,6 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
-import com.lyeeedar.Renderables.SkeletonRenderable
-import com.lyeeedar.Renderables.Sprite.Sprite
-import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.UI.addClickListener
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
@@ -138,7 +135,7 @@ class ParticleEditorScreen : AbstractScreen()
 									 })
 
 		val options = Table()
-		options.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0.4f, 0.4f, 0.4f, 0.4f))
+		options.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0.4f, 0.4f, 0.4f, 0.4f))
 		options.defaults().pad(5f).growX()
 
 		options.add(Label("Playback Speed", Statics.skin))

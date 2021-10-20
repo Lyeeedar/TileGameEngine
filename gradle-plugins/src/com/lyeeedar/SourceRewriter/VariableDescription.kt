@@ -15,7 +15,6 @@ val assetManagerLoadedTypes = setOf("ParticleEffect", "ParticleEffectDescription
                                     "Sprite", "SpriteWrapper", "DirectionalSprite",
                                     "Sound",
                                     "Colour",
-                                    "Light",
                                     "Texture", "TextureRegion",
                                     "Renderable", "Skeleton")
 class VariableDescription(val variableType: VariableType, val name: String, val type: String, val defaultValue: String, val raw: String, val annotations: ArrayList<AnnotationDescription>)
@@ -621,6 +620,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				        builder.appendln(indentation, "val $el = xmlData.getChildByName(\"$dataName\")!!")
 			        }
 
+			        if (classDef.classDef == null)
+			        {
+						throw RuntimeException("No classdef found for ${classDef.name}")
+			        }
 			        if (classDef.classDef!!.implementsStaticLoad)
 			        {
 				        builder.appendln(indentation, "$name = $type.load($el)")

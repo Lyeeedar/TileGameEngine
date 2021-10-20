@@ -26,7 +26,7 @@ open class FullscreenTable(opacity: Float = 0.4f) : Table()
 	{
 		openCount++
 
-		background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, opacity))
+		background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, opacity))
 		touchable = Touchable.enabled
 		setFillParent(true)
 
@@ -56,7 +56,7 @@ open class FullscreenTable(opacity: Float = 0.4f) : Table()
 			val table = FullscreenTable()
 			table.add(contentTable).grow().pad(15f, xPad, 15f, xPad)
 
-			contentTable.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
+			contentTable.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
 
 			val closeButton = Button(Statics.skin, "close")
 			closeButton.setSize(24f, 24f)
@@ -73,7 +73,7 @@ open class FullscreenTable(opacity: Float = 0.4f) : Table()
 
 		fun createCard(title: String, type: String, content: Table, point: Vector2)
 		{
-			val cardWidget = CardWidget(Table(), CardWidget.createCardTable(title, type, null, content), AssetManager.loadTextureRegion("white")!!, null)
+			val cardWidget = CardWidget(Table(), CardWidget.createCardTable(title, type, null, content), AssetManager.tryLoadTextureRegion("white")!!, null)
 			cardWidget.setSize(24f, 24f)
 			cardWidget.setPosition(point.x, point.y)
 

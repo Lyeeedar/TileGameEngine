@@ -3,10 +3,14 @@ package com.lyeeedar.Renderables
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.XmlData
+import com.lyeeedar.Util.XmlDataClassLoader
+import java.util.*
 import ktx.math.compareTo
 import squidpony.squidgrid.FOV
-import java.util.*
+import squidpony.squidmath.LightRNG
 
 // Could be encoded as
 // vec2 pos : 2x4 = 8 bytes
@@ -15,41 +19,33 @@ import java.util.*
 //
 // vec4 posx, posy, packedColBrightness, range
 
-class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, hasShadows: Boolean = false): Comparable<Light>
+class Light(): XmlDataClass(), Comparable<Light>
 {
-	var pos = Vector2()
+	@DataValue(dataName = "Colour")
+	var baseColour: Colour = Colour.WHITE.copy()
 
-	val baseColour = Colour.WHITE.copy()
-	var baseBrightness = 0f
-	var baseRange = 0f
+	@DataValue(dataName = "Brightness")
+	var baseBrightness: Float = 1f
 
-	val colour = Colour.WHITE.copy()
-	var brightness = 1.0f
-	var range = 0f
-
-	var hasShadows = false
-
+	@DataValue(dataName = "Range")
+	var baseRange: Float = 3f
+	var hasShadows: Boolean = false
 	var anim: LightAnimation? = null
 
-	init
-	{
-		if (colour != null)
-		{
-			baseColour.set(colour)
-			this.colour.set(colour)
-		}
+	//region non-data
+	var pos = Vector2()
 
-		baseBrightness = brightness
-		baseRange = range
-
-		this.brightness = brightness
-		this.range = range
-		this.hasShadows = hasShadows
-	}
+	val colour = Colour.WHITE.copy()
+	var brightness: Float = 1f
+	var range: Float = 3f
 
 	val cache: ShadowCastCache = ShadowCastCache(fovType = FOV.SHADOW)
 
 	var batchID: Int = 0
+
+	private val pointArray = Array<Point>(false, 16)
+	private var last: String = ""
+	//endregion
 
 	fun packColourBrightness(): Int
 	{
@@ -60,9 +56,6 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 
 		return packBytesToInt(byter, byteg, byteb, bytea)
 	}
-
-	private val pointArray = Array<Point>(false, 16)
-	private var last: String = ""
 
 	fun update(delta: Float)
 	{
@@ -105,14 +98,23 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 		}
 	}
 
+	override fun afterLoad()
+	{
+		colour.set(baseColour)
+		range = baseRange
+		brightness = baseBrightness
+	}
+
 	fun copy(): Light
 	{
-		val light = Light(baseColour, baseBrightness, baseRange)
+		val light = Light()
+		light.baseColour = baseColour.copy()
+		light.baseRange = baseRange
+		light.baseBrightness = baseBrightness
+
 		light.anim = anim?.copy()
 
-		light.colour.set(colour)
-		light.brightness = brightness
-		light.range = range
+		light.afterLoad()
 
 		return light
 	}
@@ -130,40 +132,48 @@ class Light(colour: Colour? = null, brightness: Float = 1f, range: Float = 3f, h
 	{
 		return pos.compareTo(other.pos)
 	}
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		baseColour = AssetManager.tryLoadColour(xmlData.getChildByName("Colour"))!!
+		baseBrightness = xmlData.getFloat("Brightness", 1f)
+		baseRange = xmlData.getFloat("Range", 3f)
+		hasShadows = xmlData.getBoolean("HasShadows", false)
+		val animEl = xmlData.getChildByName("Anim")
+		if (animEl != null)
+		{
+			anim = XmlDataClassLoader.loadLightAnimation(animEl.get("classID", animEl.name)!!)
+			anim!!.load(animEl)
+		}
+		afterLoad()
+	}
+	//endregion
 }
 
-abstract class LightAnimation
+abstract class LightAnimation : XmlDataClass()
 {
 	abstract fun update(delta: Float, light: Light)
-	abstract fun parse(xmlData: XmlData)
 
 	abstract fun copy(): LightAnimation
 
-	companion object
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		fun load(xmlData: XmlData): LightAnimation
-		{
-			val anim = when(xmlData.getAttribute("meta:RefKey").toUpperCase(Locale.ENGLISH))
-			{
-				"PULSELIGHTANIMATION" -> PulseLightAnimation()
-				else -> throw Exception("Unknown light animation type '" + xmlData.getAttribute("meta:RefKey") + "'!")
-			}
-
-			anim.parse(xmlData)
-
-			return anim
-		}
 	}
+	abstract val classID: String
+	//endregion
 }
 
 class PulseLightAnimation : LightAnimation()
 {
-	lateinit var periodRange: Range
-	lateinit var minBrightnessRange: Range
-	lateinit var maxBrightnessRange: Range
-	lateinit var minRangeRange: Range
-	lateinit var maxRangeRange: Range
+	var periodRange: Vector2 = Vector2()
+	var minBrightnessRange: Vector2 = Vector2()
+	var maxBrightnessRange: Vector2 = Vector2()
+	var minRangeRange: Vector2 = Vector2()
+	var maxRangeRange: Vector2 = Vector2()
 
+	//region non-data
 	var toMax = true
 	var currentPeriod = -1f
 	var startBrightness = 0f
@@ -171,16 +181,17 @@ class PulseLightAnimation : LightAnimation()
 	var startRange = 0f
 	var targetRange = 0f
 	var time = 0f
+	//end-region
 
 	override fun update(delta: Float, light: Light)
 	{
 		if (currentPeriod < 0f)
 		{
-			currentPeriod = periodRange.getValue(Random.sharedRandom)
-			startBrightness = minBrightnessRange.getValue(Random.sharedRandom)
-			targetBrightness = maxBrightnessRange.getValue(Random.sharedRandom)
-			startRange = minRangeRange.getValue(Random.sharedRandom)
-			targetRange = maxRangeRange.getValue(Random.sharedRandom)
+			currentPeriod = getValue(periodRange)
+			startBrightness = getValue(minBrightnessRange)
+			targetBrightness = getValue(maxBrightnessRange)
+			startRange = getValue(minRangeRange)
+			targetRange = getValue(maxRangeRange)
 			time = 0f
 		}
 
@@ -192,12 +203,12 @@ class PulseLightAnimation : LightAnimation()
 
 			toMax = !toMax
 
-			currentPeriod = periodRange.getValue(Random.sharedRandom)
+			currentPeriod = getValue(periodRange)
 			startBrightness = targetBrightness
 			startRange = targetRange
 
-			targetBrightness = if (toMax) maxBrightnessRange.getValue(Random.sharedRandom) else minBrightnessRange.getValue(Random.sharedRandom)
-			targetRange = if (toMax) maxRangeRange.getValue(Random.sharedRandom) else minRangeRange.getValue(Random.sharedRandom)
+			targetBrightness = if (toMax) getValue(maxBrightnessRange) else getValue(minBrightnessRange)
+			targetRange = if (toMax) getValue(maxRangeRange) else getValue(minRangeRange)
 		}
 
 		val alpha = time / currentPeriod
@@ -209,13 +220,9 @@ class PulseLightAnimation : LightAnimation()
 		light.range = light.baseRange * range
 	}
 
-	override fun parse(xmlData: XmlData)
+	fun getValue(range: Vector2, ran: LightRNG = Random.sharedRandom): Float
 	{
-		periodRange = Range.parse(xmlData.get("Period"))
-		minBrightnessRange = Range.parse(xmlData.get("MinBrightness"))
-		maxBrightnessRange = Range.parse(xmlData.get("MaxBrightness"))
-		minRangeRange = Range.parse(xmlData.get("MinRange"))
-		maxRangeRange = Range.parse(xmlData.get("MaxRange"))
+		return range.x + ran.nextFloat() * (range.y - range.x)
 	}
 
 	override fun copy(): LightAnimation
@@ -230,25 +237,21 @@ class PulseLightAnimation : LightAnimation()
 		return anim
 	}
 
-	companion object
+	//region generated
+	override fun load(xmlData: XmlData)
 	{
-		fun create(period: Float, brightness: Float, range: Float, changePercent: Float, randomPercent: Float): PulseLightAnimation
-		{
-			val change = changePercent / 100f
-			val random = randomPercent / 100f
-
-			val anim = PulseLightAnimation()
-			anim.periodRange = Range(period * (1f - random), period * (1f + random))
-
-			val minBrightness = brightness * (1f - change)
-			val maxBrightness = brightness * (1f + change)
-			anim.minBrightnessRange = Range(minBrightness * (1f - random), minBrightness * (1f + random))
-			anim.maxBrightnessRange = Range(maxBrightness * (1f - random), maxBrightness * (1f + random))
-
-			anim.minRangeRange = Range(range, range)
-			anim.maxRangeRange = Range(range, range)
-
-			return anim
-		}
+		super.load(xmlData)
+		val periodRangeRaw = xmlData.get("PeriodRange", "0,0")!!.split(',')
+		periodRange = Vector2(periodRangeRaw[0].trim().toFloat(), periodRangeRaw[1].trim().toFloat())
+		val minBrightnessRangeRaw = xmlData.get("MinBrightnessRange", "0,0")!!.split(',')
+		minBrightnessRange = Vector2(minBrightnessRangeRaw[0].trim().toFloat(), minBrightnessRangeRaw[1].trim().toFloat())
+		val maxBrightnessRangeRaw = xmlData.get("MaxBrightnessRange", "0,0")!!.split(',')
+		maxBrightnessRange = Vector2(maxBrightnessRangeRaw[0].trim().toFloat(), maxBrightnessRangeRaw[1].trim().toFloat())
+		val minRangeRangeRaw = xmlData.get("MinRangeRange", "0,0")!!.split(',')
+		minRangeRange = Vector2(minRangeRangeRaw[0].trim().toFloat(), minRangeRangeRaw[1].trim().toFloat())
+		val maxRangeRangeRaw = xmlData.get("MaxRangeRange", "0,0")!!.split(',')
+		maxRangeRange = Vector2(maxRangeRangeRaw[0].trim().toFloat(), maxRangeRangeRaw[1].trim().toFloat())
 	}
+	override val classID: String = "Pulse"
+	//endregion
 }

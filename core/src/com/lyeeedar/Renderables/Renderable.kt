@@ -29,6 +29,7 @@ abstract class Renderable
 	val lastPos: Vector2 = Vector2()
 
 	open var light: Light? = null
+	var shadow: Shadow? = null
 
 	open val isBlocking: Boolean = false
 

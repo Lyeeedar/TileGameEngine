@@ -18,7 +18,7 @@ class MessageBox(title: String, message: String, vararg buttons: Pair<String, ()
 
 	init
 	{
-		table.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
+		table.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/background.png"), 24, 24, 24, 24))
 		this.add(table)
 
 		table.add(Label(title, Statics.skin, "title")).expandX().center().pad(30f)

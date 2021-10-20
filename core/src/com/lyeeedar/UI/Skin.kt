@@ -51,13 +51,13 @@ fun loadSkin(): Skin
 	pixmap.fill()
 	skin.add("white", Texture(pixmap))
 
-	val buttonBackground = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/Button.png"), 6, 6, 6, 6))
-	val buttonCardBackground = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/ButtonCard.png"), 6, 6, 6, 6))
+	val buttonBackground = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/Button.png"), 6, 6, 6, 6))
+	val buttonCardBackground = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/ButtonCard.png"), 6, 6, 6, 6))
 
 	val textField = TextField.TextFieldStyle()
 	textField.fontColor = Color.WHITE
 	textField.font = skin.getFont("default")
-	textField.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	textField.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
 	textField.focusedBackground = (textField.background as NinePatchDrawable).tint(Color(0.9f, 0.9f, 0.9f, 1.0f))
 	textField.cursor = skin.newDrawable("white", Color.WHITE)
 	textField.selection = skin.newDrawable("white", Color.LIGHT_GRAY)
@@ -66,8 +66,8 @@ fun loadSkin(): Skin
 	val consoleText = TextField.TextFieldStyle()
 	consoleText.fontColor = Color.WHITE
 	consoleText.font = skin.getFont("console")
-	consoleText.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/white.png")).tint(Color(0.1f, 0.1f, 0.1f, 0.6f))
-	consoleText.focusedBackground = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/white.png")).tint(Color(0.3f, 0.3f, 0.3f, 0.6f))
+	consoleText.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/white.png")).tint(Color(0.1f, 0.1f, 0.1f, 0.6f))
+	consoleText.focusedBackground = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/white.png")).tint(Color(0.3f, 0.3f, 0.3f, 0.6f))
 	consoleText.cursor = skin.newDrawable("white", Color.WHITE)
 	consoleText.selection = skin.newDrawable("white", Color.LIGHT_GRAY)
 	skin.add("console", consoleText)
@@ -113,8 +113,8 @@ fun loadSkin(): Skin
 	skin.add("cardrewardtitle", cardRewardTitleLabel)
 
 	val checkButton = CheckBox.CheckBoxStyle()
-	checkButton.checkboxOff = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/GUI/Unchecked.png"))
-	checkButton.checkboxOn = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/GUI/Checked.png"))
+	checkButton.checkboxOff = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/GUI/Unchecked.png"))
+	checkButton.checkboxOn = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/GUI/Checked.png"))
 	checkButton.font = skin.getFont("default")
 	checkButton.fontColor = Color.LIGHT_GRAY
 	checkButton.overFontColor = Color.WHITE
@@ -124,14 +124,14 @@ fun loadSkin(): Skin
 	pauseButton.up =
 		LayeredDrawable(
 			buttonBackground,
-			TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_643.png")))
+			TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_643.png")))
 	skin.add("pause", pauseButton)
 
 	val playButton = Button.ButtonStyle()
 	playButton.up =
 		LayeredDrawable(
 			buttonBackground,
-			TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_682.png")))
+			TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_682.png")))
 	skin.add("play", playButton)
 
 	val textButton = TextButton.TextButtonStyle()
@@ -162,7 +162,7 @@ fun loadSkin(): Skin
 	skin.add("big", bigTextButton)
 
 	val keyBindingButton = TextButton.TextButtonStyle()
-	keyBindingButton.up = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	keyBindingButton.up = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
 	keyBindingButton.font = skin.getFont("default")
 	keyBindingButton.fontColor = Color.LIGHT_GRAY
 	keyBindingButton.overFontColor = Color.WHITE
@@ -180,12 +180,12 @@ fun loadSkin(): Skin
 	skin.add("responseButton", responseButton)
 
 	val toolTip = Tooltip.TooltipStyle()
-	toolTip.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/Tooltip.png"), 21, 21, 21, 21))
+	toolTip.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/Tooltip.png"), 21, 21, 21, 21))
 	skin.add("default", toolTip)
 
 	val progressBar = ProgressBar.ProgressBarStyle()
-	progressBar.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
-	progressBar.knobBefore = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/ProgressIndicator.png"), 8, 8, 8, 8))
+	progressBar.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	progressBar.knobBefore = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/ProgressIndicator.png"), 8, 8, 8, 8))
 	skin.add("default-horizontal", progressBar)
 
 	val buttonStyle = Button.ButtonStyle()
@@ -201,83 +201,83 @@ fun loadSkin(): Skin
 	val closeButton = Button.ButtonStyle()
 	closeButton.up = LayeredDrawable(
 		buttonBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	closeButton.over = LayeredDrawable(
 		buttonBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("close", closeButton)
 
 	val closeCardButton = Button.ButtonStyle()
 	closeCardButton.up = LayeredDrawable(
 		buttonCardBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	closeCardButton.over = LayeredDrawable(
 		buttonCardBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_681.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("closecard", closeCardButton)
 
 	val infoButton = Button.ButtonStyle()
 	infoButton.up = LayeredDrawable(
 		buttonBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	infoButton.over = LayeredDrawable(
 		buttonBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("info", infoButton)
 
 	val leftButton = Button.ButtonStyle()
 	leftButton.up = LayeredDrawable(
 		buttonBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_787.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_787.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	leftButton.over = LayeredDrawable(
 		buttonBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_787.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_787.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("left", leftButton)
 
 	val rightButton = Button.ButtonStyle()
 	rightButton.up = LayeredDrawable(
 		buttonBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_785.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_785.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	rightButton.over = LayeredDrawable(
 		buttonBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_785.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_785.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("right", rightButton)
 
 
 	val infoCardButton = Button.ButtonStyle()
 	infoCardButton.up = LayeredDrawable(
 		buttonCardBackground,
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.97f, 0.87f, 0.7f, 1f)))
 	infoCardButton.over = LayeredDrawable(
 		buttonCardBackground.tint(Color.LIGHT_GRAY),
-		TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
+		TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/Oryx/uf_split/uf_interface/uf_interface_573.png")).tint(Color(0.87f, 0.77f, 0.6f, 1f)))
 	skin.add("infocard", infoCardButton)
 
 	val horiCardSeperatorStyle = Seperator.SeperatorStyle()
 	horiCardSeperatorStyle.vertical = false
 	horiCardSeperatorStyle.thickness = 6
-	horiCardSeperatorStyle.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/GUI/SeperatorHorizontalCard.png"))
+	horiCardSeperatorStyle.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/GUI/SeperatorHorizontalCard.png"))
 	skin.add("horizontalcard", horiCardSeperatorStyle)
 
 	val horiSeperatorStyle = Seperator.SeperatorStyle()
 	horiSeperatorStyle.vertical = false
 	horiSeperatorStyle.thickness = 6
-	horiSeperatorStyle.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/GUI/SeperatorHorizontal.png"))
+	horiSeperatorStyle.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/GUI/SeperatorHorizontal.png"))
 	skin.add("horizontal", horiSeperatorStyle)
 
 	val vertSeperatorStyle = Seperator.SeperatorStyle()
 	vertSeperatorStyle.vertical = true
 	vertSeperatorStyle.thickness = 6
-	vertSeperatorStyle.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/GUI/SeperatorVertical.png"))
+	vertSeperatorStyle.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/GUI/SeperatorVertical.png"))
 	skin.add("vertical", vertSeperatorStyle)
 
 	val scrollPaneStyle = ScrollPane.ScrollPaneStyle()
-	scrollPaneStyle.vScroll = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	scrollPaneStyle.vScroll = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
 	scrollPaneStyle.vScrollKnob = buttonBackground
 	skin.add("default", scrollPaneStyle)
 
 	val listStyle = com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle()
-	listStyle.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/Tooltip.png"), 21, 21, 21, 21))
+	listStyle.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/Tooltip.png"), 21, 21, 21, 21))
 	listStyle.font = skin.getFont("default")
 	listStyle.selection = skin.newDrawable("white", Color.LIGHT_GRAY)
 	skin.add("default", listStyle)
@@ -285,14 +285,14 @@ fun loadSkin(): Skin
 	val selectBoxStyle = SelectBox.SelectBoxStyle()
 	selectBoxStyle.fontColor = Color.WHITE
 	selectBoxStyle.font = skin.getFont("default")
-	selectBoxStyle.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	selectBoxStyle.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
 	selectBoxStyle.scrollStyle = scrollPaneStyle
 	selectBoxStyle.listStyle = listStyle
 	selectBoxStyle.backgroundOver = (selectBoxStyle.background as NinePatchDrawable).tint(Color(0.9f, 0.9f, 0.9f, 1.0f))
 	skin.add("default", selectBoxStyle)
 
 	val sliderStyle = Slider.SliderStyle()
-	sliderStyle.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
+	sliderStyle.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6))
 	sliderStyle.knob = buttonBackground
 	sliderStyle.knobOver = (sliderStyle.knob as NinePatchDrawable).tint(Color(0.9f, 0.9f, 0.9f, 1.0f))
 	sliderStyle.knobDown = (sliderStyle.knob as NinePatchDrawable).tint(Color.LIGHT_GRAY)
@@ -302,7 +302,7 @@ fun loadSkin(): Skin
 	tabPanelStyle.font = skin.getFont("default")
 	tabPanelStyle.fontColor = Color.LIGHT_GRAY
 	tabPanelStyle.overFontColor = Color.WHITE
-	tabPanelStyle.bodyBackground = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6)).tint(Color(1f, 1f, 1f, 0.2f))
+	tabPanelStyle.bodyBackground = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/TextField.png"), 6, 6, 6, 6)).tint(Color(1f, 1f, 1f, 0.2f))
 	tabPanelStyle.titleButtonUnselected = buttonBackground
 	tabPanelStyle.titleButtonSelected = (tabPanelStyle.titleButtonUnselected as NinePatchDrawable).tint(Color(0.8f, 0.8f, 0.8f, 1.0f))
 	skin.add("default", tabPanelStyle)
@@ -318,8 +318,8 @@ fun loadSkin(): Skin
 	cardAutoScalingLabelStyle.borderWidth = 0
 	skin.add("card", cardAutoScalingLabelStyle)
 
-	val horiBack = AssetManager.loadTextureRegion("Sprites/GUI/PanelHorizontal.png")
-	val vertBack = AssetManager.loadTextureRegion("Sprites/GUI/PanelVertical.png")
+	val horiBack = AssetManager.tryLoadTextureRegion("Sprites/GUI/PanelHorizontal.png")
+	val vertBack = AssetManager.tryLoadTextureRegion("Sprites/GUI/PanelVertical.png")
 
 	return skin
 }

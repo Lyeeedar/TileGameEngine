@@ -14,18 +14,13 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.esotericsoftware.spine.*
 import com.esotericsoftware.spine.SkeletonData
-import com.kryo.deserialize
-import com.kryo.sharedKryo
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Renderables.*
-import com.lyeeedar.Renderables.Animation.AbstractAnimation
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Particle.TextureOverride
-import com.lyeeedar.Renderables.Sprite.DirectionalSprite
-import com.lyeeedar.Renderables.Sprite.Sprite
-import com.lyeeedar.Renderables.Sprite.SpriteWrapper
-import com.lyeeedar.Renderables.Sprite.TilingSprite
+import com.lyeeedar.Renderables.Sprite.*
+import ktx.collections.gdxArrayOf
 import ktx.collections.set
 import java.util.*
 
@@ -124,7 +119,17 @@ class AssetManager
 
 		private val loadedTextureRegions = ObjectMap<String, TextureRegion?>()
 
-		@JvmStatic fun loadTextureRegion(path: String): TextureRegion?
+		fun loadTextureRegion(xml: XmlData): TextureRegion
+		{
+			return loadTextureRegion(xml.get("File"))
+		}
+
+		fun loadTextureRegion(path: String): TextureRegion
+		{
+			return tryLoadTextureRegion(path) ?: throw RuntimeException("Texture region '${path}' not found")
+		}
+
+		@JvmStatic fun tryLoadTextureRegion(path: String): TextureRegion?
 		{
 			if (loadedTextureRegions.containsKey(path))
 			{
@@ -286,7 +291,7 @@ class AssetManager
 			val textures = Array<TextureRegion>(false, 1, TextureRegion::class.java)
 
 			// Try sprite without indexes
-			val tex = loadTextureRegion("Sprites/$name.png")
+			val tex = tryLoadTextureRegion("Sprites/$name.png")
 			if (tex != null)
 			{
 				textures.add(tex)
@@ -298,7 +303,7 @@ class AssetManager
 				var i = 0
 				while (true)
 				{
-					val tex = loadTextureRegion("Sprites/" + name + "_" + i + ".png")
+					val tex = tryLoadTextureRegion("Sprites/" + name + "_" + i + ".png")
 
 					if (tex == null)
 					{
@@ -319,7 +324,7 @@ class AssetManager
 				var i = 1
 				while (true)
 				{
-					val tex = loadTextureRegion("Sprites/" + name + "_" + i + ".png")
+					val tex = tryLoadTextureRegion("Sprites/" + name + "_" + i + ".png")
 
 					if (tex == null)
 					{
@@ -367,115 +372,39 @@ class AssetManager
 			else return loadSprite(xml)
 		}
 
-		fun loadSprite(xml:XmlData): Sprite
+		fun loadSprite(xml:XmlData, texture: TextureRegion? = null): Sprite
 		{
-			val colourElement = xml.getChildByName("Colour")
-			var colour = Colour(1f, 1f, 1f, 1f)
-			if (colourElement != null)
-			{
-				colour = loadColour(colourElement)
-			}
+			val data = SpriteData()
+			data.load(xml)
 
-			val sprite = loadSprite(
-					xml.get("Name"),
-					xml.getFloat("UpdateRate", 0f),
-					colour,
-					xml.getBoolean("DrawActualSize", false))
+			val sprite = if (texture != null)
+				Sprite(
+					data.name,
+					data.updateRate,
+					gdxArrayOf(texture),
+					data.colour ?: Colour.WHITE.copy(),
+					data.drawActualSize)
+				else
+				loadSprite(
+					data.name,
+					data.updateRate,
+					data.colour ?: Colour.WHITE.copy(),
+					data.drawActualSize)
 
-			sprite.repeatDelay = xml.getFloat("RepeatDelay", 0f)
-			sprite.frameBlend = xml.getBoolean("Blend", false)
+			sprite.repeatDelay = data.repeatDelay
+			sprite.frameBlend = data.blend
 
-			sprite.disableHDR = xml.getBoolean("DisableHDR", false)
+			sprite.disableHDR = data.disableHDR
 
-			if (xml.getBoolean("RandomStart", false))
+			if (data.randomStart)
 			{
 				sprite.texIndex = Random.random(Random.sharedRandom, sprite.textures.size)
 				sprite.animationAccumulator = Random.random(Random.sharedRandom, sprite.animationDelay)
 			}
 
-			val animationElement = xml.getChildByName("Animation")
-			if (animationElement != null)
-			{
-				sprite.animation = AbstractAnimation.load(animationElement.getChild(0))
-			}
-
-			val lightEl = xml.getChildByName("Light")
-			if (lightEl != null)
-			{
-				sprite.light = loadLight(lightEl)
-			}
+			sprite.light = data.light
 
 			return sprite
-		}
-
-		fun loadSprite(xml:XmlData, texture: TextureRegion): Sprite
-		{
-			val colourElement = xml.getChildByName("Colour")
-			var colour = Colour(1f, 1f, 1f, 1f)
-			if (colourElement != null)
-			{
-				colour = loadColour(colourElement)
-			}
-
-			val textures = Array<TextureRegion>(false, 1, TextureRegion::class.java)
-			textures.add(texture)
-
-			var updateTime = xml.getFloat("UpdateRate", 0f)
-
-			if (updateTime <= 0)
-			{
-				updateTime = 0.5f
-			}
-
-			val sprite = Sprite(xml.get("Name", "")!!,
-					updateTime,
-					textures,
-					colour,
-					xml.getBoolean("DrawActualSize", false))
-
-			sprite.repeatDelay = xml.getFloat("RepeatDelay", 0f)
-			sprite.disableHDR = xml.getBoolean("DisableHDR", false)
-
-			val animationElement = xml.getChildByName("Animation")
-			if (animationElement != null)
-			{
-				sprite.animation = AbstractAnimation.load(animationElement.getChild(0))
-			}
-
-			val lightEl = xml.getChildByName("Light")
-			if (lightEl != null)
-			{
-				sprite.light = loadLight(lightEl)
-			}
-
-			return sprite
-		}
-
-		fun loadLight(xml: XmlData): Light
-		{
-			val light = Light()
-			light.colour.set(loadColour(xml.getChildByName("Colour")!!))
-			light.baseColour.set(light.colour)
-			val brightness = xml.getFloat("Brightness")
-			light.baseBrightness = brightness
-			light.colour.mul(brightness, brightness, brightness, 1.0f)
-			light.range = xml.getFloat("Range")
-			light.baseRange = light.range
-			light.hasShadows = xml.getBoolean("HasShadows", false)
-
-			val animEl = xml.getChildByName("Animation")
-			if (animEl != null)
-			{
-				light.anim = LightAnimation.load(animEl)
-			}
-
-			return light
-		}
-
-		fun tryLoadLight(xml: XmlData?): Light?
-		{
-			if (xml == null) return null
-			return loadLight(xml)
 		}
 
 		fun loadColour(stringCol: String, colour: Colour = Colour()): Colour
@@ -517,7 +446,7 @@ class AssetManager
 			renderedLayeredSprite.load(xml)
 
 			val mergedName = renderedLayeredSprite.toString()
-			val tex = loadTextureRegion("Sprites/$mergedName.png")
+			val tex = tryLoadTextureRegion("Sprites/$mergedName.png")
 					  ?: throw RuntimeException("Cant find any textures for layered sprite $mergedName!")
 
 			val sprite = Sprite(tex)

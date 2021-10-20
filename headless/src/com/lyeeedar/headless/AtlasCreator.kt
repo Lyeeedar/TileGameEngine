@@ -208,10 +208,27 @@ class AtlasCreator
 			}
 		}
 
-		val tilingRegex = Regex("TilingSprite\\(\".*?\", \".*?\", \".*?\"")
-		val occurances3 = tilingRegex.findAll(contents)
+		val regex3 = Regex("AssetManager.tryLoadTextureRegion\\(\".*?\"")//(\".*\")")
+
+		val occurances3 = regex3.findAll(contents)
 
 		for (occurance in occurances3)
+		{
+			var path = occurance.value
+			path = path.replace("AssetManager.tryLoadTextureRegion(\"", "")
+			path = path.replace("\"", "")
+
+			val found = processSprite(path)
+			if (!found && !(path.contains("*") || path.contains("$")))
+			{
+				throw RuntimeException("Failed to find sprite for file: $path")
+			}
+		}
+
+		val tilingRegex = Regex("TilingSprite\\(\".*?\", \".*?\", \".*?\"")
+		val occurances4 = tilingRegex.findAll(contents)
+
+		for (occurance in occurances4)
 		{
 			val split = occurance.value.split("\", \"")
 			val baseName = split[1]

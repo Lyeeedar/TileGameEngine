@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.lyeeedar.Util.*
-import com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table
 import ktx.actors.alpha
 import ktx.actors.then
 import ktx.scene2d.table
@@ -23,7 +22,7 @@ import ktx.scene2d.scene2d
 fun createGreyoutTable(stage: Stage, appearSpeed: Float = 0.1f, opacity: Float = 0.9f): Table
 {
 	val greyoutTable = Table()
-	greyoutTable.background = TextureRegionDrawable(AssetManager.loadTextureRegion("white")).tint(Color(0f, 0f, 0f, opacity))
+	greyoutTable.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("white")).tint(Color(0f, 0f, 0f, opacity))
 	greyoutTable.touchable = Touchable.enabled
 	greyoutTable.setFillParent(true)
 	greyoutTable.addAction(Actions.fadeIn(appearSpeed))
@@ -53,7 +52,7 @@ fun showFullscreenText(text: String, minDuration: Float, exitAction: ()->Unit)
 		}
 	}
 
-	fadeTable.background = TextureRegionDrawable(AssetManager.loadTextureRegion("Sprites/white.png")).tint(Color(0f, 0f, 0f, 0.7f))
+	fadeTable.background = TextureRegionDrawable(AssetManager.tryLoadTextureRegion("Sprites/white.png")).tint(Color(0f, 0f, 0f, 0.7f))
 	fadeTable.alpha = 0f
 
 	val sequence = Actions.alpha(0f) then Actions.fadeIn(0.2f) then lambda {

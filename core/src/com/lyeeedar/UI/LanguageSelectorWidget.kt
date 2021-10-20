@@ -62,7 +62,7 @@ class LanguageSelectorWidget(skin: Skin) : Table(skin)
 		{
 			val languageTable = Table()
 			languageTable.name = "Language_${language.code}"
-			languageTable.background = NinePatchDrawable(NinePatch(AssetManager.loadTextureRegion("Sprites/GUI/Button.png"), 6, 6, 6, 6))
+			languageTable.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/Button.png"), 6, 6, 6, 6))
 
 			if (language == selectedLanguage)
 			{
