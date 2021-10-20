@@ -94,6 +94,8 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 
 		val renderable = SkeletonRenderable(skeleton, state, graph)
 		renderable.colour.set(colour)
+		renderable.light = light?.copy()
+		renderable.shadow = shadow?.copy()
 		return renderable
 	}
 }

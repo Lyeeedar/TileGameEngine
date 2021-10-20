@@ -403,6 +403,7 @@ class AssetManager
 			}
 
 			sprite.light = data.light
+			sprite.shadow = data.shadow
 
 			return sprite
 		}

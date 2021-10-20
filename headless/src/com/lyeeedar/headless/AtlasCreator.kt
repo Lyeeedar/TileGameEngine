@@ -357,6 +357,8 @@ class AtlasCreator
 
 		val textureElements = xml.getChildrenByAttributeRecursively("meta:RefKey", "Texture")
 		textureElements.addAll(xml.getChildrenByAttributeRecursively("RefKey", "Texture"))
+		textureElements.addAll(xml.getChildrenByAttributeRecursively("meta:RefKey", "TextureRegion"))
+		textureElements.addAll(xml.getChildrenByAttributeRecursively("RefKey", "TextureRegion"))
 
 		for (el in textureElements)
 		{

@@ -291,6 +291,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			lightsHash = lightsHash xor light.pos.hashCode()
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.range)
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.brightness)
+			lightsHash = lightsHash xor light.colour.hashCode()
 		}
 
 		for (i in 0 until renderer.shadowLights.size)
@@ -301,6 +302,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			lightsHash = lightsHash xor light.pos.hashCode()
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.range)
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(light.brightness)
+			lightsHash = lightsHash xor light.colour.hashCode()
 		}
 
 		if (lightsHash != lightBufferHash)
@@ -309,6 +311,19 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			fillLightBuffer()
 			renderLights()
+		}
+
+		for (i in 0 until renderer.shadows.size)
+		{
+			val shadow = renderer.shadows[i]
+
+			for (ii in 0 until shadow.queuedPositions)
+			{
+				lightsHash = lightsHash xor shadow.positions[ii].hashCode()
+			}
+
+			lightsHash = lightsHash xor shadow.colour.hashCode()
+			lightsHash = lightsHash xor NumberUtils.floatToIntBits(shadow.scale)
 		}
 	}
 
@@ -370,6 +385,34 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 
 		shadowedLightMesh.setInstanceData(shadowedLightInstanceData, 0, i)
+
+		i = 0
+		for (l in 0 until renderer.shadows.size)
+		{
+			val shadow = renderer.shadows[l]
+
+			val width = shadow.scale * renderer.tileSize
+			val height = shadow.scale * renderer.tileSize
+			val colour = shadow.colour.toFloatBits()
+
+			for (ii in 0 until shadow.queuedPositions)
+			{
+				val x = shadow.positions[ii].x * renderer.tileSize
+				val y = shadow.positions[ii].y * renderer.tileSize
+
+				shadowInstanceData[i++] = x
+				shadowInstanceData[i++] = y
+				shadowInstanceData[i++] = width
+				shadowInstanceData[i++] = height
+				shadowInstanceData[i++] = shadow.texture.u
+				shadowInstanceData[i++] = shadow.texture.v
+				shadowInstanceData[i++] = shadow.texture.u2
+				shadowInstanceData[i++] = shadow.texture.v2
+				shadowInstanceData[i++] = colour
+			}
+		}
+
+		shadowMesh.setInstanceData(shadowInstanceData, 0, i)
 	}
 
 	private fun renderLights()
@@ -386,7 +429,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		if (renderer.basicLights.size > 0)
 		{
-			lightShader.begin()
+			lightShader.bind()
 			lightShader.setUniformMatrix("u_projTrans", combinedMatrix)
 			lightShader.setUniformf("u_offset", offsetx, offsety)
 
@@ -399,7 +442,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		if (renderer.shadowLights.size > 0)
 		{
-			shadowedLightShader.begin()
+			shadowedLightShader.bind()
 			shadowedLightShader.setUniformMatrix("u_projTrans", combinedMatrix)
 			shadowedLightShader.setUniformf("u_offset", offsetx, offsety)
 			shadowedLightShader.setUniform4fv("u_shadowRegions", shadowedRegionUniformData, 0, shadowedRegionUniformData.size)
@@ -409,6 +452,24 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			shadowedLightMesh.render(shadowedLightShader, GL20.GL_TRIANGLES, 0, 6)
 
 			shadowedLightMesh.unbind(shadowedLightShader)
+		}
+
+		if (renderer.shadows.size > 0)
+		{
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+			shadowShader.bind()
+			shadowShader.setUniformMatrix("u_projTrans", combinedMatrix)
+			shadowShader.setUniformf("u_offset", offsetx, offsety)
+			shadowShader.setUniformi("u_texture", 0)
+
+			renderer.shadows[0].texture.texture.bind(0)
+
+			shadowMesh.bind(shadowShader)
+
+			shadowMesh.render(shadowShader, GL20.GL_TRIANGLES, 0, 6)
+
+			shadowMesh.unbind(shadowShader)
 		}
 
 		lightFBO.end(Statics.stage.viewport.screenX, Statics.stage.viewport.screenY, Statics.stage.viewport.screenWidth, Statics.stage.viewport.screenHeight)

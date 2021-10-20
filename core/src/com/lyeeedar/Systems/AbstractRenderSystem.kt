@@ -53,6 +53,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	private val nonVisibleColour = Colour(nonVisibleBrightness, nonVisibleBrightness, nonVisibleBrightness, 1f, true)
 
 	val lights = world.getEntitiesFor().all(ComponentType.Position, ComponentType.Light).get()
+	val shadows = world.getEntitiesFor().all(ComponentType.Position, ComponentType.Shadow).get()
 
 	var doStaticRender = true
 
@@ -189,6 +190,23 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			}
 
 			renderer.addLight(light.light, lx, ly)
+		}
+		for (entity in shadows.entities)
+		{
+			val shadow = entity.shadow()!!
+
+			val pos = entity.position()!!
+			var lx = pos.position.xFloat + 0.5f + pos.offset.x
+			var ly = pos.position.yFloat + 0.5f + pos.offset.y
+
+			val renderOffset = entity.renderOffset()
+			if (renderOffset != null)
+			{
+				lx += renderOffset[0]
+				ly += renderOffset[1]
+			}
+
+			renderer.addShadow(shadow.shadow, lx, ly)
 		}
 	}
 

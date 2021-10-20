@@ -2,16 +2,14 @@ package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.IntMap
 import com.badlogic.gdx.utils.ObjectSet
 import com.badlogic.gdx.utils.Pool
-import com.lyeeedar.Renderables.CurveRenderable
-import com.lyeeedar.Renderables.Light
+import com.lyeeedar.Renderables.*
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
-import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.SpriteWrapper
 import com.lyeeedar.Renderables.Sprite.TilingSprite
@@ -24,6 +22,7 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 {
 	internal val basicLights = com.badlogic.gdx.utils.Array<Light>()
 	internal val shadowLights = com.badlogic.gdx.utils.Array<Light>()
+	internal val shadows = com.badlogic.gdx.utils.Array<Shadow>()
 
 	private val startingArraySize = 128
 	internal var spriteArray = Array<RenderSprite?>(startingArraySize) { null }
@@ -179,6 +178,12 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		basicLights.clear()
 		shadowLights.clear()
 
+		for (i in 0 until shadows.size)
+		{
+			shadows[i].queuedBatchID = 0
+		}
+		shadows.clear()
+
 		if (queuedSprites < spriteArray.size / 4)
 		{
 			spriteArray = kotlin.Array(spriteArray.size / 4, { null })
@@ -205,6 +210,41 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		{
 			basicLights.add(light)
 		}
+	}
+
+	internal fun addShadow(shadow: Shadow, ix: Float, iy: Float)
+	{
+		if (!isShadowOnscreen(shadow, ix, iy)) return
+
+		if (shadow.queuedBatchID != sorter.batchID)
+		{
+			shadows.add(shadow)
+			shadow.queuedBatchID = sorter.batchID
+			shadow.queuedPositions = 0
+		}
+
+		if (shadow.queuedPositions < shadow.positions.size)
+		{
+			shadow.positions[shadow.queuedPositions].set(Vector2(ix, iy))
+		}
+		else
+		{
+			shadow.positions.add(Vector2(ix, iy))
+		}
+		shadow.queuedPositions++
+	}
+
+	private fun isShadowOnscreen(shadow: Shadow, ix: Float, iy: Float): Boolean
+	{
+		val tileSize = tileSize
+
+		val x = ix * tileSize + offsetx
+		val y = iy * tileSize + offsety
+		val range = shadow.scale * tileSize
+
+		if (x + range <= 0 || x - range >= Statics.stage.width || y + range <= 0 || y - range >= Statics.stage.height) return false
+
+		return true
 	}
 
 	private fun isLightOnscreen(light: Light): Boolean

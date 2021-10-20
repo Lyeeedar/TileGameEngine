@@ -34,7 +34,7 @@ import squidpony.squidmath.LightRNG
 
 class SpriteSorter(val renderer: SortedRenderer)
 {
-	private var batchID: Int = random.nextInt()
+	public var batchID: Int = random.nextInt()
 
 	private val tempVec = Vector2()
 	private val tempVec2 = Vector2()
@@ -85,6 +85,10 @@ class SpriteSorter(val renderer: SortedRenderer)
 				if (sprite.light != null)
 				{
 					renderer.addLight(sprite.light!!, rs.px + 0.5f, rs.py + 0.5f)
+				}
+				if (sprite.shadow != null)
+				{
+					renderer.addShadow(sprite.shadow!!, rs.px + 0.5f, rs.py + 0.5f)
 				}
 			}
 		}
@@ -188,6 +192,10 @@ class SpriteSorter(val renderer: SortedRenderer)
 		if (effect.light != null)
 		{
 			renderer.addLight(effect.light!!, lx, ly)
+		}
+		if (effect.shadow != null)
+		{
+			renderer.addShadow(effect.shadow!!, lx, ly)
 		}
 
 		//val scale = effect.animation?.renderScale()?.get(0) ?: 1f
@@ -353,6 +361,10 @@ class SpriteSorter(val renderer: SortedRenderer)
 		{
 			renderer.addLight(tilingSprite.light!!, lx + 0.5f, ly + 0.5f)
 		}
+		if (tilingSprite.shadow != null)
+		{
+			renderer.addShadow(tilingSprite.shadow!!, lx + 0.5f, ly + 0.5f)
+		}
 
 		// check if onscreen
 		if (!renderer.alwaysOnscreen && !isSpriteOnscreen(tilingSprite, x, y, width, height)) return
@@ -434,6 +446,10 @@ class SpriteSorter(val renderer: SortedRenderer)
 		{
 			renderer.addLight(sprite.light!!, lx + 0.5f, ly + 0.5f)
 		}
+		if (sprite.shadow != null)
+		{
+			renderer.addShadow(sprite.shadow!!, lx + 0.5f, ly + 0.5f)
+		}
 
 		// check if onscreen
 		if (!renderer.alwaysOnscreen && !isSpriteOnscreen(sprite, x, y, width, height, lScaleX, lScaleY)) return
@@ -487,8 +503,6 @@ class SpriteSorter(val renderer: SortedRenderer)
 		var lScaleX = scaleX
 		var lScaleY = scaleY
 
-		// check if onscreen
-
 		if (skeleton.animation != null)
 		{
 			val offset = skeleton.animation!!.renderOffset(false)
@@ -523,6 +537,15 @@ class SpriteSorter(val renderer: SortedRenderer)
 		val localy = y + renderer.offsety
 		val localw = width * tileSize * skeleton.size[1]
 		val localh = height * tileSize * skeleton.size[1]
+
+		if (skeleton.light != null)
+		{
+			renderer.addLight(skeleton.light!!, lx + 0.5f, ly + 0.5f)
+		}
+		if (skeleton.shadow != null)
+		{
+			renderer.addShadow(skeleton.shadow!!, lx + 0.5f, ly + 0.5f)
+		}
 
 		if (localx + localw < 0 || localx > Statics.stage.width || localy + localh < 0 || localy > Statics.stage.height) return
 
@@ -799,6 +822,15 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 		lx = lx + 0.5f - (0.5f * lScaleX)
 		ly = ly + 0.5f - (0.5f * lScaleY)
+
+		if (curve.light != null)
+		{
+			renderer.addLight(curve.light!!, lx + 0.5f, ly + 0.5f)
+		}
+		if (curve.shadow != null)
+		{
+			renderer.addShadow(curve.shadow!!, lx + 0.5f, ly + 0.5f)
+		}
 
 		val comparisonVal = getComparisonVal(sortX ?: lx, sortY ?: ly, layer, index, BlendMode.MULTIPLICATIVE)
 

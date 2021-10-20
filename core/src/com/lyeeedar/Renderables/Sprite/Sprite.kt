@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array
 import com.lyeeedar.Renderables.Animation.AbstractColourAnimation
 import com.lyeeedar.Renderables.Light
 import com.lyeeedar.Renderables.Renderable
+import com.lyeeedar.Renderables.Shadow
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Statics.Companion.spriteTargetResolution
@@ -27,6 +28,7 @@ class SpriteData : XmlDataClass()
 	var colour: Colour? = null
 
 	var light: Light? = null
+	var shadow: Shadow? = null
 
 	var repeatDelay: Float = 0f
 	var blend: Boolean = false
@@ -45,6 +47,12 @@ class SpriteData : XmlDataClass()
 		{
 			light = Light()
 			light!!.load(lightEl)
+		}
+		val shadowEl = xmlData.getChildByName("Shadow")
+		if (shadowEl != null)
+		{
+			shadow = Shadow()
+			shadow!!.load(shadowEl)
 		}
 		repeatDelay = xmlData.getFloat("RepeatDelay", 0f)
 		blend = xmlData.getBoolean("Blend", false)
@@ -439,6 +447,7 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 		sprite.colourAnimation = colourAnimation?.copy() as? AbstractColourAnimation
 		sprite.disableHDR = disableHDR
 		sprite.light = light?.copy()
+		sprite.shadow = shadow?.copy()
 		sprite.colour = colour.copy()
 		sprite.tintLight = tintLight
 
