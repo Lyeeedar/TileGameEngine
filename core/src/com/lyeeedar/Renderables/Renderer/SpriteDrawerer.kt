@@ -1046,7 +1046,7 @@ out lowp vec4 fragColour;
 void main()
 {
 	lowp float texAlpha = texture(u_texture, v_texCoords).a;
-	fragColour = vec4(u_colour * 0.5, 1.0 - step(texAlpha, 0.1));
+	fragColour = vec4(u_colour * 0.5, texAlpha);
 }
 """.trimIndent()
 			return fragmentShader
