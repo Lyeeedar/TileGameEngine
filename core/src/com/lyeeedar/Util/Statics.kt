@@ -42,6 +42,7 @@ class Statics
 
 		var resolution = Point(360, 640)
 		var screenSize = Point(resolution.x, resolution.y)
+		var spriteTargetResolution = 32f
 
 		var lightCollisionGrid: Array2D<Boolean>? = null
 

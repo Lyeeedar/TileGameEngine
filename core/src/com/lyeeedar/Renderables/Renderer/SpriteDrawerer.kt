@@ -369,9 +369,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		lightFBO.begin()
 
-		Gdx.gl.glEnable(GL20.GL_BLEND)
 		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE)
-		Gdx.gl.glDepthMask(false)
 
 		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 0f)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -402,9 +400,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			shadowLightMesh.unbind(shadowLightShader)
 		}
-
-		Gdx.gl.glDepthMask(true)
-		Gdx.gl.glDisable(GL20.GL_BLEND)
 
 		lightFBO.end(Statics.stage.viewport.screenX, Statics.stage.viewport.screenY, Statics.stage.viewport.screenWidth, Statics.stage.viewport.screenHeight)
 	}
@@ -462,9 +457,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		val shader = precomputedVertexShader
 
-		Gdx.gl.glEnable(GL20.GL_BLEND)
-		Gdx.gl.glDepthMask(false)
-
 		shader.bind()
 
 		shader.setUniformMatrix("u_projTrans", combinedMatrix)
@@ -472,7 +464,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader.setUniformi("u_lightTexture", 1)
 		shader.setUniformf("u_lightTextureSize", lightFBOSize)
 
-		lightFBO.colorBufferTexture!!.bind(1)
 		buffer.texture.bind(0)
 
 		Gdx.gl.glBlendFunc(buffer.blendSrc, buffer.blendDst)
@@ -487,8 +478,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		precomputedVertexCount = 0
 		precomputedIndexCount = 0
-
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 	}
 
 	private fun renderVertices()
@@ -497,9 +486,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		val offsetx = renderer.offsetx
 		val offsety = renderer.offsety
-
-		Gdx.gl.glEnable(GL20.GL_BLEND)
-		Gdx.gl.glDepthMask(false)
 
 		shader.bind()
 
@@ -556,8 +542,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		}
 
 		currentGeometryInstanceIndex = 0
-
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 	}
 
 	private fun renderStatic()
@@ -567,9 +551,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		val offsetx = renderer.offsetx
 		val offsety = renderer.offsety
 
-		Gdx.gl.glEnable(GL20.GL_BLEND)
-		Gdx.gl.glDepthMask(false)
-
 		shader.bind()
 
 		shader.setUniformMatrix("u_projTrans", combinedMatrix)
@@ -577,8 +558,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shader.setUniformi("u_texture", 0)
 		shader.setUniformi("u_lightTexture", 1)
 		shader.setUniformf("u_lightTextureSize", lightFBOSize)
-
-		lightFBO.colorBufferTexture!!.bind(1)
 
 		if (currentBuffer != null)
 		{
@@ -620,8 +599,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			staticGeometryMesh.unbind(shader)
 		}
-
-		Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 	}
 
 	internal fun draw(batch: Batch?)
@@ -631,12 +608,16 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			return
 		}
 
+		Gdx.gl.glEnable(GL20.GL_BLEND)
+		Gdx.gl.glDepthMask(false)
+
 		if (batch != null) combinedMatrix.set(batch.projectionMatrix).mul(batch.transformMatrix)
 
 		if (!renderer.inStaticBegin)
 		{
 			updateLightBuffer()
 		}
+		lightFBO.colorBufferTexture!!.bind(1)
 
 		// begin rendering
 		if (!renderer.inStaticBegin)

@@ -9,6 +9,7 @@ import com.lyeeedar.Renderables.Animation.AbstractColourAnimation
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Random
+import com.lyeeedar.Util.Statics.Companion.spriteTargetResolution
 
 class Sprite(val fileName: String, var animationDelay: Float, var textures: Array<TextureRegion>, colour: Colour, var drawActualSize: Boolean) : Renderable()
 {
@@ -254,8 +255,8 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 
 		if (drawActualSize)
 		{
-			val widthRatio = width / 32f
-			val heightRatio = height / 32f
+			val widthRatio = width / spriteTargetResolution
+			val heightRatio = height / spriteTargetResolution
 
 			val regionWidth = referenceSize ?: texture.regionWidth.toFloat()
 			val regionHeight = referenceSize ?: texture.regionHeight.toFloat()
@@ -331,8 +332,8 @@ class Sprite(val fileName: String, var animationDelay: Float, var textures: Arra
 
 		if (drawActualSize)
 		{
-			val widthRatio = width / 32f
-			val heightRatio = height / 32f
+			val widthRatio = width / spriteTargetResolution
+			val heightRatio = height / spriteTargetResolution
 
 			val regionWidth = referenceSize ?: texture.regionWidth.toFloat()
 			val regionHeight = referenceSize ?: texture.regionHeight.toFloat()

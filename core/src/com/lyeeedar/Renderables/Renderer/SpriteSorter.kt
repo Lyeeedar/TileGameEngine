@@ -28,6 +28,7 @@ import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
 import com.lyeeedar.Util.*
+import com.lyeeedar.Util.Statics.Companion.spriteTargetResolution
 import ktx.collections.set
 import squidpony.squidmath.LightRNG
 
@@ -411,7 +412,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 		if (sprite.drawActualSize)
 		{
-			val widthRatio = width / 32f
+			val widthRatio = width / spriteTargetResolution
 			val regionWidth = sprite.currentTexture.regionWidth.toFloat()
 			val trueWidth = regionWidth * widthRatio
 			val widthOffset = (trueWidth - width) / 2
@@ -833,8 +834,8 @@ class SpriteSorter(val renderer: SortedRenderer)
 		{
 			val texture = sprite.textures.items[sprite.texIndex]
 
-			val widthRatio = localw / 32f
-			val heightRatio = localh / 32f
+			val widthRatio = localw / spriteTargetResolution
+			val heightRatio = localh / spriteTargetResolution
 
 			val regionWidth = sprite.referenceSize ?: texture.regionWidth.toFloat()
 			val regionHeight = sprite.referenceSize ?: texture.regionHeight.toFloat()
