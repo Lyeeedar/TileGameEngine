@@ -134,8 +134,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		shadowMesh.setIndices(billboardIndices)
 		shadowMesh.enableInstancedRendering(false, 100,
 		                                    VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_pos_width_height"),
-		                                    VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"),
-		                                    VertexAttribute(VertexAttributes.Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE))
+		                                    VertexAttribute(VertexAttributes.Usage.Generic, 4, "a_texCoords0"))
 
 		val maxPrecomputedVertices = 2000
 		precomputedMesh = Mesh(VertexDataType.VertexBufferObjectWithVAO, false, maxPrecomputedVertices, maxPrecomputedVertices * 2 * 3,
@@ -149,7 +148,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		lightInstanceData = FloatArray(10000 * (4 + 1))
 		shadowedLightInstanceData = FloatArray(100 * (4 + 1 + 2))
 		shadowedRegionUniformData = FloatArray(128 * 4)
-		shadowInstanceData = FloatArray(100 * (4 + 4 + 1))
+		shadowInstanceData = FloatArray(100 * (4 + 4))
 
 		spriteShader = createSpriteShader()
 		lightShader = createLightShader()
@@ -188,11 +187,11 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 	private fun createFBO()
 	{
-		val width = Statics.stage.viewport.screenWidth / 2
-		val height = Statics.stage.viewport.screenHeight / 2
+		val width = Statics.stage.viewport.screenWidth
+		val height = Statics.stage.viewport.screenHeight
 
 		lightFBO = GL30FrameBuffer(GL30.GL_RGB16F, GL30.GL_RGB, GL30.GL_FLOAT, width, height, false)
-		lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
+		lightFBO.colorBufferTexture?.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
 
 		lightFBOSize.set(width.toFloat(), height.toFloat())
 	}
@@ -322,7 +321,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 				lightsHash = lightsHash xor shadow.positions[ii].hashCode()
 			}
 
-			lightsHash = lightsHash xor shadow.colour.hashCode()
 			lightsHash = lightsHash xor NumberUtils.floatToIntBits(shadow.scale)
 		}
 	}
@@ -393,7 +391,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 			val width = shadow.scale * renderer.tileSize
 			val height = shadow.scale * renderer.tileSize
-			val colour = shadow.colour.toFloatBits()
 
 			for (ii in 0 until shadow.queuedPositions)
 			{
@@ -408,7 +405,6 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 				shadowInstanceData[i++] = shadow.texture.v
 				shadowInstanceData[i++] = shadow.texture.u2
 				shadowInstanceData[i++] = shadow.texture.v2
-				shadowInstanceData[i++] = colour
 			}
 		}
 
@@ -426,6 +422,27 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 
 		Gdx.gl.glClearColor(ambientLight.r, ambientLight.g, ambientLight.b, 0f)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+
+		if (renderer.shadows.size > 0)
+		{
+			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
+
+			shadowShader.bind()
+			shadowShader.setUniformMatrix("u_projTrans", combinedMatrix)
+			shadowShader.setUniformf("u_offset", offsetx, offsety)
+			shadowShader.setUniformi("u_texture", 0)
+			shadowShader.setUniformf("u_colour", ambientLight.r, ambientLight.g, ambientLight.b)
+
+			renderer.shadows[0].texture.texture.bind(0)
+
+			shadowMesh.bind(shadowShader)
+
+			shadowMesh.render(shadowShader, GL20.GL_TRIANGLES, 0, 6)
+
+			shadowMesh.unbind(shadowShader)
+
+			Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE)
+		}
 
 		if (renderer.basicLights.size > 0)
 		{
@@ -454,23 +471,7 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 			shadowedLightMesh.unbind(shadowedLightShader)
 		}
 
-		if (renderer.shadows.size > 0)
-		{
-			Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
 
-			shadowShader.bind()
-			shadowShader.setUniformMatrix("u_projTrans", combinedMatrix)
-			shadowShader.setUniformf("u_offset", offsetx, offsety)
-			shadowShader.setUniformi("u_texture", 0)
-
-			renderer.shadows[0].texture.texture.bind(0)
-
-			shadowMesh.bind(shadowShader)
-
-			shadowMesh.render(shadowShader, GL20.GL_TRIANGLES, 0, 6)
-
-			shadowMesh.unbind(shadowShader)
-		}
 
 		lightFBO.end(Statics.stage.viewport.screenX, Statics.stage.viewport.screenY, Statics.stage.viewport.screenWidth, Statics.stage.viewport.screenHeight)
 	}
@@ -1003,14 +1004,12 @@ in vec2 ${ShaderProgram.POSITION_ATTRIBUTE};
 // per instance
 in vec4 a_pos_width_height;
 in vec4 a_texCoords0;
-in vec4 ${ShaderProgram.COLOR_ATTRIBUTE};
 
 // uniforms
 uniform mat4 u_projTrans;
 uniform vec2 u_offset;
 
 // outputs
-out vec4 v_color;
 out vec2 v_texCoords;
 
 void main()
@@ -1022,8 +1021,6 @@ void main()
 	vec2 basePos = a_pos_width_height.xy - vec2(0.0, halfSize.y * 0.8);
 	vec4 viewPos = vec4(worldPos.xy + u_offset, 0.0, 1.0);
 	vec4 screenPos = u_projTrans * viewPos;
-
-	v_color = ${ShaderProgram.COLOR_ATTRIBUTE};
 	
 	vec2 texCoordAlpha = (vertexPos + 1.0) / 2.0;
 	v_texCoords = mix(a_texCoords0.xy, a_texCoords0.zw, texCoordAlpha);
@@ -1038,18 +1035,18 @@ void main()
 			val fragmentShader = """
 #version 300 es
 
-in lowp vec4 v_color;
 in mediump vec2 v_texCoords;
 
 uniform sampler2D u_texture;
+uniform lowp vec3 u_colour;
 
 out lowp vec4 fragColour;
 
 // ------------------------------------------------------
 void main()
 {
-	lowp vec4 outCol = texture(u_texture, v_texCoords);
-	fragColour = clamp(v_color * outCol, 0.0, 1.0);
+	lowp float texAlpha = texture(u_texture, v_texCoords).a;
+	fragColour = vec4(u_colour * 0.5, 1.0 - step(texAlpha, 0.1));
 }
 """.trimIndent()
 			return fragmentShader
