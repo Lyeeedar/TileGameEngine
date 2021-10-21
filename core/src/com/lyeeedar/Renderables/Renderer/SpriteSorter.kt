@@ -637,6 +637,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 			else if (attachment is SkeletonAttachment)
 			{
 				val attachmentSkeleton = attachment.skeleton
+				attachmentSkeleton.updateWorldTransform(slot.bone)
 				queueSkeleton(attachmentSkeleton, comparisonVal)
 			}
 

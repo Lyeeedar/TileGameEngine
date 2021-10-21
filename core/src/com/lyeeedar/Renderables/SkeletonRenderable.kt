@@ -1,6 +1,7 @@
 package com.lyeeedar.Renderables
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.utils.Array
 import com.esotericsoftware.spine.AnimationState
 import com.esotericsoftware.spine.AnimationStateData
 import com.esotericsoftware.spine.Skeleton
@@ -36,10 +37,18 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 {
 	val animationGraphState = AnimationGraphState(this, graph)
 
+	val attachedSkeletons = Array<SkeletonRenderable>()
+
 	override fun doUpdate(delta: Float): Boolean
 	{
 		state.update(delta)
 		graph.update(delta, animationGraphState)
+
+		for (i in 0 until attachedSkeletons.size)
+		{
+			val renderable = attachedSkeletons[i]
+			renderable.update(delta)
+		}
 
 		var complete = animation?.update(delta) ?: true
 		if (complete)

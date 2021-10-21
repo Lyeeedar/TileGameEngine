@@ -221,7 +221,7 @@ class LoopAnimationGraphNode : AbstractAnimationGraphNode()
 		if (visited.get(name, Int.MAX_VALUE) <= depth) return
 		visited.put(name, depth)
 
-		val maxWeight = transitions.maxByOrNull { it.weight }!!.weight
+		val maxWeight = transitions.maxByOrNull { it.weight }?.weight ?: return
 
 		for (next in transitions)
 		{
