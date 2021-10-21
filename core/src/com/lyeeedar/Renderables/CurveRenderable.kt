@@ -119,7 +119,7 @@ class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val t
 			perp.scl(thickness).scl(tileSize)
 			sample.scl(tileSize).add(offsetx, offsety)
 
-			val u = texture.u.lerp(texture.u2, alpha)
+			val u = texture.u.lerp(texture.u2, step * i)
 
 			val top = realPos.set(sample).add(perp)
 			vertices[vertI++] = top.x

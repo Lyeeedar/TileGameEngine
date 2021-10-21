@@ -25,7 +25,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 	{
 		if (state.targets.size == 0) return
 
-		val spawnedParticles = Array<Entity>()
+		val spawnedParticles = Array<EntityReference>()
 		if (spawnSingleParticle)
 		{
 			val min = state.targets.minByOrNull(Point::hashCode)!!
@@ -64,7 +64,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 			entity.renderable()?.set(r)
 
 			state.world.addEntity(entity)
-			spawnedParticles.add(entity)
+			spawnedParticles.add(entity.getRef())
 		}
 		else
 		{
@@ -86,7 +86,7 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 				entity.renderable()?.set(r)
 
 				state.world.addEntity(entity)
-				spawnedParticles.add(entity)
+				spawnedParticles.add(entity.getRef())
 			}
 		}
 		state.data[key] = spawnedParticles
@@ -94,9 +94,11 @@ class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 
 	override fun exit(state: ActionSequenceState)
 	{
-		val spawnedParticles = state.data[key] as Array<Entity>
-		for (entity in spawnedParticles)
+		val spawnedParticles = state.data[key] as Array<EntityReference>
+		for (ref in spawnedParticles)
 		{
+			val entity = ref.get() ?: continue
+
 			val particle = entity.renderable()!!.renderable as ParticleEffect
 			particle.stop()
 
