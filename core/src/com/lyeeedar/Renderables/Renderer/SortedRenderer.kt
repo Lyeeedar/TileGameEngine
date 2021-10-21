@@ -2,6 +2,7 @@ package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Disposable
 import com.badlogic.gdx.utils.IntMap
@@ -40,6 +41,9 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	private var screenShakeSpeed: Float = 0f
 	private var screenShakeAngle: Float = 0f
 	private var screenShakeLocked: Boolean = false
+	private var screenJoltRadius: Float = 0f
+	private var screenJoltTime: Float = 0f
+	private var screenJoltDuration: Float = 0f
 
 	internal val tilingMap: IntMap<ObjectSet<Long>> = IntMap()
 	internal val setPool: Pool<ObjectSet<Long>> = object : Pool<ObjectSet<Long>>() {
@@ -58,6 +62,14 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	{
 		screenShakeRadius = amount
 		screenShakeSpeed = speed
+	}
+
+	fun setScreenJolt(amount: Float, duration: Float)
+	{
+		screenJoltRadius = amount
+		screenJoltDuration = duration
+		screenJoltTime = 0f
+		screenShakeAngle = Random.random(Random.sharedRandom) * 360
 	}
 
 	fun lockScreenShake()
@@ -81,6 +93,39 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 		drawerer.ambientLight.set(ambientLight)
 		this.offsetx = offsetx
 		this.offsety = offsety
+
+		// do screen shake
+		if ( screenShakeRadius > 2 )
+		{
+			screenShakeAccumulator += delta
+
+			while ( screenShakeAccumulator >= screenShakeSpeed )
+			{
+				screenShakeAccumulator -= screenShakeSpeed
+				screenShakeAngle += (150 + Random.random(Random.sharedRandom) * 60)
+
+				if (!screenShakeLocked)
+				{
+					screenShakeRadius *= 0.9f
+				}
+			}
+
+			this.offsetx += Math.sin( screenShakeAngle.toDouble() ).toFloat() * screenShakeRadius
+			this.offsety += Math.cos( screenShakeAngle.toDouble() ).toFloat() * screenShakeRadius
+		}
+		else if (screenJoltTime < screenJoltDuration)
+		{
+			screenJoltTime += delta
+
+			var alpha = screenJoltTime / screenJoltDuration
+			alpha *= alpha
+
+			val radius = (1f - alpha) * screenJoltRadius
+
+			this.offsetx += Math.sin(screenShakeAngle.toDouble() ).toFloat() * radius
+			this.offsety += Math.cos(screenShakeAngle.toDouble() ).toFloat() * radius
+		}
+
 		delta = deltaTime
 		inBegin = true
 	}
@@ -120,26 +165,6 @@ class SortedRenderer(var tileSize: Float, val width: Float, val height: Float, v
 	private fun flush(batch: Batch? = null)
 	{
 		sorter.sort()
-
-		// do screen shake
-		if ( screenShakeRadius > 2 )
-		{
-			screenShakeAccumulator += delta
-
-			while ( screenShakeAccumulator >= screenShakeSpeed )
-			{
-				screenShakeAccumulator -= screenShakeSpeed
-				screenShakeAngle += (150 + Random.random(Random.sharedRandom) * 60)
-
-				if (!screenShakeLocked)
-				{
-					screenShakeRadius *= 0.9f
-				}
-			}
-
-			offsetx += Math.sin( screenShakeAngle.toDouble() ).toFloat() * screenShakeRadius
-			offsety += Math.cos( screenShakeAngle.toDouble() ).toFloat() * screenShakeRadius
-		}
 
 		for (light in basicLights)
 		{

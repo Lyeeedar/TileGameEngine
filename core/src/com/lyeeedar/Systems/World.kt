@@ -15,6 +15,8 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	var tileSize: Float = 40f
 	var ambientLight: Colour = Colour.WHITE.copy()
+	var timeMultiplier = 1f
+	var hitStop = 0f
 
 	var entityListsDirty = true
 	val entities = Array<Entity>(false, 128)
@@ -103,6 +105,15 @@ class World<T: AbstractTile>(var grid: Array2D<T>)
 
 	fun update(delta: Float)
 	{
+		var timeMultiplier = timeMultiplier
+		if (hitStop > 0f)
+		{
+			hitStop -= delta
+			timeMultiplier *= 0.1f
+		}
+
+		val delta = delta * timeMultiplier
+
 		updateEntityList()
 
 		if (!doneFirstUpdate)
