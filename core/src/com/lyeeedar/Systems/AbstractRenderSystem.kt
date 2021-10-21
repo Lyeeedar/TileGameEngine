@@ -281,6 +281,16 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			renderable.size[1] = pos.size
 		}
 
+		if (renderable is SkeletonRenderable)
+		{
+			val variables = entity.variables()
+			if (variables != null)
+			{
+				renderable.animationGraphState.variables.clear()
+				renderable.animationGraphState.variables.putAll(variables.variables)
+			}
+		}
+
 		renderer.queue(renderable, px, py, pos.slot.ordinal, 1, colour = tileCol)
 
 		val offset = renderable.animation?.renderOffset(false)

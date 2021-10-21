@@ -126,8 +126,8 @@ class TilingSprite() : Renderable()
 
 	fun load(thisName: String, checkName: String, texName: String?, maskName: String, spriteElement:XmlData)
 	{
-		this.thisID = thisName.toLowerCase(Locale.ENGLISH).hashCode().toLong()
-		this.checkID = checkName.toLowerCase(Locale.ENGLISH).hashCode().toLong()
+		this.thisID = thisName.lowercase(Locale.ENGLISH).hashCode().toLong()
+		this.checkID = checkName.lowercase(Locale.ENGLISH).hashCode().toLong()
 		this.texName = texName
 		this.maskName = maskName
 		this.spriteBase = spriteElement

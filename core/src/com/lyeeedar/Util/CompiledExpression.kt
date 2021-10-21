@@ -19,7 +19,7 @@ class CompiledExpression(val expression: String)
 	{
 		try
 		{
-			root = parseExpressionPart(expression.toLowerCase(Locale.ENGLISH), this)
+			root = parseExpressionPart(expression.lowercase(Locale.ENGLISH), this)
 		}
 		catch (ex: Exception)
 		{

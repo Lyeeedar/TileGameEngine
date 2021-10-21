@@ -98,7 +98,7 @@ class Division : GraphXmlDataClass<MapGeneratorNode>()
 		}
 		else
 		{
-			val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "%size")
+			val cond = raw.lowercase(Locale.ENGLISH).replace("%", "%size")
 			return CompiledExpression(cond)
 		}
 	}

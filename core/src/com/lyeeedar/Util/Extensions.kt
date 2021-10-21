@@ -9,11 +9,11 @@ import java.util.*
  * Created by Philip on 04-Jul-16.
  */
 
-fun String.neaten() = this.substring(0, 1).toUpperCase(Locale.ENGLISH) + this.substring(1).toLowerCase(Locale.ENGLISH)
+fun String.neaten() = this.substring(0, 1).toUpperCase(Locale.ENGLISH) + this.substring(1).lowercase(Locale.ENGLISH)
 
 fun Char.isVowel(): Boolean
 {
-	return when(this.toLowerCase())
+	return when (this.toLowerCase())
 	{
 		'a', 'e', 'i', 'o', 'u' -> true
 		else -> false
@@ -50,8 +50,7 @@ fun Int.prettyPrint(): String
 	if (this < 10000)
 	{
 		return this.toString()
-	}
-	else
+	} else
 	{
 		return String.format("%,d", this)
 	}
@@ -65,8 +64,8 @@ fun Color.toHSV(out: FloatArray? = null): FloatArray
 
 	val saturation = if (delta == 0f) 0f else delta / max
 	val hue = if (this.r == max) ((this.g - this.b) / delta) % 6
-				else if (this.g == max) 2 + (this.b - this.r) / delta
-					else 4 + (this.r - this.g) / delta
+	else if (this.g == max) 2 + (this.b - this.r) / delta
+	else 4 + (this.r - this.g) / delta
 	val value = max
 
 	val output = if (out != null && out.size >= 3) out else kotlin.FloatArray(3)
@@ -78,7 +77,8 @@ fun Color.toHSV(out: FloatArray? = null): FloatArray
 }
 
 
-val vector2Pool = object : Pool<Vector2>() {
+val vector2Pool = object : Pool<Vector2>()
+{
 	override fun newObject(): Vector2
 	{
 		return Vector2()

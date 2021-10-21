@@ -75,7 +75,7 @@ class BehaviourTreeState
 
 		if (guid == 0)
 		{
-			variables[key.toLowerCase(Locale.ENGLISH)] = when (value)
+			variables[key.lowercase(Locale.ENGLISH)] = when (value)
 			{
 				is Float -> value
 				is Int -> value.toFloat()
@@ -86,7 +86,7 @@ class BehaviourTreeState
 
 			if (value is Entity || value is Point)
 			{
-				dynamicVariables[dataKey] = key.toLowerCase(Locale.ENGLISH)
+				dynamicVariables[dataKey] = key.lowercase(Locale.ENGLISH)
 			}
 		}
 	}
@@ -98,10 +98,10 @@ class BehaviourTreeState
 
 		if (guid == 0)
 		{
-			variables.remove(key.toLowerCase(Locale.ENGLISH), 0f)
+			variables.remove(key.lowercase(Locale.ENGLISH), 0f)
 			if (data is EntityReference || data is Point)
 			{
-				variables.remove("${key.toLowerCase(Locale.ENGLISH)}.dist", 0f)
+				variables.remove("${key.lowercase(Locale.ENGLISH)}.dist", 0f)
 				dynamicVariables.remove(dataKey)
 			}
 		}

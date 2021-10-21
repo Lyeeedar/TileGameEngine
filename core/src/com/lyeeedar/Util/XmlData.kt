@@ -420,7 +420,7 @@ class XmlData
 					}
 					else
 					{
-						val boolVal = when (el.text.toLowerCase(Locale.ENGLISH))
+						val boolVal = when (el.text.lowercase(Locale.ENGLISH))
 						{
 							"true" -> true
 							"false" -> false
@@ -429,8 +429,7 @@ class XmlData
 						if (boolVal != null)
 						{
 							data.value = boolVal
-						}
-						else
+						} else
 						{
 							data.value = el.text
 						}
@@ -641,7 +640,7 @@ class XmlAttributeData
 				}
 				else
 				{
-					val boolVal = when (rawvalue.toLowerCase(Locale.ENGLISH))
+					val boolVal = when (rawvalue.lowercase(Locale.ENGLISH))
 					{
 						"true" -> true
 						"false" -> false
@@ -650,8 +649,7 @@ class XmlAttributeData
 					if (boolVal != null)
 					{
 						data.value = boolVal
-					}
-					else
+					} else
 					{
 						data.value = rawvalue
 					}

@@ -25,7 +25,7 @@ class TakeAction : AbstractMapGenerationAction()
 	lateinit var countExp: CompiledExpression
 	fun createExpression(raw: String): CompiledExpression
 	{
-		val cond = raw.toLowerCase(Locale.ENGLISH).replace("%", "%count")
+		val cond = raw.lowercase(Locale.ENGLISH).replace("%", "%count")
 		return CompiledExpression(cond)
 	}
 

@@ -47,6 +47,8 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 		for (i in 0 until attachedSkeletons.size)
 		{
 			val renderable = attachedSkeletons[i]
+			renderable.animationGraphState.variables.clear()
+			renderable.animationGraphState.variables.putAll(animationGraphState.variables)
 			renderable.update(delta)
 		}
 

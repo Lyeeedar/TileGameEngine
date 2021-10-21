@@ -470,7 +470,7 @@ class AssetManager
 			for (i in 0 until anims.childCount)
 			{
 				val el = anims.getChild(i)
-				val name = el.get("Name").toLowerCase(Locale.ENGLISH)
+				val name = el.get("Name").lowercase(Locale.ENGLISH)
 				val up = AssetManager.loadSprite(el.getChildByName("Up")!!)
 				val down = AssetManager.loadSprite(el.getChildByName("Down")!!)
 

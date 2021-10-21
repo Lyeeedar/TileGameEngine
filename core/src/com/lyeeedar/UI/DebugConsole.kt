@@ -128,7 +128,7 @@ class DebugConsole(val historyKey: String) : Table()
 			{
 				tabIndex = 0
 
-				val commandName = text.text.split(' ').first().toLowerCase(Locale.ENGLISH)
+				val commandName = text.text.split(' ').first().lowercase(Locale.ENGLISH)
 
 				if (commandName == "?" || commandName == "help")
 				{
@@ -136,8 +136,7 @@ class DebugConsole(val historyKey: String) : Table()
 					{
 						write(command.key)
 					}
-				}
-				else if (commands.containsKey(commandName))
+				} else if (commands.containsKey(commandName))
 				{
 					val command = commands[commandName]
 					val success = command.execute(text.text, this)
@@ -149,13 +148,11 @@ class DebugConsole(val historyKey: String) : Table()
 							history.add(text.text)
 							Statics.settings.set("CommandHistory$historyKey", history)
 						}
-					}
-					else
+					} else
 					{
 						error("Failed to run command '${text.text}'!")
 					}
-				}
-				else
+				} else
 				{
 					error("No command registered with name '$commandName'!")
 				}
@@ -166,7 +163,7 @@ class DebugConsole(val historyKey: String) : Table()
 			}
 			else if (key == '\t')
 			{
-				val validNames = commands.keys().filter { it.contains(typedText.toLowerCase(Locale.ENGLISH)) }
+				val validNames = commands.keys().filter { it.contains(typedText.lowercase(Locale.ENGLISH)) }
 				if (tabIndex >= validNames.size)
 				{
 					tabIndex = 0
@@ -235,7 +232,7 @@ class DebugConsole(val historyKey: String) : Table()
 	{
 		if (Statics.release) return
 
-		val lname = name.toLowerCase(Locale.ENGLISH)
+		val lname = name.lowercase(Locale.ENGLISH)
 
 		commands[lname] = ConsoleCommand(name, help, callback)
 	}
@@ -244,7 +241,7 @@ class DebugConsole(val historyKey: String) : Table()
 	{
 		if (Statics.release) return
 
-		val lname = name.toLowerCase(Locale.ENGLISH)
+		val lname = name.lowercase(Locale.ENGLISH)
 		if (commands.containsKey(lname)) throw Exception("Console command already registered with name '$name'!")
 
 		commands[lname] = ConsoleCommand(name, help, callback)
@@ -254,7 +251,7 @@ class DebugConsole(val historyKey: String) : Table()
 	{
 		if (Statics.release) return
 
-		val lname = name.toLowerCase(Locale.ENGLISH)
+		val lname = name.lowercase(Locale.ENGLISH)
 
 		commands.remove(lname)
 	}
@@ -268,12 +265,11 @@ class ConsoleCommand(val text: String, val help: String, val callback: (args: ko
 
 		val argText = text.subSequence(this.text.length, text.length).toString().trim()
 
-		if (argText.toLowerCase(Locale.ENGLISH) == "help")
+		if (argText.lowercase(Locale.ENGLISH) == "help")
 		{
 			console.write(help)
 			return true
-		}
-		else
+		} else
 		{
 			val args: kotlin.Array<String>
 
@@ -304,8 +300,7 @@ class ConsoleCommand(val text: String, val help: String, val callback: (args: ko
 				}
 
 				args = argList.filter { !it.isBlank() }.asIterable().toList().toTypedArray()
-			}
-			else
+			} else
 			{
 				args = argText.split(' ').toTypedArray()
 			}
@@ -313,8 +308,7 @@ class ConsoleCommand(val text: String, val help: String, val callback: (args: ko
 			try
 			{
 				return callback.invoke(args, console)
-			}
-			catch (ex: Exception)
+			} catch (ex: Exception)
 			{
 				console.error(ex.message ?: "Unknown exception! $ex")
 

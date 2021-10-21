@@ -131,7 +131,7 @@ abstract class AbstractGameLoopTest(val completionCallback: ()->Unit) {
 	protected suspend fun getActor(name: String): Actor?
 	{
 		return invokeOnMainThreadAndReturn {
-			getAllActors().firstOrNull { it.name?.toLowerCase(Locale.ENGLISH) == name.toLowerCase(Locale.ENGLISH) }
+			getAllActors().firstOrNull { it.name.lowercase(Locale.ENGLISH) == name.lowercase(Locale.ENGLISH) }
 		}
 	}
 

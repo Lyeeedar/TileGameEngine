@@ -573,7 +573,7 @@ class DefinedNameRule(val names: Array<String>) : Rule()
 
 		for (name in names)
 		{
-			val lower = name.toLowerCase(Locale.ENGLISH)
+			val lower = name.lowercase(Locale.ENGLISH)
 			if (sentence.text.contains(lower))
 			{
 				val start = sentence.text.indexOf(lower)

@@ -22,6 +22,8 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 
 	val animationMap = ObjectMap<String, Animation>()
 
+	val variables = ObjectFloatMap<String>()
+
 	init
 	{
 		for (node in graph.nodeMap.values())
@@ -117,6 +119,14 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 				state.currentTargetState = null
 			}
 		}
+
+		for (i in 0 until current.visibilityRules.size)
+		{
+			val rule = current.visibilityRules[i]
+			val slot = state.renderable.skeleton.findSlot(rule.slot)
+
+			slot.color.a = rule.rule.evaluate(state.variables, Random.sharedRandom)
+		}
 	}
 
 	override fun afterLoad()
@@ -163,6 +173,8 @@ abstract class AbstractAnimationGraphNode : GraphXmlDataClass<AbstractAnimationG
 	lateinit var name: String
 	lateinit var animation: String
 
+	val visibilityRules: Array<VisibilityRule> = Array()
+
 	@Transient
 	val reachableNodes = ObjectIntMap<String>()
 
@@ -182,6 +194,18 @@ abstract class AbstractAnimationGraphNode : GraphXmlDataClass<AbstractAnimationG
 	{
 		name = xmlData.get("Name")
 		animation = xmlData.get("Animation")
+		val visibilityRulesEl = xmlData.getChildByName("VisibilityRules")
+		if (visibilityRulesEl != null)
+		{
+			for (el in visibilityRulesEl.children)
+			{
+				val objvisibilityRules: VisibilityRule
+				val objvisibilityRulesEl = el
+				objvisibilityRules = VisibilityRule()
+				objvisibilityRules.load(objvisibilityRulesEl)
+				visibilityRules.add(objvisibilityRules)
+			}
+		}
 	}
 	abstract val classID: String
 	override fun resolve(nodes: ObjectMap<String, AbstractAnimationGraphNode>)
@@ -336,6 +360,20 @@ class AnimAnimationGraphNode : AbstractAnimationGraphNode()
 	{
 		super.resolve(nodes)
 		next = nodes[nextGUID]!!
+	}
+	//endregion
+}
+
+class VisibilityRule : XmlDataClass()
+{
+	lateinit var slot: String
+	lateinit var rule: CompiledExpression
+
+	//region generated
+	override fun load(xmlData: XmlData)
+	{
+		slot = xmlData.get("Slot")
+		rule = CompiledExpression(xmlData.get("Rule", "1")!!)
 	}
 	//endregion
 }
