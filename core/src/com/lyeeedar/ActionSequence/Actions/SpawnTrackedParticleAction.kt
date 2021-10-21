@@ -15,7 +15,7 @@ import ktx.collections.set
 @DataClass(category = "Renderable", name = "TrackedFX")
 class SpawnTrackedParticleAction : AbstractDurationActionSequenceAction()
 {
-	val key = "spawnedParticles"
+	val key = "spawnedParticles" + this.hashCode()
 
 	lateinit var particle: ParticleEffectDescription
 	var spawnSingleParticle: Boolean = false

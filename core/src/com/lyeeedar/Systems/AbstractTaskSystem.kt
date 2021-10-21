@@ -3,6 +3,7 @@ package com.lyeeedar.Systems
 import com.badlogic.gdx.utils.Array
 import com.lyeeedar.AI.Tasks.AbstractTask
 import com.lyeeedar.Components.*
+import com.lyeeedar.Renderables.CurveRenderable
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.SkeletonRenderable
 
@@ -44,6 +45,17 @@ abstract class AbstractTaskSystem(world: World<*>) : AbstractSystem(world)
 				{
 					// skip long running animations
 					(renderable.renderable as SkeletonRenderable).animationGraphState.completeAnimations()
+				}
+
+				canUpdate = false
+				break
+			}
+			else if (renderable.renderable is CurveRenderable && (renderable.renderable as CurveRenderable).isAnimating)
+			{
+				if (turnTimeAccumulator > 2f)
+				{
+					// skip long running animations
+					(renderable.renderable as CurveRenderable).completeAnimation()
 				}
 
 				canUpdate = false

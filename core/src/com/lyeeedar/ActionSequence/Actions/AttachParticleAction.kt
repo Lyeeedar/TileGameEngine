@@ -14,7 +14,7 @@ import ktx.collections.set
 @DataClass(category = "Renderable", name = "AttachFX")
 class AttachParticleAction : AbstractDurationActionSequenceAction()
 {
-	val dataKey = "attachedParticles"
+	val dataKey = "attachedParticles" + this.hashCode()
 
 	lateinit var particle: ParticleEffectDescription
 	lateinit var key: String

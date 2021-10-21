@@ -8,7 +8,7 @@ import ktx.collections.set
 @DataClass(category = "Meta", colour = "255,0,0,255")
 class RepeatAction : AbstractDurationActionSequenceAction()
 {
-	val key = "repeat"
+	val key = "repeat" + this.hashCode()
 	var count: Int = 1
 
 	override fun enter(state: ActionSequenceState)

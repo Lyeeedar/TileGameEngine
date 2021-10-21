@@ -2,11 +2,10 @@ package com.lyeeedar.Renderables
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.CatmullRomSpline
 import com.badlogic.gdx.math.Path
 import com.badlogic.gdx.math.Vector2
-import com.lyeeedar.Util.Colour
-import com.lyeeedar.Util.lerp
-import com.lyeeedar.Util.set
+import com.lyeeedar.Util.*
 
 class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val texture: TextureRegion, val samples: Int) : Renderable()
 {
@@ -17,20 +16,60 @@ class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val t
 	private var offsety: Float = Float.MAX_VALUE
 	private var tileSize: Float = Float.MAX_VALUE
 	private val lastCol: Colour = Colour.TRANSPARENT.copy()
+	private var lastWindowStart = -1f
+	private var lastWindowEnd = -1f
 
 	private val sample = Vector2()
 	private val lastSample = Vector2()
 	private val dir = Vector2()
 	private val realPos = Vector2()
+	private var windowStart = 0f
+	private var windowEnd = 1f
+
+	private var windowEndAnimDuration = 0f
+	private var windowSizeLag = 0f
+	private var animTime = 0f
+	var isAnimating = false
+
+	fun setAnimation(duration: Float, lag: Float)
+	{
+		animTime = 0f
+		windowEndAnimDuration = duration
+		windowSizeLag = lag
+		windowStart = 0f
+		windowEnd = 0f
+		isAnimating = true
+	}
+
+	fun completeAnimation()
+	{
+		windowEndAnimDuration = 0f
+		animTime = 0f
+		windowSizeLag = 0f
+		windowStart = 0f
+		windowEnd = 1f
+		isAnimating = false
+	}
 
 	override fun doUpdate(delta: Float): Boolean
 	{
-		val complete = animation?.update(delta) ?: true
+		var complete = animation?.update(delta) ?: true
 		if (complete)
 		{
 			animation?.free()
 			animation = null
 		}
+
+		if (animTime < windowEndAnimDuration)
+		{
+			animTime += delta
+			val alpha = animTime / windowEndAnimDuration
+			windowEnd = min(alpha, 1f)
+			windowStart = max(windowEnd - windowSizeLag, 0f)
+
+			complete = false
+		}
+		isAnimating = animTime < windowEndAnimDuration
 
 		return complete
 	}
@@ -42,7 +81,7 @@ class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val t
 
 	fun computeVertices(offsetx: Float, offsety: Float, tileSize: Float, colour: Colour)
 	{
-		if (this.offsetx == offsetx && this.offsety == offsety && this.tileSize == tileSize && lastCol == colour)
+		if (this.offsetx == offsetx && this.offsety == offsety && this.tileSize == tileSize && lastCol == colour && windowStart == lastWindowStart && windowEnd == lastWindowEnd)
 		{
 			return
 		}
@@ -51,6 +90,8 @@ class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val t
 		this.offsety = offsety
 		this.tileSize = tileSize
 		this.lastCol.set(colour)
+		this.lastWindowStart = windowStart
+		this.lastWindowEnd = windowEnd
 
 		val colBits = lastCol.toFloatBits()
 		val step = 1f / (samples - 1)
@@ -60,7 +101,7 @@ class CurveRenderable(val path: Path<Vector2>, val thicknessPixels: Float, val t
 		var vertI = 0
 		for (i in 0 until samples)
 		{
-			val alpha = step * i
+			val alpha = windowStart + step * i * (windowEnd - windowStart)
 			path.valueAt(sample, alpha)
 
 			if (i == 0)
