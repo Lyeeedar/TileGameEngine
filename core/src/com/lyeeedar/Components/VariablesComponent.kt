@@ -16,7 +16,7 @@ class VariablesComponent : AbstractComponent()
 
 	fun write(variableMap: ObjectFloatMap<String>, prefixName: String? = null)
 	{
-		val prefixName = prefixName ?: ""
+		val prefixName = if (prefixName != null) "$prefixName." else ""
 		for (pair in variables)
 		{
 			variableMap[prefixName + pair.key] = pair.value
