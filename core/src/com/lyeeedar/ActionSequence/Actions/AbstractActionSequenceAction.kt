@@ -1,5 +1,6 @@
 package com.lyeeedar.ActionSequence.Actions
 
+import com.lyeeedar.ActionSequence.ActionSequence
 import com.lyeeedar.ActionSequence.ActionSequenceState
 import com.lyeeedar.Util.DataNumericRange
 import com.lyeeedar.Util.XmlData
@@ -21,8 +22,10 @@ abstract class AbstractActionSequenceAction : XmlDataClass()
 	open fun onTurn(state: ActionSequenceState) {}
 	abstract fun enter(state: ActionSequenceState)
 	abstract fun exit(state: ActionSequenceState)
+	open fun update(delta: Float, state: ActionSequenceState) {}
 	open fun isBlocked(state: ActionSequenceState): Boolean = false
 	open fun isDelayed(state: ActionSequenceState): Boolean = false
+	open fun afterLoad(actionSequence: ActionSequence) { }
 
 	open fun cancel(state: ActionSequenceState)
 	{

@@ -185,6 +185,12 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 			triggers.add(ExitTrigger(action))
 		}
 		triggers.sort(compareBy { it.time })
+
+		for (i in 0 until rawActions.size)
+		{
+			val action = rawActions[i]
+			action.afterLoad(this)
+		}
 	}
 
 	fun preTurn(state: ActionSequenceState)
@@ -255,6 +261,12 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 
 	fun update(delta: Float, state: ActionSequenceState): Boolean
 	{
+		for (i in 0 until state.enteredActions.size)
+		{
+			val action = state.enteredActions[i]
+			action.update(delta, state)
+		}
+
 		if (isBlocked(state))
 		{
 			return false
@@ -393,7 +405,7 @@ class ActionSequence(val xml: XmlData) : XmlDataClass()
 	//endregion
 }
 
-abstract class AbstractActionSequenceTrigger(val action: AbstractActionSequenceAction, val time: Float)
+abstract class AbstractActionSequenceTrigger(val action: AbstractActionSequenceAction, var time: Float)
 {
 	abstract fun executeTrigger(state: ActionSequenceState): Boolean
 }
