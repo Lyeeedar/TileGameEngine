@@ -5,15 +5,17 @@ import com.badlogic.gdx.utils.ObjectFloatMap
 import com.lyeeedar.ActionSequence.AbstractActionSequenceTrigger
 import com.lyeeedar.ActionSequence.ActionSequence
 import com.lyeeedar.ActionSequence.ActionSequenceState
+import com.lyeeedar.Util.DataClass
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.XmlData
 import ktx.collections.set
 
 val targetDelayKey = "TargetDelay"
 
-class ExecuteTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
+@DataClass(category = "Meta", name = "ForEachTarget")
+class ProcessTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
 {
-	val dataKey = "ExecuteTargets" + this.hashCode()
+	val dataKey = "ProcessTargets" + this.hashCode()
 
 	val containedTriggers = Array<AbstractActionSequenceTrigger>()
 
@@ -114,6 +116,6 @@ class ExecuteTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
 	{
 		super.load(xmlData)
 	}
-	override val classID: String = "ExecuteTargetsIndividually"
+	override val classID: String = "ProcessTargetsIndividually"
 	//endregion
 }
