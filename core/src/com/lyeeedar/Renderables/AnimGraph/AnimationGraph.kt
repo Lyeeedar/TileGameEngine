@@ -149,56 +149,41 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 			}
 		}
 
-		for (action in current.actions)
+		updateActions(current.actions, state.enteredStateActions, delta, state)
+		updateActions(actions, state.enteredRootActions, delta, state)
+	}
+
+	private fun updateActions(actions: Array<AbstractAnimGraphAction>, enteredActions: ObjectSet<AbstractAnimGraphAction>, delta: Float, state: AnimationGraphState)
+	{
+		for (i in 0 until actions.size)
 		{
+			val action = actions[i]
 			val valid = action.condition.evaluate(state.variables, Random.sharedRandom) != 0f
 
 			if (valid)
 			{
-				if (!state.enteredStateActions.contains(action))
+				if (!enteredActions.contains(action))
 				{
 					action.enter(state)
-					state.enteredStateActions.add(action)
+					enteredActions.add(action)
 				}
 			}
 			else
 			{
-				if (state.enteredStateActions.contains(action))
+				if (enteredActions.contains(action))
 				{
 					action.exit(state)
-					state.enteredStateActions.remove(action)
-				}
-			}
-		}
-		for (action in actions)
-		{
-			val valid = action.condition.evaluate(state.variables, Random.sharedRandom) != 0f
-
-			if (valid)
-			{
-				if (!state.enteredRootActions.contains(action))
-				{
-					action.enter(state)
-					state.enteredRootActions.add(action)
-				}
-			}
-			else
-			{
-				if (state.enteredRootActions.contains(action))
-				{
-					action.exit(state)
-					state.enteredRootActions.remove(action)
+					enteredActions.remove(action)
 				}
 			}
 		}
 
-		for (action in state.enteredStateActions)
+		if (enteredActions.size > 0)
 		{
-			action.update(delta, state)
-		}
-		for (action in state.enteredRootActions)
-		{
-			action.update(delta, state)
+			for (action in enteredActions)
+			{
+				action.update(delta, state)
+			}
 		}
 	}
 
