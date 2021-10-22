@@ -1195,7 +1195,7 @@ void main()
 	lowp vec4 col2 = texture(u_texture, v_texCoords2);
 
 	lowp vec4 outCol = mix(col1, col2, v_blendAlpha);
-	outCol *= step(v_alphaRef, v_color.a * outCol.a);
+	outCol *= step(v_alphaRef, outCol.a);
 
 	fragColour = clamp(v_color * outCol, 0.0, 1.0) * vec4(light.rgb, 1.0);
 }

@@ -5,8 +5,8 @@ import com.lyeeedar.Components.position
 import com.lyeeedar.Components.renderable
 import com.lyeeedar.Components.transient
 import com.lyeeedar.Components.transientParticleArchetype
+import com.lyeeedar.Renderables.Attachments.RenderableAttachment
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
-import com.lyeeedar.Renderables.RenderableAttachment
 import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*

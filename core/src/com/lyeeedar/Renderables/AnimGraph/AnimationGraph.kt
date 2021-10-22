@@ -5,7 +5,9 @@ import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.esotericsoftware.spine.Animation
 import com.esotericsoftware.spine.AnimationState
+import com.esotericsoftware.spine.Slot
 import com.lyeeedar.Renderables.AbstractAnimationGraphNode
+import com.lyeeedar.Renderables.AnimGraph.AbstractAnimGraphAction
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.XmlData
 import com.lyeeedar.Util.XmlDataClassLoader
@@ -24,6 +26,13 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 
 	val variables = ObjectFloatMap<String>()
 
+	val slotCache = ObjectMap<String, Slot>()
+
+	val enteredRootActions = ObjectSet<AbstractAnimGraphAction>()
+	val enteredStateActions = ObjectSet<AbstractAnimGraphAction>()
+
+	val actionData = ObjectMap<String, Any>()
+
 	init
 	{
 		for (node in graph.nodeMap.values())
@@ -34,6 +43,18 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 				animationMap[node.animation] = anim
 			}
 		}
+	}
+
+	fun getSlot(name: String): Slot
+	{
+		var slot = slotCache[name]
+		if (slot == null)
+		{
+			slot = renderable.skeleton.findSlot(name)!!
+			slotCache[name] = slot
+		}
+
+		return slot
 	}
 
 	fun setTargetState(state: String)
@@ -55,6 +76,12 @@ class AnimationGraphState(val renderable: SkeletonRenderable, val graph: Animati
 
 	fun transitionTo(node: AbstractAnimationGraphNode)
 	{
+		for (action in enteredStateActions)
+		{
+			action.exit(this)
+		}
+		enteredStateActions.clear()
+
 		current = node
 		node.enter(this)
 		node.update(0f, this)
@@ -84,6 +111,8 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 
 	@DataGraphReference
 	lateinit var root: AbstractAnimationGraphNode
+
+	val actions: Array<AbstractAnimGraphAction> = Array()
 
 	fun update(delta: Float, state: AnimationGraphState)
 	{
@@ -120,12 +149,56 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 			}
 		}
 
-		for (i in 0 until current.visibilityRules.size)
+		for (action in current.actions)
 		{
-			val rule = current.visibilityRules[i]
-			val slot = state.renderable.skeleton.findSlot(rule.slot)
+			val valid = action.condition.evaluate(state.variables, Random.sharedRandom) != 0f
 
-			slot.color.a = rule.rule.evaluate(state.variables, Random.sharedRandom)
+			if (valid)
+			{
+				if (!state.enteredStateActions.contains(action))
+				{
+					action.enter(state)
+					state.enteredStateActions.add(action)
+				}
+			}
+			else
+			{
+				if (state.enteredStateActions.contains(action))
+				{
+					action.exit(state)
+					state.enteredStateActions.remove(action)
+				}
+			}
+		}
+		for (action in actions)
+		{
+			val valid = action.condition.evaluate(state.variables, Random.sharedRandom) != 0f
+
+			if (valid)
+			{
+				if (!state.enteredRootActions.contains(action))
+				{
+					action.enter(state)
+					state.enteredRootActions.add(action)
+				}
+			}
+			else
+			{
+				if (state.enteredRootActions.contains(action))
+				{
+					action.exit(state)
+					state.enteredRootActions.remove(action)
+				}
+			}
+		}
+
+		for (action in state.enteredStateActions)
+		{
+			action.update(delta, state)
+		}
+		for (action in state.enteredRootActions)
+		{
+			action.update(delta, state)
 		}
 	}
 
@@ -152,6 +225,18 @@ class AnimationGraph : GraphXmlDataClass<AbstractAnimationGraphNode>()
 			}
 		}
 		rootGUID = xmlData.get("Root")
+		val actionsEl = xmlData.getChildByName("Actions")
+		if (actionsEl != null)
+		{
+			for (el in actionsEl.children)
+			{
+				val objactions: AbstractAnimGraphAction
+				val objactionsEl = el
+				objactions = XmlDataClassLoader.loadAbstractAnimGraphAction(objactionsEl.get("classID", objactionsEl.name)!!)
+				objactions.load(objactionsEl)
+				actions.add(objactions)
+			}
+		}
 		resolve(nodeMap)
 		afterLoad()
 	}
@@ -173,7 +258,7 @@ abstract class AbstractAnimationGraphNode : GraphXmlDataClass<AbstractAnimationG
 	lateinit var name: String
 	lateinit var animation: String
 
-	val visibilityRules: Array<VisibilityRule> = Array()
+	val actions: Array<AbstractAnimGraphAction> = Array()
 
 	@Transient
 	val reachableNodes = ObjectIntMap<String>()
@@ -194,16 +279,16 @@ abstract class AbstractAnimationGraphNode : GraphXmlDataClass<AbstractAnimationG
 	{
 		name = xmlData.get("Name")
 		animation = xmlData.get("Animation")
-		val visibilityRulesEl = xmlData.getChildByName("VisibilityRules")
-		if (visibilityRulesEl != null)
+		val actionsEl = xmlData.getChildByName("Actions")
+		if (actionsEl != null)
 		{
-			for (el in visibilityRulesEl.children)
+			for (el in actionsEl.children)
 			{
-				val objvisibilityRules: VisibilityRule
-				val objvisibilityRulesEl = el
-				objvisibilityRules = VisibilityRule()
-				objvisibilityRules.load(objvisibilityRulesEl)
-				visibilityRules.add(objvisibilityRules)
+				val objactions: AbstractAnimGraphAction
+				val objactionsEl = el
+				objactions = XmlDataClassLoader.loadAbstractAnimGraphAction(objactionsEl.get("classID", objactionsEl.name)!!)
+				objactions.load(objactionsEl)
+				actions.add(objactions)
 			}
 		}
 	}
@@ -216,7 +301,8 @@ abstract class AbstractAnimationGraphNode : GraphXmlDataClass<AbstractAnimationG
 
 class Transition : GraphXmlDataClass<AbstractAnimationGraphNode>()
 {
-	var weight: Int = 1
+	@DataCompiledExpression(default = "1")
+	lateinit var condition: CompiledExpression
 
 	@DataGraphReference
 	lateinit var next: AbstractAnimationGraphNode
@@ -224,7 +310,7 @@ class Transition : GraphXmlDataClass<AbstractAnimationGraphNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		weight = xmlData.getInt("Weight", 1)
+		condition = CompiledExpression(xmlData.get("Condition", "1")!!)
 		nextGUID = xmlData.get("Next")
 	}
 	private lateinit var nextGUID: String
@@ -245,11 +331,9 @@ class LoopAnimationGraphNode : AbstractAnimationGraphNode()
 		if (visited.get(name, Int.MAX_VALUE) <= depth) return
 		visited.put(name, depth)
 
-		val maxWeight = transitions.maxByOrNull { it.weight }?.weight ?: return
-
 		for (next in transitions)
 		{
-			next.next.updateReachableNodes(visited, depth+(maxWeight-next.weight)+1)
+			next.next.updateReachableNodes(visited, depth+1)
 		}
 	}
 
@@ -360,20 +444,6 @@ class AnimAnimationGraphNode : AbstractAnimationGraphNode()
 	{
 		super.resolve(nodes)
 		next = nodes[nextGUID]!!
-	}
-	//endregion
-}
-
-class VisibilityRule : XmlDataClass()
-{
-	lateinit var slot: String
-	lateinit var rule: CompiledExpression
-
-	//region generated
-	override fun load(xmlData: XmlData)
-	{
-		slot = xmlData.get("Slot")
-		rule = CompiledExpression(xmlData.get("Rule", "1")!!)
 	}
 	//endregion
 }

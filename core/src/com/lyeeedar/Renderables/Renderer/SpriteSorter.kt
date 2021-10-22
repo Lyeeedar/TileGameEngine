@@ -15,12 +15,13 @@ import com.esotericsoftware.spine.attachments.SkeletonAttachment
 import com.esotericsoftware.spine.utils.SkeletonClipping
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
+import com.lyeeedar.Renderables.Attachments.LightAttachment
 import com.lyeeedar.Renderables.CurveRenderable
 import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.RenderableAttachment
+import com.lyeeedar.Renderables.Attachments.RenderableAttachment
 import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
@@ -656,6 +657,15 @@ class SpriteSorter(val renderer: SortedRenderer)
 				{
 					slot.attachment = null
 				}
+			}
+			else if (attachment is LightAttachment)
+			{
+				var wx = slot.bone.worldX
+				var wy = slot.bone.worldY
+
+				wx = (wx - renderer.offsetx) / renderer.tileSize
+				wy = (wy - renderer.offsety) / renderer.tileSize
+				renderer.addLight(attachment.light, wx, wy)
 			}
 
 			if (texture != null)
