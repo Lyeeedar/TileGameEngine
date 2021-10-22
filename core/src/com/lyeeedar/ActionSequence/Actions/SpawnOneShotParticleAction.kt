@@ -6,6 +6,8 @@ import com.lyeeedar.Components.renderable
 import com.lyeeedar.Components.transient
 import com.lyeeedar.Components.transientParticleArchetype
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
+import com.lyeeedar.Renderables.RenderableAttachment
+import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
@@ -28,18 +30,54 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 
 	var alignToVector: Boolean = true
 
+	@DataValue(visibleIf = "AttachmentSlot == null")
 	var spawnSingleParticle: Boolean = false
 
-	@DataValue(visibleIf = "SpawnSingleParticle == false")
+	@DataValue(visibleIf = "AttachmentSlot == null && SpawnSingleParticle == false")
 	var spawnBehaviour: SpawnBehaviour = SpawnBehaviour.IMMEDIATE
 
-	@DataValue(visibleIf = "SpawnSingleParticle == false && SpawnBehaviour != Immediate")
+	@DataValue(visibleIf = "SpawnBehaviour != Immediate")
 	var spawnDuration: Float = 0f
 	var makeParticleNonBlocking: Boolean = false
+
+	@DataValue(visibleIf = "SpawnSingleParticle == false")
+	var attachmentSlot: String? = null
 
 	override fun enter(state: ActionSequenceState)
 	{
 		val sourceTile = state.sourcePoint
+
+		if (attachmentSlot?.isNotEmpty() == true)
+		{
+			val renderable = state.source.get()?.renderable()?.renderable as? SkeletonRenderable
+
+			if (renderable != null)
+			{
+				var slot = renderable.skeleton.findSlot(attachmentSlot)
+				if (slot == null)
+				{
+					for (child in renderable.attachedSkeletons)
+					{
+						slot = child.skeleton.findSlot(attachmentSlot)
+						if (slot != null) break
+					}
+				}
+
+				if (slot != null)
+				{
+					val r = particle.getParticleEffect()
+					if (alignToVector)
+					{
+						r.rotation = state.facing.angle
+					}
+
+					val attachment = RenderableAttachment(r, "OneShotFx")
+					slot.attachment = attachment
+				}
+			}
+
+			return
+		}
 
 		if (state.targets.size == 0) return
 
@@ -167,6 +205,7 @@ class SpawnOneShotParticleAction : AbstractOneShotActionSequenceAction()
 		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
 		makeParticleNonBlocking = xmlData.getBoolean("MakeParticleNonBlocking", false)
+		attachmentSlot = xmlData.get("AttachmentSlot", null)
 	}
 	override val classID: String = "SpawnOneShotParticle"
 	//endregion

@@ -1,15 +1,11 @@
 package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.NumberUtils
 import com.esotericsoftware.spine.Skeleton
-import com.esotericsoftware.spine.SkeletonRenderer
 import com.esotericsoftware.spine.SkeletonRenderer.VertexEffect
 import com.esotericsoftware.spine.Slot
 import com.esotericsoftware.spine.attachments.ClippingAttachment
@@ -24,6 +20,7 @@ import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
+import com.lyeeedar.Renderables.RenderableAttachment
 import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
@@ -565,7 +562,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 			return
 		}
 
-		queueSkeleton(skeleton.skeleton, comparisonVal)
+		queueSkeleton(skeleton.skeleton, comparisonVal, layer, index)
 	}
 
 	private val vertices = com.badlogic.gdx.utils.FloatArray(32)
@@ -577,7 +574,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 	private val temp4 = Color()
 	private val temp5 = Color()
 	private val temp6 = Color()
-	private fun queueSkeleton(skeleton: Skeleton, comparisonVal: Int)
+	private fun queueSkeleton(skeleton: Skeleton, comparisonVal: Int, layer: Int, index: Int)
 	{
 		val tempPosition: Vector2 = this.temp
 		val tempUV: Vector2 = this.temp2
@@ -638,7 +635,27 @@ class SpriteSorter(val renderer: SortedRenderer)
 			{
 				val attachmentSkeleton = attachment.skeleton
 				attachmentSkeleton.updateWorldTransform(slot.bone)
-				queueSkeleton(attachmentSkeleton, comparisonVal)
+				queueSkeleton(attachmentSkeleton, comparisonVal, layer, index)
+			}
+			else if (attachment is RenderableAttachment)
+			{
+				val renderable = attachment.renderable
+
+				var wx = slot.bone.worldX
+				var wy = slot.bone.worldY
+
+				wx = (wx - renderer.offsetx) / renderer.tileSize - 0.5f
+				wy = (wy - renderer.offsety) / renderer.tileSize - 0.5f
+				renderer.queue(renderable, wx, wy, layer, index, Colour(slot.color))
+
+				if (renderable is ParticleEffect && renderable.completed)
+				{
+					slot.attachment = null
+				}
+				else if (renderable is Sprite && renderable.completed)
+				{
+					slot.attachment = null
+				}
 			}
 
 			if (texture != null)
