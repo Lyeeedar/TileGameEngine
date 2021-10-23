@@ -105,10 +105,12 @@ class ProcessTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
 	override fun exit(state: ActionSequenceState)
 	{
 		val substates = state.data[dataKey] as? Array<ActionSequenceState> ?: return
-		if (substates.size == 0)
+		if (substates.size != 0)
 		{
-			state.data.remove(dataKey)
+			// force complete
+			update(Float.MAX_VALUE, state)
 		}
+		state.data.remove(dataKey)
 	}
 
 	//region generated
