@@ -463,11 +463,11 @@ class SpriteSorter(val renderer: SortedRenderer)
 	{
 		val tileSize = renderer.tileSize
 
-		val lx = ix - width
-		val ly = iy - height
+		val lx = ix
+		val ly = iy
 
-		val x = ix * tileSize
-		val y = iy * tileSize
+		val x = (ix + 0.5f) * tileSize
+		val y = (iy + 0.5f) * tileSize
 
 		// check if onscreen
 

@@ -11,12 +11,16 @@ import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.SpaceSlot
 import com.lyeeedar.SpaceSlotType
 import com.lyeeedar.UI.RenderSystemWidget
+import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Colour
 import com.lyeeedar.Util.Statics
 import com.lyeeedar.Util.round
 
 abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(world, world.getEntitiesFor().all(ComponentType.Position, ComponentType.Renderable).get())
 {
+	val white = AssetManager.tryLoadTextureRegion("Sprites/white.png")!!
+	val checkerCol = Colour(0f, 0f, 0f, 0.04f).lockColour()
+
 	val shape: ShapeRenderer by lazy { ShapeRenderer() }
 	var drawParticleDebug = false
 	var drawEmitters = true
@@ -56,6 +60,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 	val shadows = world.getEntitiesFor().all(ComponentType.Position, ComponentType.Shadow).get()
 
 	var doStaticRender = true
+
+	var checkerboard = true
 
 	override fun beforeUpdate(deltaTime: Float)
 	{
@@ -114,7 +120,14 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 						val floor = tile.floor ?: continue
 
 						renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.getRenderCol())
-						drawExtraTile(tile)
+
+						if (checkerboard && tile.wall == null)
+						{
+							if ((tile.x + tile.y).rem(2) == 0)
+							{
+								renderer.queueTexture(white, tile.x.toFloat(), tile.y.toFloat(), SpaceSlot.FLOOR.ordinal, index = 1, colour = checkerCol)
+							}
+						}
 					}
 					else
 					{
@@ -151,6 +164,8 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 						val floor = tile.floor
 						if (floor != null) renderer.queueSpriteWrapper(floor, x.toFloat(), y.toFloat(), SpaceSlot.FLOOR.ordinal, colour = tile.getRenderCol())
 					}
+
+					drawExtraTile(tile)
 
 					if (!tile.skipRender)
 					{

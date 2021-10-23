@@ -54,6 +54,12 @@ class Colour()
 		this.fixed = fixed
 	}
 
+	fun lockColour(): Colour
+	{
+		fixed = true
+		return this
+	}
+
 	fun copy(): Colour = Colour(this)
 
 	fun isWhite(): Boolean = r == 1f && g == 1f && b == 1f && a == 1f
