@@ -16,7 +16,7 @@ val assetManagerLoadedTypes = setOf("ParticleEffect", "ParticleEffectDescription
                                     "Sound",
                                     "Colour",
                                     "Texture", "TextureRegion",
-                                    "Renderable", "Skeleton")
+                                    "Renderable", "Skeleton", "SkeletonRenderable")
 class VariableDescription(val variableType: VariableType, val name: String, val type: String, val defaultValue: String, val raw: String, val annotations: ArrayList<AnnotationDescription>)
 {
 	val dataName: String
@@ -132,6 +132,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             type = type.substring(0, type.length-1)
             nullable = true
         }
+		type = type.trim()
 
 		val get = if (classDefinition.classDef!!.getAnnotations().any { it.name == "DataClassCollection" }) "getAttribute" else "get"
 
@@ -248,6 +249,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			else if (type == "Sprite" && annotations.any { it.name == "DataLayeredSprite" })
 			{
 				loadName = "LayeredSprite"
+			}
+			else if (type == "SkeletonRenderable")
+			{
+				loadName = "Skeleton"
 			}
 			else
 			{
@@ -655,6 +660,10 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			        builder.appendln(indentation, "if ($el != null)")
 			        builder.appendln(indentation, "{")
 
+			        if (classDef.classDef == null)
+			        {
+				        throw RuntimeException("No classdef found for ${classDef.name}")
+			        }
 			        if (classDef.classDef!!.implementsStaticLoad)
 			        {
 				        builder.appendln(indentation + 1, "$name = $type.load($el)")
@@ -805,6 +814,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
             type = type.substring(0, type.length-1)
             isNullable = true
         }
+		type = type.trim()
 
         var nullable = ""
         var skipIfDefault = ""
@@ -933,6 +943,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 				"ParticleEffectDescription" -> "ParticleEffect,ParticleEffectTemplate"
 				"Sprite" -> if (annotations.any { it.name == "DataLayeredSprite" }) "RenderedLayeredSprite" else "Sprite"
 				"Renderable" -> "Sprite,TilingSprite,ParticleEffect,Skeleton"
+				"SkeletonRenderable" -> "Skeleton"
 				else -> type
 			}
             builder.appendlnFix(indentation, """<Data Name="$dataName" Keys="$dataType" $nullable $skipIfDefault $visibleIfStr meta:RefKey="Reference" />""")
