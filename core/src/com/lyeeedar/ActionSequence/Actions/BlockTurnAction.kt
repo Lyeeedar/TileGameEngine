@@ -25,7 +25,7 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 
 	override fun exit(state: ActionSequenceState)
 	{
-		val counter = state.data[key] as Int
+		val counter = state.data[key] as? Int ?: 0
 
 		if (counter <= 0)
 		{
@@ -35,7 +35,7 @@ class BlockTurnAction : AbstractOneShotActionSequenceAction()
 
 	override fun isBlocked(state: ActionSequenceState): Boolean
 	{
-		val counter = state.data[key] as Int
+		val counter = state.data[key] as? Int ?: 0
 		return counter > 0
 	}
 
