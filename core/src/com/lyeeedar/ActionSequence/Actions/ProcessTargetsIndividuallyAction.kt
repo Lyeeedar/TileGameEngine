@@ -98,6 +98,12 @@ class ProcessTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
 
 			subState.currentTime = -targetDelay[target, 0f]
 
+			val requiredTime = containedTriggers.last().time - subState.currentTime
+			if (requiredTime >= duration)
+			{
+				throw RuntimeException("ProcessTargetsIndividuallyAction not given enough time to execute all actions. Needs over $requiredTime but has $duration")
+			}
+
 			substates.add(subState)
 		}
 		state.data[dataKey] = substates
