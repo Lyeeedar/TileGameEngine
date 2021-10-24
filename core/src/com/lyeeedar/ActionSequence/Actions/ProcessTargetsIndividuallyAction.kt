@@ -92,6 +92,7 @@ class ProcessTargetsIndividuallyAction : AbstractDurationActionSequenceAction()
 		{
 			val subState = ActionSequenceState()
 			subState.set(state.source, state.sequence, state.world, state.rng.nextLong())
+			subState.targets.clear()
 			subState.targets.add(target)
 			subState.facing = state.facing
 
