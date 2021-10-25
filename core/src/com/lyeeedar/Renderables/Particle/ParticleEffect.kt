@@ -87,6 +87,7 @@ class ParticleEffect(val description: ParticleEffectDescription) : Renderable()
 	var lockPosition = false
 	var facing: Direction = Direction.NORTH
 	var useFacing = true
+	var isLit = true
 
 	var scale = 1f
 

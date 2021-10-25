@@ -287,7 +287,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 					val tex1Index = tex1.toInt()
 					val texture1 = particle.textures[pdata.texStream][tex1Index].second
 
-					val rs = RenderSprite.obtain().set(null, null, texture1, drawx * tileSize, drawy * tileSize, tempVec.x, tempVec.y, col, sizex, sizey, rotation, 1f, 1f, effect.flipX, effect.flipY, particle.blend, lit, comparisonVal)
+					val rs = RenderSprite.obtain().set(null, null, texture1, drawx * tileSize, drawy * tileSize, tempVec.x, tempVec.y, col, sizex, sizey, rotation, 1f, 1f, effect.flipX, effect.flipY, particle.blend, lit && effect.isLit, comparisonVal)
 
 					if (particle.blendKeyframes)
 					{
@@ -636,6 +636,7 @@ class SpriteSorter(val renderer: SortedRenderer)
 			{
 				val attachmentSkeleton = attachment.skeleton
 				attachmentSkeleton.updateWorldTransform(slot.bone)
+				attachmentSkeleton.color = skeleton.color
 				queueSkeleton(attachmentSkeleton, comparisonVal, layer, index)
 			}
 			else if (attachment is RenderableAttachment)

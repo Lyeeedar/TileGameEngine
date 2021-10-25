@@ -2,6 +2,7 @@ package com.lyeeedar.Screens
 
 import com.badlogic.gdx.*
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.input.GestureDetector
@@ -270,7 +271,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 	{
 		font = Statics.skin.getFont("default")
 
-		stage = Stage(ScalingViewport(Scaling.fit, Statics.resolution.xFloat, Statics.resolution.yFloat), SpriteBatch(2000))
+		stage = Stage(ScalingViewport(Scaling.fit, Statics.resolution.xFloat, Statics.resolution.yFloat), getStageBatch())
 
 		mainTable = Table()
 		mainTable.setFillParent(true)
@@ -304,6 +305,11 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 		inputMultiplexer.addProcessor(inputProcessorOne)
 
 		create()
+	}
+
+	open fun getStageBatch(): Batch
+	{
+		return SpriteBatch(2000)
 	}
 
 	// ----------------------------------------------------------------------

@@ -21,6 +21,8 @@ class RenderableComponent : DataComponent()
 		}
 	private var overrideRenderable: Renderable? = null
 
+	var ignoreTileCol = false
+
 	override fun initialiseFrom(data: AbstractComponentData)
 	{
 		val data = data as RenderableComponentData
@@ -36,6 +38,7 @@ class RenderableComponent : DataComponent()
 	override fun reset()
 	{
 		overrideRenderable = null
+		ignoreTileCol = false
 	}
 
 	companion object

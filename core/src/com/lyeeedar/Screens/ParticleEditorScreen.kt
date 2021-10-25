@@ -21,6 +21,7 @@ import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Particle.ParticleEffectDescription
 import com.lyeeedar.Renderables.Renderable
 import com.lyeeedar.Renderables.Renderer.SortedRenderer
+import com.lyeeedar.SpaceSlot
 import com.lyeeedar.UI.addClickListener
 import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
@@ -54,6 +55,8 @@ class ParticleEditorScreen : AbstractScreen()
 	val wood = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/wall_stone_10")
 	val water = AssetManager.loadSprite("Oryx/uf_split/uf_terrain/water_blue_1")
 
+	val checkerCol = Colour(0f, 0f, 0f, 0.2f).lockColour()
+
 	var backgroundType = BackgroundType.MAP
 	lateinit var particle: ParticleEffect
 	val batch = SpriteBatch()
@@ -68,6 +71,7 @@ class ParticleEditorScreen : AbstractScreen()
 	lateinit var debugButton: CheckBox
 	lateinit var alignUpButton: CheckBox
 	lateinit var flyRandomlyButton: CheckBox
+	lateinit var lockToTileButton: CheckBox
 	var deltaMultiplier = 1f
 	var size = 1
 
@@ -120,6 +124,7 @@ class ParticleEditorScreen : AbstractScreen()
 		debugButton = CheckBox("", Statics.skin)
 		alignUpButton = CheckBox("", Statics.skin)
 		flyRandomlyButton = CheckBox("", Statics.skin)
+		lockToTileButton = CheckBox("", Statics.skin)
 
 		val sizeBox = SelectBox<Int>(Statics.skin)
 		sizeBox.setItems(1, 2, 3, 4, 5)
@@ -156,6 +161,10 @@ class ParticleEditorScreen : AbstractScreen()
 
 		options.add(Label("Fly Randomly", Statics.skin))
 		options.add(flyRandomlyButton)
+		options.row()
+
+		options.add(Label("Lock To Tile", Statics.skin))
+		options.add(lockToTileButton)
 		options.row()
 
 		options.add(Label("Size", Statics.skin))
@@ -201,15 +210,26 @@ class ParticleEditorScreen : AbstractScreen()
 
 									   particlePos.set(sx, sy)
 
-									   val dist = p1.dst(p2)
-
 									   particle.animation = null
-									   particle.animation = MoveAnimation.obtain().set(dist, arrayOf(p1, p2), Interpolation.linear)
-									   particle.rotation = getRotation(p1, p2)
+									   if (lockToTileButton.isChecked)
+									   {
+										   particle.position.set(p2)
+										   particle.rotation = 0f
+									   }
+									   else
+									   {
+										   val dist = p1.dst(p2)
 
-									   Point.freeAll(crossedTiles)
-									   crossedTiles.clear()
-									   particle.collisionFun = fun(x:Int, y:Int) { crossedTiles.add(Point.obtain().set(x, y)) }
+										   particle.animation = MoveAnimation.obtain().set(dist, arrayOf(p1, p2), Interpolation.linear)
+										   particle.rotation = getRotation(p1, p2)
+
+										   Point.freeAll(crossedTiles)
+										   crossedTiles.clear()
+										   particle.collisionFun = fun(x: Int, y: Int)
+										   {
+											   crossedTiles.add(Point.obtain().set(x, y))
+										   }
+									   }
 
 									   particle.start()
 
@@ -392,6 +412,11 @@ class ParticleEditorScreen : AbstractScreen()
 					BackgroundType.WOOD -> {
 						spriteRender.queueSprite(wood, x.toFloat(), y.toFloat(), 0, 0, col)
 					}
+				}
+
+				if ((x + y).rem(2) == 0)
+				{
+					spriteRender.queueSprite(white, x.toFloat(), y.toFloat(), 0, 1, checkerCol)
 				}
 			}
 		}

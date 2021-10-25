@@ -244,7 +244,7 @@ abstract class AbstractRenderSystem(world: World<*>) : AbstractEntitySystem(worl
 			return
 		}
 
-		val tileCol = tile.getRenderCol()
+		val tileCol = if (entity.renderable()!!.ignoreTileCol) Colour.WHITE else tile.getRenderCol()
 
 		val tilesHeight = Statics.resolution[1] / tileSize
 		val outOfRange = pos.position.dist(playerOffsetX.toInt(), playerOffsetY.toInt()) > tilesHeight
