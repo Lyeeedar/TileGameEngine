@@ -71,6 +71,11 @@ class SkeletonCompressor
 		skeletonElements.addAll(xml.getChildrenByAttributeRecursively("meta:RefKey", "Skeleton"))
 		skeletonElements.addAll(xml.getChildrenByAttributeRecursively("RefKey", "Skeleton"))
 
+		if (xml.name == "Skeleton" && xml.hasAttribute("xmlns:meta"))
+		{
+			skeletonElements.add(xml)
+		}
+
 		try
 		{
 			for (el in skeletonElements)
@@ -109,5 +114,7 @@ class SkeletonCompressor
 
 		// fix atlas
 		atlasDst.writeText(atlasDst.readText().replace(imgSrc.name, imgDst.name))
+
+		System.out.println("Found skeleton ${data.path}")
 	}
 }

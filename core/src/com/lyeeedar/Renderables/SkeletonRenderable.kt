@@ -9,7 +9,8 @@ import com.lyeeedar.Util.*
 import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.XmlData
 
-@DataClass(name = "Skeleton", global = true)
+@DataClass(name = "Skeleton")
+@DataFile(colour = "170,170,150", icon="Sprites/Oryx/uf_split/uf_heroes/skeleton_1.png")
 class SkeletonData : XmlDataClass()
 {
 	@DataFileReference(allowedFileTypes = "json")
