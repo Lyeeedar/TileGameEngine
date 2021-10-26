@@ -70,7 +70,8 @@ class TextureCompressor
 		}
 
 		//findFilesRecursive(File("../assetsraw").absoluteFile)
-		//parseCodeFilesRecursive(File("../../core/src").absoluteFile)
+		parseCodeFilesRecursive(File("../core/src").absoluteFile)
+		parseCodeFilesRecursive(File("../../engine/core/src").absoluteFile)
 		processAtlas()
 
 		var output = "algorithm:$algorithmVersion\n"
@@ -119,7 +120,7 @@ class TextureCompressor
 	private fun parseCodeFile(file: String)
 	{
 		val contents = File(file).readText()
-		val regex = Regex("AssetManager.loadTexture\\(\".*?\"")//(\".*\")")
+		val regex = Regex("AssetManager.loadTexture\\(\".*?\"")
 
 		val occurances = regex.findAll(contents)
 
@@ -129,6 +130,7 @@ class TextureCompressor
 			path = path.replace("AssetManager.loadTexture(\"", "")
 			path = path.replace("\"", "")
 
+			System.out.println("found $path")
 			processTexture(path)
 		}
 	}
@@ -194,7 +196,7 @@ class TextureCompressor
 		if (!file.startsWith("Sprites/")) file = "Sprites/" + file
 		if (!file.endsWith(".png")) file += ".png"
 
-		val f = File(file)
+		val f = File("../assetsraw/$file")
 		if (!f.exists()) return false
 
 		return compressTexture(file) != null
@@ -209,7 +211,7 @@ class TextureCompressor
 
 		System.out.println("Compressing texture '$file'")
 
-		val f = File(file)
+		val f = File("../assetsraw/$file")
 		val bytes = f.readBytes()
 		val bhash = MessageDigest.getInstance("MD5").digest(bytes)
 		val hash = bhash.fold("", { str, it -> str + "%02x".format(it) })

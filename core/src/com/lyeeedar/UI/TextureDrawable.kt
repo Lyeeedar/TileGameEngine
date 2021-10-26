@@ -11,6 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.TransformDrawable
 open class TextureDrawable : BaseDrawable, TransformDrawable
 {
 	var texture: Texture? = null
+	var color: Color = Color.WHITE.cpy()
+	var scale = 1f
+	var offsetX = 0f
+	var offsetY = 0f
 
 	/** Creates an uninitialized TextureRegionDrawable. The texture region must be set before use.  */
 	constructor()
@@ -29,7 +33,13 @@ open class TextureDrawable : BaseDrawable, TransformDrawable
 
 	override fun draw(batch: Batch?, x: Float, y: Float, width: Float, height: Float)
 	{
-		batch!!.draw(this.texture, x, y, width, height)
+		batch!!.color = color
+
+		val tex = texture!!
+
+		val u2 = if (tex.uWrap == Texture.TextureWrap.ClampToEdge) 1f else (width / tex.width) * scale
+		val v2 = if (tex.vWrap == Texture.TextureWrap.ClampToEdge) 1f else (height / tex.height) * scale
+		batch.draw(this.texture, x, y, width, height, offsetX, offsetY, offsetX+u2, offsetY+v2)
 	}
 
 	override fun draw(batch: Batch, x: Float, y: Float, originX: Float, originY: Float, width: Float, height: Float, scaleX: Float, scaleY: Float, rotation: Float)
@@ -37,16 +47,22 @@ open class TextureDrawable : BaseDrawable, TransformDrawable
 		throw NotImplementedError()
 	}
 
-	fun tint(tint: Color): SpriteDrawable
+	fun scale(scale: Float): TextureDrawable
 	{
-		val sprite = Sprite(texture)
-		sprite.color = tint
-		sprite.setSize(minWidth, minHeight)
-		val drawable = SpriteDrawable(sprite)
-		drawable.leftWidth = leftWidth
-		drawable.rightWidth = rightWidth
-		drawable.topHeight = topHeight
-		drawable.bottomHeight = bottomHeight
-		return drawable
+		this.scale = scale
+		return this
+	}
+
+	fun offset(offsetX: Float, offsetY: Float): TextureDrawable
+	{
+		this.offsetX = offsetX
+		this.offsetY = offsetY
+		return this
+	}
+
+	fun tint(tint: Color): TextureDrawable
+	{
+		color.set(tint)
+		return this
 	}
 }

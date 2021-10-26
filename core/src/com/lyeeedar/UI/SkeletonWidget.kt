@@ -11,7 +11,6 @@ class SkeletonWidget(val skeleton: SkeletonRenderable, val originalWidth: Float,
 	{
 		this.width = originalWidth
 		this.height = originalHeight
-		setFillParent(true)
 	}
 
 	private val skeletonRenderer = SkeletonRenderer()

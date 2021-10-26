@@ -161,7 +161,7 @@ class AssetManager
 			var rawpath = path
 			if (!rawpath.endsWith(".png")) rawpath += ".png"
 
-			val path = rawpath//"CompressedData/" + rawpath.hashCode() + ".ktx"
+			val path = "CompressedData/" + rawpath.hashCode() + ".png"
 
 			if (loadedTextures.containsKey(path))
 			{

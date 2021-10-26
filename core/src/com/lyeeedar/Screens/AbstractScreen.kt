@@ -1,6 +1,7 @@
 package com.lyeeedar.Screens
 
 import com.badlogic.gdx.*
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -88,7 +89,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 		Future.update(delta)
 		Tutorial.current?.act(delta)
 
-		Gdx.gl.glClearColor(0f, 0f, 0f, 0f)
+		Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
 		doRender(delta)
@@ -347,6 +348,7 @@ abstract class AbstractScreen() : Screen, InputProcessor, GestureDetector.Gestur
 	var actualFps: Int = 0
 	var fpsAccumulator: Float = 0f
 	var drawFPS = true
+	var backgroundColor = Color.BLACK.cpy()
 
 	lateinit var font: BitmapFont
 
