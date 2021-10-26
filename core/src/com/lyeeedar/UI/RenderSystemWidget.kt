@@ -15,7 +15,7 @@ import com.lyeeedar.Util.AssetManager
 import com.lyeeedar.Util.Point
 import com.lyeeedar.Util.Statics
 
-class RenderSystemWidget(val world: World<*>) : Widget()
+class RenderSystemWidget(var world: World<*>) : Widget()
 {
 	val white = AssetManager.tryLoadTextureRegion("GUI/border")
 
