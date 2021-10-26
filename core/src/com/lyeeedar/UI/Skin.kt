@@ -276,6 +276,9 @@ fun loadSkin(): Skin
 	scrollPaneStyle.vScrollKnob = buttonBackground
 	skin.add("default", scrollPaneStyle)
 
+	val noBarScrollPaneStyle = ScrollPane.ScrollPaneStyle()
+	skin.add("noBar", noBarScrollPaneStyle)
+
 	val listStyle = com.badlogic.gdx.scenes.scene2d.ui.List.ListStyle()
 	listStyle.background = NinePatchDrawable(NinePatch(AssetManager.tryLoadTextureRegion("Sprites/GUI/Tooltip.png"), 21, 21, 21, 21))
 	listStyle.font = skin.getFont("default")

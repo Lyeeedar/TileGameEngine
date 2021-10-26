@@ -53,6 +53,11 @@ class Future
 
 		fun call(function: () -> Unit, delay: Float, token: Any? = null)
 		{
+			call(delay, token, function)
+		}
+
+		fun call(delay: Float, token: Any? = null, function: () -> Unit)
+		{
 			synchronized(processing)
 			{
 				if (processing)
