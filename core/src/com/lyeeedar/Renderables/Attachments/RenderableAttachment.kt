@@ -5,4 +5,8 @@ import com.lyeeedar.Renderables.Renderable
 
 class RenderableAttachment(var renderable: Renderable, name: String) : Attachment(name)
 {
+	override fun copy(): Attachment
+	{
+		return RenderableAttachment(renderable.copy(), name)
+	}
 }

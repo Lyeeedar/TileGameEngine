@@ -1,11 +1,14 @@
 package com.lyeeedar.Renderables.Renderer
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.NumberUtils
 import com.esotericsoftware.spine.Skeleton
+import com.esotericsoftware.spine.SkeletonRenderer
 import com.esotericsoftware.spine.SkeletonRenderer.VertexEffect
 import com.esotericsoftware.spine.Slot
 import com.esotericsoftware.spine.attachments.ClippingAttachment
@@ -16,12 +19,12 @@ import com.esotericsoftware.spine.utils.SkeletonClipping
 import com.lyeeedar.BlendMode
 import com.lyeeedar.Direction
 import com.lyeeedar.Renderables.Attachments.LightAttachment
+import com.lyeeedar.Renderables.Attachments.RenderableAttachment
 import com.lyeeedar.Renderables.CurveRenderable
 import com.lyeeedar.Renderables.Particle.Emitter
 import com.lyeeedar.Renderables.Particle.Particle
 import com.lyeeedar.Renderables.Particle.ParticleEffect
 import com.lyeeedar.Renderables.Renderable
-import com.lyeeedar.Renderables.Attachments.RenderableAttachment
 import com.lyeeedar.Renderables.SkeletonRenderable
 import com.lyeeedar.Renderables.Sprite.Sprite
 import com.lyeeedar.Renderables.Sprite.TilingSprite
@@ -601,9 +604,14 @@ class SpriteSorter(val renderer: SortedRenderer)
 		for (i in 0 until skeleton.drawOrder.size)
 		{
 			val slot = drawOrder[i] as Slot
+			if (!slot.bone.isActive)
+			{
+				continue
+			}
+
 			var texture: TextureRegion? = null
 			val vertexSize = if (clipper.isClipping) 2 else 5
-			val attachment = slot.attachment
+			val attachment = slot.attachment ?: continue
 			if (attachment is RegionAttachment)
 			{
 				val region = attachment
@@ -749,13 +757,13 @@ class SpriteSorter(val renderer: SortedRenderer)
 
 	private fun applyVertexEffect(vertices: FloatArray, verticesLength: Int, stride: Int, light: Float, dark: Float)
 	{
-		val tempPosition: Vector2 = this.temp
-		val tempUV: Vector2 = this.temp2
-		val tempLight1: Color = this.temp3
-		val tempDark1: Color = this.temp4
-		val tempLight2: Color = this.temp5
-		val tempDark2: Color = this.temp6
-		val vertexEffect: VertexEffect = this.vertexEffect!!
+		val tempPosition = temp
+		val tempUV = temp2
+		val tempLight1 = temp3
+		val tempDark1 = temp4
+		val tempLight2 = temp5
+		val tempDark2 = temp6
+		val vertexEffect = vertexEffect!!
 		tempLight1.set(NumberUtils.floatToIntColor(light))
 		tempDark1.set(NumberUtils.floatToIntColor(dark))
 		if (stride == 5)
