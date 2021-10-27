@@ -103,8 +103,8 @@ class SkeletonCompressor
 
 		val atlasSrc = File("$src.atlas")
 		val atlasDst = File("$dst.atlas")
-		val jsonSrc = File("$src.json")
-		val jsonDst = File("$dst.json")
+		val jsonSrc = File("$src.skel")
+		val jsonDst = File("$dst.skel")
 
 		// copy
 		atlasSrc.copyTo(atlasDst, true)

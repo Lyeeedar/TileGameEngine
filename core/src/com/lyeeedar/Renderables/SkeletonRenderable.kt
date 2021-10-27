@@ -13,7 +13,7 @@ import com.lyeeedar.Util.XmlData
 @DataFile(colour = "170,170,150", icon="Sprites/Oryx/uf_split/uf_heroes/skeleton_1.png")
 class SkeletonData : XmlDataClass()
 {
-	@DataFileReference(allowedFileTypes = "json")
+	@DataFileReference(allowedFileTypes = "skel")
 	lateinit var path: String
 
 	@DataFileReference(resourceType = "AnimationGraph")

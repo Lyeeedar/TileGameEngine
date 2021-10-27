@@ -533,9 +533,9 @@ class AssetManager
 				filepath = "CompressedData/" + filepath.hashCode()
 
 				val atlas = TextureAtlas(Gdx.files.internal("${filepath}.atlas"))
-				val json = SkeletonJson(atlas)
-				json.scale = data.scale * (48f / 256f)
-				skeletonData = json.readSkeletonData(Gdx.files.internal("${filepath}.json"))
+				val loader = SkeletonBinary(atlas)
+				loader.scale = data.scale * (48f / 256f)
+				skeletonData = loader.readSkeletonData(Gdx.files.internal("${filepath}.skel"))
 
 				loadedSkeletons[key] = skeletonData
 			}
