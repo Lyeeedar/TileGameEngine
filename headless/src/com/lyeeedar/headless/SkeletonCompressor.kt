@@ -99,21 +99,33 @@ class SkeletonCompressor
 		dst = "CompressedData/${dst.hashCode()}"
 
 		val src = "../assetsraw/" + data.path
+		val srcFolder = src.removeSuffix("/" + src.split("/").last())
 
 		val atlasSrc = File("$src.atlas")
 		val atlasDst = File("$dst.atlas")
-		val imgSrc = File("$src.png")
-		val imgDst = File("$dst.png")
 		val jsonSrc = File("$src.json")
 		val jsonDst = File("$dst.json")
 
 		// copy
 		atlasSrc.copyTo(atlasDst, true)
-		imgSrc.copyTo(imgDst, true)
 		jsonSrc.copyTo(jsonDst, true)
 
-		// fix atlas
-		atlasDst.writeText(atlasDst.readText().replace(imgSrc.name, imgDst.name))
+		// copy images and fix atlas
+		var atlasContents = atlasDst.readText()
+		atlasDst.forEachLine {
+			if (it.endsWith(".png"))
+			{
+				val imgPath = "$srcFolder/$it"
+				val imgDstName = "${imgPath.hashCode()}.png"
+
+				val imgSrc = File(imgPath)
+				val imgDst = File("CompressedData/$imgDstName")
+
+				imgSrc.copyTo(imgDst, true)
+				atlasContents = atlasContents.replace(it, imgDstName)
+			}
+		}
+		atlasDst.writeText(atlasContents)
 
 		System.out.println("Found skeleton ${data.path}")
 	}
