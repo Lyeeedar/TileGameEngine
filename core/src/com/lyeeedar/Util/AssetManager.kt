@@ -544,6 +544,7 @@ class AssetManager
 			val stateData = AnimationStateData(skeletonData)
 			stateData.defaultMix = 0.1f
 			val state = AnimationState(stateData)
+			skeleton.setSkin(data.skin)
 
 			val renderable = SkeletonRenderable(skeleton, state, animationGraph)
 			renderable.colour = data.colour ?: Colour.WHITE

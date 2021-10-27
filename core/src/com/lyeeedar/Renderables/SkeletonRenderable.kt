@@ -23,6 +23,8 @@ class SkeletonData : XmlDataClass()
 
 	var colour: Colour? = Colour.WHITE
 
+	var skin: String = "default"
+
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
@@ -30,6 +32,7 @@ class SkeletonData : XmlDataClass()
 		animGraph = xmlData.get("AnimGraph")
 		scale = xmlData.getFloat("Scale", 1f)
 		colour = AssetManager.tryLoadColour(xmlData.getChildByName("Colour"))
+		skin = xmlData.get("Skin", "default")!!
 	}
 	//endregion
 }
@@ -103,6 +106,7 @@ class SkeletonRenderable(val skeleton: Skeleton, val state: AnimationState, val 
 		val stateData = AnimationStateData(skeletonData)
 		stateData.defaultMix = 0.1f
 		val state = AnimationState(stateData)
+		skeleton.setSkin(this.skeleton.skin.name)
 
 		val renderable = SkeletonRenderable(skeleton, state, graph)
 		renderable.colour.set(colour)
