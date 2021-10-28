@@ -148,7 +148,7 @@ class SelectNamedAreaAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		mode = Mode.valueOf(xmlData.get("Mode").uppercase(Locale.ENGLISH))
 		countExp = createExpression(xmlData.get("CountExp", "1")!!)
 		name = xmlData.get("Name")
 		nodeGUID = xmlData.get("Node", null)

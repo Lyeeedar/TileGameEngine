@@ -73,7 +73,7 @@ class TranslateAction : AbstractMapGenerationAction()
 		super.load(xmlData)
 		xEqn = createExpression(xmlData.get("XEqn", "1")!!)
 		yEqn = createExpression(xmlData.get("YEqn", "1")!!)
-		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		mode = Mode.valueOf(xmlData.get("Mode").uppercase(Locale.ENGLISH))
 	}
 	override val classID: String = "Translate"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

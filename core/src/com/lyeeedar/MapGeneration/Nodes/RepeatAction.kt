@@ -152,7 +152,7 @@ class RepeatAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		remainderMode = RemainderMode.valueOf(xmlData.get("RemainderMode").toUpperCase(Locale.ENGLISH))
+		remainderMode = RemainderMode.valueOf(xmlData.get("RemainderMode").uppercase(Locale.ENGLISH))
 		onX = xmlData.getBoolean("OnX", true)
 		size = createExpression(xmlData.get("Size", "1")!!)
 		childGUID = xmlData.get("Child")

@@ -82,7 +82,7 @@ class SquidlibSectionGeneratorAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
+		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").uppercase(Locale.ENGLISH))
 		water = xmlData.getInt("Water", 0)
 		lake = xmlData.getInt("Lake", 0)
 		maze = xmlData.getInt("Maze", 0)

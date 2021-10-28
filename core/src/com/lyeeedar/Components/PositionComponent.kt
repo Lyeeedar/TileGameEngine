@@ -86,7 +86,7 @@ class PositionComponentData : AbstractComponentData()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		slot = SpaceSlot.valueOf(xmlData.get("Slot", SpaceSlot.ENTITY.toString())!!.toUpperCase(Locale.ENGLISH))
+		slot = SpaceSlot.valueOf(xmlData.get("Slot", SpaceSlot.ENTITY.toString())!!.uppercase(Locale.ENGLISH))
 		moveable = xmlData.getBoolean("Moveable", true)
 		canSwap = xmlData.getBoolean("CanSwap", false)
 		size = xmlData.getInt("Size", 1)

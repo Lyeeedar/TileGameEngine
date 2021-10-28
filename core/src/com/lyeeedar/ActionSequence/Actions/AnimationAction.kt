@@ -69,7 +69,7 @@ class AnimationAction : AbstractDurationActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		anim = Animation.valueOf(xmlData.get("Anim").toUpperCase(Locale.ENGLISH))
+		anim = Animation.valueOf(xmlData.get("Anim").uppercase(Locale.ENGLISH))
 		startSize = xmlData.getFloat("StartSize", 1f)
 		endSize = xmlData.getFloat("EndSize", 1f)
 		oneWay = xmlData.getBoolean("OneWay", true)

@@ -92,7 +92,7 @@ class TilingSprite() : Renderable()
 		{
 			for (el in directionsEl.children())
 			{
-				val dir = Direction.valueOf(el.name.toUpperCase(Locale.ENGLISH))
+				val dir = Direction.valueOf(el.name.uppercase(Locale.ENGLISH))
 				val sprite = AssetManager.loadSprite(el)
 
 				val bitflag = when (dir)

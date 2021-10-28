@@ -82,7 +82,7 @@ class SoundInstance
 			sound.rangeMax = xml.getInt("RangeMax")
 			sound.volume = xml.getFloat("Volume", sound.volume)
 			sound.pitch = xml.getFloat("Pitch", sound.pitch)
-			sound.function = Function.valueOf(xml.get("Function", "Linear")!!.toUpperCase(Locale.ENGLISH))
+			sound.function = Function.valueOf(xml.get("Function", "Linear")!!.uppercase(Locale.ENGLISH))
 
 			return sound
 		}

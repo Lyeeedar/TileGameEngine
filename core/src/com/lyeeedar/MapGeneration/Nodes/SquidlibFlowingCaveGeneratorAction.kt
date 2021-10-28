@@ -46,7 +46,7 @@ class SquidlibFlowingCaveGeneratorAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
+		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").uppercase(Locale.ENGLISH))
 		roomChance = xmlData.getFloat("RoomChance", 0.0f)
 		overwrite = xmlData.getBoolean("Overwrite", true)
 	}

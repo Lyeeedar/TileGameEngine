@@ -237,7 +237,7 @@ class AssetManager
 					val texName = overrideEl.get("Name")
 					val overrideName = overrideEl.getChildByName("Texture")!!.get("File")
 					val blendModeStr = overrideEl.get("BlendMode", "Current")!!
-					val blendMode = if (blendModeStr != "Current") BlendMode.valueOf(blendModeStr.toUpperCase(Locale.ENGLISH)) else null
+					val blendMode = if (blendModeStr != "Current") BlendMode.valueOf(blendModeStr.uppercase(Locale.ENGLISH)) else null
 
 					effect.textureOverrides.add(TextureOverride(texName, overrideName, blendMode))
 				}
@@ -494,12 +494,14 @@ class AssetManager
 
 		fun loadRenderable(xml:XmlData): Renderable
 		{
-			val type = xml.getAttribute("meta:RefKey", null)?.toUpperCase(Locale.ENGLISH) ?: xml.name.toUpperCase(Locale.ENGLISH)
+			val type =
+				xml.getAttribute("meta:RefKey", null)?.uppercase(Locale.ENGLISH) ?: xml.name.uppercase(Locale.ENGLISH)
 
-			return when(type)
+			return when (type)
 			{
 				"SPRITE" -> AssetManager.loadSprite(xml)
-				"PARTICLEEFFECT", "PARTICLE", "PARTICLEEFFECTTEMPLATE" -> AssetManager.loadParticleEffect(xml).getParticleEffect()
+				"PARTICLEEFFECT", "PARTICLE", "PARTICLEEFFECTTEMPLATE" -> AssetManager.loadParticleEffect(xml)
+					.getParticleEffect()
 				"TILINGSPRITE" -> AssetManager.loadTilingSprite(xml)
 				"SKELETON" -> AssetManager.loadSkeleton(xml)
 				else -> throw Exception("Unknown renderable type '$type'!")

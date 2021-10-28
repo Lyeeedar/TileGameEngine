@@ -228,7 +228,7 @@ class SplitPart : GraphXmlDataClass<MapGeneratorNode>()
 	//region generated
 	override fun load(xmlData: XmlData)
 	{
-		side = SplitSide.valueOf(xmlData.get("Side").toUpperCase(Locale.ENGLISH))
+		side = SplitSide.valueOf(xmlData.get("Side").uppercase(Locale.ENGLISH))
 		size = createExpression(xmlData.get("Size", "1")!!)
 		childGUID = xmlData.get("Child", null)
 	}

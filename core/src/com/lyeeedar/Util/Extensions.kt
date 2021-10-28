@@ -9,7 +9,7 @@ import java.util.*
  * Created by Philip on 04-Jul-16.
  */
 
-fun String.neaten() = this.substring(0, 1).toUpperCase(Locale.ENGLISH) + this.substring(1).lowercase(Locale.ENGLISH)
+fun String.neaten() = this.substring(0, 1).uppercase(Locale.ENGLISH) + this.substring(1).lowercase(Locale.ENGLISH)
 
 fun Char.isVowel(): Boolean
 {

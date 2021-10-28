@@ -148,7 +148,7 @@ class FilterAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		mode = Mode.valueOf(xmlData.get("Mode").uppercase(Locale.ENGLISH))
 		char = xmlData.get("Char", " ")!![0]
 		centerDist = xmlData.getInt("CenterDist", 2)
 		nodeGUID = xmlData.get("Node", null)

@@ -113,10 +113,10 @@ class ScaleAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		mode = Mode.valueOf(xmlData.get("Mode").uppercase(Locale.ENGLISH))
 		xEqn = createExpression(xmlData.get("XEqn", "1")!!)
 		yEqn = createExpression(xmlData.get("YEqn", "1")!!)
-		snap = Direction.valueOf(xmlData.get("Snap").toUpperCase(Locale.ENGLISH))
+		snap = Direction.valueOf(xmlData.get("Snap").uppercase(Locale.ENGLISH))
 	}
 	override val classID: String = "Scale"
 	override fun resolve(nodes: ObjectMap<String, MapGeneratorNode>)

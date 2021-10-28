@@ -33,7 +33,7 @@ class XmlLoadTester
 					System.out.println("Begin test load '$path'")
 
 					val xml = XmlData.getXml(path)
-					when (xml.name.toUpperCase(Locale.ENGLISH))
+					when (xml.name.uppercase(Locale.ENGLISH))
 					{
 						"EFFECT" -> ParticleEffect.load(path.split("Particles/")[1], ParticleEffectDescription(""))
 						"BEHAVIOURTREE" -> BehaviourTree.load(path)
@@ -43,8 +43,7 @@ class XmlLoadTester
 					}
 
 					System.out.println("Success")
-				}
-				catch (ex: Exception)
+				} catch (ex: Exception)
 				{
 					System.err.println("Failed to load '$path'")
 					throw ex

@@ -35,9 +35,9 @@ class SetStateBehaviourAction : AbstractBehaviourAction()
 		{
 			for (el in outputMapEl.children)
 			{
-				val enumVal = EvaluationState.valueOf(el.name.toUpperCase(Locale.ENGLISH))
+				val enumVal = EvaluationState.valueOf(el.name.uppercase(Locale.ENGLISH))
 				val objoutputMap: EvaluationState
-				objoutputMap = EvaluationState.valueOf(el.text.toUpperCase(Locale.ENGLISH))
+				objoutputMap = EvaluationState.valueOf(el.text.uppercase(Locale.ENGLISH))
 				outputMap[enumVal] = objoutputMap
 			}
 		}

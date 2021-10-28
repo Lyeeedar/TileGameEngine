@@ -205,7 +205,7 @@ class GradientModifier : AbstractImageModifier()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		type = Type.valueOf(xmlData.get("Type", Type.INTERNAL.toString())!!.toUpperCase(Locale.ENGLISH))
+		type = Type.valueOf(xmlData.get("Type", Type.INTERNAL.toString())!!.uppercase(Locale.ENGLISH))
 		val coloursEl = xmlData.getChildByName("Colours")
 		if (coloursEl != null)
 		{

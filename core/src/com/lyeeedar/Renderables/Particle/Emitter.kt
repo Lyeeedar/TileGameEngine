@@ -604,9 +604,9 @@ class Emitter(val particleEffect: ParticleEffect)
 
 			val emitter = Emitter(particleEffect)
 
-			emitter.type = EmissionType.valueOf(xml.get("Type", "Absolute")!!.toUpperCase(Locale.ENGLISH))
-			emitter.simulationSpace = SimulationSpace.valueOf(xml.get("Space", "World")!!.toUpperCase(Locale.ENGLISH))
-			emitter.shape = EmissionShape.valueOf(xml.get("Shape", "Box")!!.toUpperCase(Locale.ENGLISH))
+			emitter.type = EmissionType.valueOf(xml.get("Type", "Absolute")!!.uppercase(Locale.ENGLISH))
+			emitter.simulationSpace = SimulationSpace.valueOf(xml.get("Space", "World")!!.uppercase(Locale.ENGLISH))
+			emitter.shape = EmissionShape.valueOf(xml.get("Shape", "Box")!!.uppercase(Locale.ENGLISH))
 
 			emitter.width = xml.getFloat("Width", 0f)
 			if (emitter.width == 0f && emitter.shape != EmissionShape.CONE) emitter.width = 0.001f
@@ -620,8 +620,8 @@ class Emitter(val particleEffect: ParticleEffect)
 			}
 
 			emitter.emitterRotation = xml.getFloat("Rotation", 0f)
-			emitter.area = EmissionArea.valueOf(xml.get("Area", "Interior")!!.toUpperCase(Locale.ENGLISH))
-			emitter.dir = EmissionDirection.valueOf(xml.get("Direction", "Radial")!!.toUpperCase(Locale.ENGLISH))
+			emitter.area = EmissionArea.valueOf(xml.get("Area", "Interior")!!.uppercase(Locale.ENGLISH))
+			emitter.dir = EmissionDirection.valueOf(xml.get("Direction", "Radial")!!.uppercase(Locale.ENGLISH))
 			emitter.particleSpeed = Range(xml.get("ParticleSpeed"))
 			emitter.particleRotation = Range(xml.get("ParticleRotation"))
 			emitter.gravity = xml.getFloat("Gravity", 0f)

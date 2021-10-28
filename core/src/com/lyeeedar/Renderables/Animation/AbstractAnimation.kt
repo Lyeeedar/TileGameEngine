@@ -38,9 +38,9 @@ abstract class AbstractAnimation
 
 	companion object
 	{
-		fun load(xml:XmlData): AbstractAnimation
+		fun load(xml: XmlData): AbstractAnimation
 		{
-			val uname = xml.name.toUpperCase(Locale.ENGLISH)
+			val uname = xml.name.uppercase(Locale.ENGLISH)
 			val c = getClass(uname)
 			val instance = ClassReflection.getConstructor(c).newInstance() as AbstractAnimation
 
@@ -76,7 +76,7 @@ abstract class AbstractAnimationDefinition
 	{
 		fun load(xmlData: XmlData): AbstractAnimationDefinition
 		{
-			val def = when(xmlData.getAttribute("meta:RefKey").toUpperCase(Locale.ENGLISH))
+			val def = when (xmlData.getAttribute("meta:RefKey").uppercase(Locale.ENGLISH))
 			{
 				"MOVEANIMATION" -> MoveAnimationDefinition()
 				"LEAPANIMATION" -> LeapAnimationDefinition()

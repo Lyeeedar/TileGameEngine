@@ -190,7 +190,7 @@ class Effector(val emitter: Emitter)
 		fun load(xmlData: XmlData, emitter: Emitter): Effector
 		{
 			val effector = Effector(emitter)
-			effector.type = EffectorType.valueOf(xmlData.get("Type", "Point")!!.toUpperCase(Locale.ENGLISH))
+			effector.type = EffectorType.valueOf(xmlData.get("Type", "Point")!!.uppercase(Locale.ENGLISH))
 
 			// load timelines
 			val offset = VectorTimeline()

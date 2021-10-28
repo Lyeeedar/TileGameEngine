@@ -79,7 +79,7 @@ class SquidlibDungeonGeneratorAction : AbstractMapGenerationAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").toUpperCase(Locale.ENGLISH))
+		tilesetType = TilesetType.valueOf(xmlData.get("TilesetType").uppercase(Locale.ENGLISH))
 		water = xmlData.getInt("Water", 0)
 		grass = xmlData.getInt("Grass", 0)
 		traps = xmlData.getInt("Traps", 0)

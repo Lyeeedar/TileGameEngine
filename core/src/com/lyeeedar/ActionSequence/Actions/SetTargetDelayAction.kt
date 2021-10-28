@@ -62,7 +62,7 @@ class SetTargetDelayAction : AbstractOneShotActionSequenceAction()
 	override fun load(xmlData: XmlData)
 	{
 		super.load(xmlData)
-		mode = Mode.valueOf(xmlData.get("Mode").toUpperCase(Locale.ENGLISH))
+		mode = Mode.valueOf(xmlData.get("Mode").uppercase(Locale.ENGLISH))
 		maxDelay = xmlData.getFloat("MaxDelay", 0.5f)
 	}
 	override val classID: String = "SetTargetDelay"

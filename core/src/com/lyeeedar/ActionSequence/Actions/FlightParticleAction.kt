@@ -128,7 +128,9 @@ class FlightParticleAction : AbstractDurationActionSequenceAction()
 		particle = AssetManager.loadParticleEffect(xmlData.getChildByName("Particle")!!)
 		useLeap = xmlData.getBoolean("UseLeap", false)
 		alignToVector = xmlData.getBoolean("AlignToVector", true)
-		spawnBehaviour = SpawnBehaviour.valueOf(xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.toUpperCase(Locale.ENGLISH))
+		spawnBehaviour = SpawnBehaviour.valueOf(
+			xmlData.get("SpawnBehaviour", SpawnBehaviour.IMMEDIATE.toString())!!.uppercase(Locale.ENGLISH)
+		                                       )
 		spawnDuration = xmlData.getFloat("SpawnDuration", 0f)
 	}
 	override val classID: String = "FlightParticle"
