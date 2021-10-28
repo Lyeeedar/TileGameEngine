@@ -367,15 +367,15 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			if (variableType == VariableType.LATEINIT)
 			{
 				if (visibleIfStr.isNotBlank()) throw RuntimeException("Lateinit with visibleif enum not supported!")
-				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\").toUpperCase(Locale.ENGLISH))")
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\").uppercase(Locale.ENGLISH))")
 			}
 			else if (sourceElName != null)
 			{
-				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf($sourceElName.text.toUpperCase(Locale.ENGLISH))")
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf($sourceElName.text.uppercase(Locale.ENGLISH))")
 			}
 			else if (variableType == VariableType.VAR)
 			{
-				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\", ${defaultValue}.toString())!!.toUpperCase(Locale.ENGLISH))")
+				builder.appendln(indentation, "$name = ${enumDef.name}.valueOf(xmlData.${get}(\"$dataName\", ${defaultValue}.toString())!!.uppercase(Locale.ENGLISH))")
 			}
 		}
 		else if (type.startsWith("Array2D<"))
@@ -551,7 +551,7 @@ class VariableDescription(val variableType: VariableType, val name: String, val 
 			builder.appendln(indentation + 1, "for (el in ${elName}.children)")
 			builder.appendln(indentation + 1, "{")
 
-			builder.appendln(indentation + 2, "val enumVal = $enumType.valueOf(el.name.toUpperCase(Locale.ENGLISH))")
+			builder.appendln(indentation + 2, "val enumVal = $enumType.valueOf(el.name.uppercase(Locale.ENGLISH))")
 
 			if (valueType == "String")
 			{
