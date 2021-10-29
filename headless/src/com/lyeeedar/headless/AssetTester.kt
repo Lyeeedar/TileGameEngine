@@ -60,3 +60,6 @@ object AssetTester
 		}
 	}
 }
+
+expect fun addGameAssetTests(funcs: com.badlogic.gdx.utils.Array<Pair<String, ()->Any>>)
+expect fun addGameLongTests(funcs: com.badlogic.gdx.utils.Array<Pair<String, ()->Any>>)

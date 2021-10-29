@@ -25,6 +25,7 @@ object CompilerRunner
 			funcs.add(Pair("Skeleton") { SkeletonCompressor() })
 			funcs.add(Pair("Texture") { TextureCompressor() })
 			funcs.add(Pair("Xml") { XmlCompressor() })
+			funcs.add(Pair("Shaders") { GlslCompiler() })
 
 			val timings = com.badlogic.gdx.utils.Array<Pair<String, Long>>()
 			for (func in funcs)

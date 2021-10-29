@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter
+import com.badlogic.gdx.graphics.glutils.ShaderProgram
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ObjectMap
 import com.esotericsoftware.spine.*
@@ -36,6 +37,7 @@ class AssetManager
 			loadedTextures.clear()
 			loadedSkeletons.clear()
 			loadedAnimGraphs.clear()
+			loadedShaders.clear()
 
 			SpriteWrapper.loaded.clear()
 
@@ -557,6 +559,43 @@ class AssetManager
 		{
 			if (xml == null) return null
 			return loadSkeleton(xml)
+		}
+
+		val loadedShaders = ObjectMap<String, ShaderProgram>()
+
+		fun loadShader(path: String): ShaderProgram
+		{
+			return loadShader(path, path)
+		}
+
+		fun loadShader(vertexPath: String, fragmentPath: String): ShaderProgram
+		{
+			val key = vertexPath + fragmentPath
+
+			var shader = loadedShaders[key]
+			if (shader != null)
+			{
+				return shader
+			}
+
+			val vertex = "CompressedData/${"$vertexPath.vert".hashCode()}.vert"
+			val fragment = "CompressedData/${"$fragmentPath.frag".hashCode()}.frag"
+
+			val vertexFile = Gdx.files.internal(vertex)
+			val fragmentFile = Gdx.files.internal(fragment)
+
+			val vertexSource = vertexFile.readString()
+			val fragmentSource = fragmentFile.readString()
+
+			shader = ShaderProgram(vertexSource, fragmentSource)
+			if (!shader.isCompiled)
+			{
+				throw IllegalArgumentException("Error compiling shader:\nVertex:\n$vertexSource\n\nFragment:\n$fragmentSource\n\nLog:\n " + shader.log)
+			}
+
+			loadedShaders[key] = shader
+
+			return shader
 		}
 	}
 }
