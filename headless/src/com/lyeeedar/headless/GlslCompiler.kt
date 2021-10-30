@@ -67,16 +67,21 @@ class GlslCompiler
 		return shader
 	}
 
-	fun optimiseShader(context: GlslOptimiser.glslopt_ctx, type: Int, input: String): String
+	fun optimiseShader(optimiser: GlslOptimiser?, context: GlslOptimiser.glslopt_ctx?, type: Int, input: String): String
 	{
 		val input = expandConstants(input)
 
-		val compiled = GlslOptimiser.INSTANCE.glslopt_optimize(context, type, input, 0)
-		val output = GlslOptimiser.INSTANCE.glslopt_get_output(compiled)
+		if (context == null || optimiser == null)
+		{
+			return input
+		}
+
+		val compiled = optimiser.glslopt_optimize(context, type, input, 0)
+		val output = optimiser.glslopt_get_output(compiled)
 
 		if (output == null)
 		{
-			val log = GlslOptimiser.INSTANCE.glslopt_get_log(compiled)
+			val log = optimiser.glslopt_get_log(compiled)
 			System.err.println("Failed to compile shader")
 			System.err.println("\n--------------------------------------------------------------------\n")
 			System.err.println(input)
@@ -84,7 +89,7 @@ class GlslCompiler
 			System.err.println(log)
 		}
 
-		GlslOptimiser.INSTANCE.glslopt_shader_delete(compiled)
+		optimiser.glslopt_shader_delete(compiled)
 
 		return restoreOldPrecision(output, input)
 	}
@@ -104,15 +109,15 @@ class GlslCompiler
 		return shader
 	}
 
-	fun optimiseFragment(context: GlslOptimiser.glslopt_ctx, input: String): String
+	fun optimiseFragment(optimiser: GlslOptimiser?, context: GlslOptimiser.glslopt_ctx?, input: String): String
 	{
-		val optimised = optimiseShader(context, GlslOptimiser.glslopt_shader_type.kGlslOptShaderFragment, input)
+		val optimised = optimiseShader(optimiser, context, GlslOptimiser.glslopt_shader_type.kGlslOptShaderFragment, input)
 		return addHeader(optimised, fragmentHeader)
 	}
 
-	fun optimiseVertex(context: GlslOptimiser.glslopt_ctx, input: String): String
+	fun optimiseVertex(optimiser: GlslOptimiser?, context: GlslOptimiser.glslopt_ctx?, input: String): String
 	{
-		val optimised = optimiseShader(context, GlslOptimiser.glslopt_shader_type.kGlslOptShaderVertex, input)
+		val optimised = optimiseShader(optimiser, context, GlslOptimiser.glslopt_shader_type.kGlslOptShaderVertex, input)
 		return addHeader(optimised, vertexHeader)
 	}
 
@@ -124,7 +129,7 @@ class GlslCompiler
 		File(dst).writeText(shader)
 	}
 
-	private fun findFilesRecursive(context: GlslOptimiser.glslopt_ctx, dir: File)
+	private fun findFilesRecursive(optimiser: GlslOptimiser?, context: GlslOptimiser.glslopt_ctx?, dir: File)
 	{
 		val contents = dir.listFiles() ?: return
 
@@ -132,20 +137,20 @@ class GlslCompiler
 		{
 			if (file.isDirectory)
 			{
-				findFilesRecursive(context, file)
+				findFilesRecursive(optimiser, context, file)
 			}
 			else if (file.path.endsWith(".vert"))
 			{
 				System.out.println("Processing ${file.path}")
 
-				val optimised = optimiseVertex(context, file.readText())
+				val optimised = optimiseVertex(optimiser, context, file.readText())
 				writeToOutput(optimised, file)
 			}
 			else if (file.path.endsWith(".frag"))
 			{
 				System.out.println("Processing ${file.path}")
 
-				val optimised = optimiseFragment(context, file.readText())
+				val optimised = optimiseFragment(optimiser, context, file.readText())
 				writeToOutput(optimised, file)
 			}
 		}
@@ -166,17 +171,30 @@ class GlslCompiler
 
 		var start = System.currentTimeMillis()
 
-		val context = GlslOptimiser.INSTANCE.glslopt_initialize(
-			GlslOptimiser.glslopt_target.kGlslTargetOpenGLES30)
+		var optimiser: GlslOptimiser? = null
+		var context: GlslOptimiser.glslopt_ctx? = null
+		try
+		{
+			optimiser = GlslOptimiser.initialise()
+			context = optimiser.glslopt_initialize(GlslOptimiser.glslopt_target.kGlslTargetOpenGLES30)
+		}
+		catch (ex: Exception)
+		{
+			System.err.println("Failed to load optimiser context")
+			ex.printStackTrace()
+		}
 
 		try
 		{
 			println(">>>>>> Parsing resources <<<<<<<<")
-			findFilesRecursive(context, File("../assetsraw").absoluteFile)
+			findFilesRecursive(optimiser, context, File("../assetsraw").absoluteFile)
 		}
 		finally
 		{
-			GlslOptimiser.INSTANCE.glslopt_cleanup(context)
+			if (context != null)
+			{
+				optimiser?.glslopt_cleanup(context)
+			}
 		}
 
 		println("Optimising completed in ${System.currentTimeMillis() - start}")

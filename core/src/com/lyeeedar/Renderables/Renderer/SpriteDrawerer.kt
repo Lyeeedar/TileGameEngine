@@ -167,11 +167,13 @@ class SpriteDrawerer(val renderer: SortedRenderer): Disposable
 		lightMesh.dispose()
 		lightFBO.dispose()
 		shadowedLightMesh.dispose()
-		spriteShader.dispose()
-		lightShader.dispose()
-		shadowedLightShader.dispose()
-		precomputedVertexShader.dispose()
 		precomputedMesh.dispose()
+
+		//		spriteShader.dispose()
+		//		lightShader.dispose()
+		//		shadowedLightShader.dispose()
+		//		precomputedVertexShader.dispose()
+		//      shadowShader.dispose()
 	}
 
 	private fun updateFBO()

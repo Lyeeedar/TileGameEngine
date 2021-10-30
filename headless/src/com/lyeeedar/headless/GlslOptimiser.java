@@ -9,8 +9,11 @@ import com.sun.jna.*;
  */
 public interface GlslOptimiser extends Library {
 	public static final String JNA_LIBRARY_NAME = "glsl_optimizer_lib";
-	public static final NativeLibrary JNA_NATIVE_LIB = NativeLibrary.getInstance( GlslOptimiser.JNA_LIBRARY_NAME );
-	public static final GlslOptimiser INSTANCE = (GlslOptimiser) Native.load( GlslOptimiser.JNA_LIBRARY_NAME, GlslOptimiser.class );
+
+	public static GlslOptimiser initialise()
+	{
+		return (GlslOptimiser) Native.load( GlslOptimiser.JNA_LIBRARY_NAME, GlslOptimiser.class );
+	}
 
 	public static interface glslopt_shader_type {
 		public static final int kGlslOptShaderVertex = 0;
